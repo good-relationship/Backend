@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat WebSocket</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@6.0.0/dist/stomp.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+<div id="main-content" class="container">
+    <h2>WebSocket Chat</h2>
+    <div>
+        <button id="connect" class="btn btn-primary" type="button">Connect</button>
+        <button id="disconnect" class="btn btn-warning" type="button" disabled="disabled">Disconnect</button>
+        <div>
+            <button id="loadHistory" class="btn btn-info" type="button">Load History</button>
+        </div>
+    </div>
+    <div>
+        <input type="text" id="name" placeholder="Enter your name here..." class="form-control">
+        <button id="setName" class="btn btn-secondary" type="button">Set Name</button>
+    </div>
+    <div>
+        <input type="text" id="content" placeholder="Your message here..." class="form-control">
+        <button id="send" class="btn btn-success" type="button">Send</button>
+    </div>
+    <div>
+        <table id="conversation" class="table table-striped">
+            <thead>
+            <tr><th>Messages</th></tr>
+            </thead>
+            <tbody id="message"></tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
