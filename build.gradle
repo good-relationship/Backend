@@ -2,7 +2,26 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.3'
 	id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.ec4j.editorconfig' version '0.0.3'
+    id 'checkstyle'
 }
+
+editorconfig {
+    excludes = ['build']
+}
+
+check.dependsOn editorconfigCheck // checkstyle이 설정 되어 있을 시, editorconfigCheck 후 checkstyle 진행
+
+
+checkstyle {
+    maxWarnings = 0
+    configFile = file("${rootDir}/config/naver-checkstyle-rules.xml")
+    configProperties = ["suppressionFile": "${rootDir}/config/naver-checkstyle-suppressions.xml"]
+    toolVersion = "8.42"
+}
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
 
 group = 'good_relation'
 version = '0.0.1-SNAPSHOT'
