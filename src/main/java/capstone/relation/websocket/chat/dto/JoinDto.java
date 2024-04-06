@@ -1,4 +1,4 @@
-package good_relation.good_relation.websocket.chat.dto;
+package capstone.relation.websocket.chat.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

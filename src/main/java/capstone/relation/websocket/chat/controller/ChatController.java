@@ -1,4 +1,4 @@
-package good_relation.good_relation.websocket.chat.controller;
+package capstone.relation.websocket.chat.controller;
 
 import java.util.List;
 
@@ -6,9 +6,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
-import good_relation.good_relation.websocket.chat.dto.ChatDto;
-import good_relation.good_relation.websocket.chat.dto.JoinDto;
-import good_relation.good_relation.websocket.chat.repository.MessageRepository;
+import capstone.relation.websocket.chat.dto.ChatDto;
+import capstone.relation.websocket.chat.dto.JoinDto;
+import capstone.relation.websocket.chat.repository.MessageRepository;
 
 @Controller
 public class ChatController {
@@ -18,7 +18,7 @@ public class ChatController {
 	@MessageMapping("/message")
 	@SendTo("/topic/message")
 	public ChatDto newMessage(ChatDto message) throws Exception {
-		System.out.println("Received message: " + message.getContent())	;
+		System.out.println("Received message: " + message.getContent());
 		messageRepository.addMessage(message);
 		return message;
 	}

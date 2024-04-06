@@ -1,12 +1,15 @@
-package good_relation.good_relation.websocket.chat.repository;
+package capstone.relation.websocket.chat.repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import good_relation.good_relation.websocket.chat.dto.ChatDto;
+import org.springframework.stereotype.Repository;
+
+import capstone.relation.websocket.chat.dto.ChatDto;
 import lombok.Data;
 
 @Data
+@Repository
 public class MessageRepository {
 	static List<ChatDto> messages = new ArrayList<>();
 

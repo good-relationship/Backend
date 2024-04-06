@@ -1,4 +1,4 @@
-package good_relation.good_relation;
+package capstone.relation;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

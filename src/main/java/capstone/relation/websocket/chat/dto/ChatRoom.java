@@ -1,4 +1,4 @@
-package good_relation.good_relation.websocket.chat.dto;
+package capstone.relation.websocket.chat.dto;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -13,12 +13,11 @@ public class ChatRoom {
 
 	private HashMap<String, String> userlist = new HashMap<String, String>();
 
-	public ChatRoom create(String roomName){
+	public ChatRoom create(String roomName) {
 		ChatRoom chatRoom = new ChatRoom();
 		chatRoom.roomId = UUID.randomUUID().toString();
 		chatRoom.roomName = roomName;
 
 		return chatRoom;
 	}
-
 }
