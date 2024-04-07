@@ -1,0 +1,230 @@
+openapi: 3.0.0
+info:
+  title: 조은사이 API
+  description: >
+    환영합니다! [조은사이](https://example.com)는 팀프로젝트를 할 때 사용하는 도구를 하나로 모아둔 플랫폼입니다. 이 API 문서는 조은사이의 API를 사용하는 방법을 설명합니다.
+    
+    #### 지원 및 문의
+    - API 사용 중에 문제가 발생하거나 추가적인 지원이 필요한 경우, 지원 페이지에서 도움을 받을 수 있습니다.
+    - 새로운 기능 제안이나 버그 리포트는 리포지토리를 통해 제출해 주세요.
+    
+    #### API 작성에 참고한 문서:
+    - [Google API design guide](https://cloud.google.com/apis/design)
+
+  contact:
+    email: wnddms12345@gmail.com
+  version: 0.0.1
+
+externalDocs:
+  description: Find out more about Mejai GG
+  url: http://example.com
+
+servers:
+  - url: 'http://localhost:8080'
+
+paths:
+  /login/auth/kakao:
+    get:
+      summary: 카카오 로그인 인증
+      description: >
+        초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.
+      parameters:
+        - in: query
+          name: inviteToken
+          required: false
+          schema:
+            type: string
+          description: 초대된 경우에만 있는 토큰
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+  
+  /login/auth/naver:
+    get:
+      summary: 네이버 로그인 인증
+      description: >
+        카카오 로그인 인증과 유사하게 처리합니다. 초대받은 경우만 있는 토큰으로 네이버를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.
+      parameters:
+        - in: query
+          name: inviteToken
+          required: false
+          schema:
+            type: string
+          description: 초대된 경우에만 있는 토큰
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+  /ws-chat:
+    get:
+      summary: 채팅을 위한 WebSocket 연결
+      description: >
+        채팅 기능을 위한 WebSocket 연결 엔드포인트입니다. 클라이언트는 SockJS와 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다.
+      responses:
+        '101':
+          description: Switching Protocols
+
+  /ws-chat/topic/message:
+    get:
+      summary: 새 메시지 구독
+      description: >
+        `/topic/message`를 구독하여 새로운 메시지를 수신합니다. 실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
+      responses:
+        '200':
+          description: 메시지 수신 dto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageDto'
+
+  /ws-chat/topic/history:
+    get:
+      summary: 메시지 히스토리 구독
+      description: >
+        `/topic/history`를 구독하여 이전 메시지 히스토리를 수신합니다. 실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
+        메시지는 10개 단위로 옵니다(임시)
+      responses:
+        '200':
+          description: 메시지 히스토리 수신 dto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponseDto'
+
+  /ws-chat/app/message:
+    post:
+      summary: 메시지 발송
+      description: >
+        새 메시지를 `/app/message` 경로로 발송합니다. 실제 발송은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessagePublishDto'
+      responses:
+        '200':
+          description: 메시지 발송 성공
+  /ws-chat/app/history:
+    post:
+      summary: 메시지 히스토리 요청
+      description: >
+        특정 방의 이전 메시지 히스토리를 요청합니다. 실제 요청은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoryPublishDto'
+      responses:
+        '200':
+          description: 메시지 히스토리 요청 성공
+
+
+
+components:
+  schemas:
+    LoginResponse:
+      type: object
+      properties:
+        hasWorkSpace:
+          type: string
+          enum: [ hasWorkSpace, noSpace, invited ]
+          description: 워크스페이스의 상태
+          example: hasWorkSpace
+        workName:
+          type: string
+          description: 워크스페이스의 이름
+          example: '조은사이'
+        token:
+          type: string
+          format: jwt
+          description: 인증을 위한 JWT 토큰
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+
+    SenderDto:
+      type: object
+      properties:
+        senderName:
+          type: string
+          example: '신중은'
+        senderImage:
+          type: string
+          format: uri
+          example: 'https://example.com/image.jpg'
+        senderId:
+          type: string
+          format: uuid
+          example: '1234567890'
+    MessagePublishDto:
+      type: object
+      properties:
+        roomId:
+          type: string
+          example: '1234567890'
+        senderId:
+          type: string
+          example: '1234567890'
+        content:
+          type: string
+          example: '안녕하세요!'
+    
+    MessageDto:
+      type: object
+      properties:
+        sender:
+          $ref: '#/components/schemas/SenderDto'
+        date:
+          type: string
+          format: date-time
+          example: '2023-12-31T23:59:59'
+        messageId:
+          type: string
+          example: '1234567890'
+        content:
+          type: string
+          example: '안녕하세요!'
+
+    HistoryPublishDto:
+      type: object
+      properties:
+        lastMsgId:
+          type: string
+          example: '1234567890'
+          required: false
+        senderId:
+          type: string
+          example: '1234567890'
+        roomId:
+          type: string
+          example: '1234567890'
+    HistoryResponseDto:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageDto'
+        isEnd:
+          type: boolean
+          example: false
+        lastMsgId:
+          type: string
+          example: '1234567890'
