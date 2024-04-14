@@ -8,3 +8,6 @@ spring:
     show-sql: 'true'
     hibernate:
       ddl-auto: create # 만들어지면 none
+  profiles:
+    active: local # application-local.yml
+    include: oauth
