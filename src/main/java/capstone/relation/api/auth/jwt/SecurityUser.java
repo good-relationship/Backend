@@ -8,10 +8,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import capstone.relation.api.auth.domain.Role;
-import capstone.relation.common.user.MemberInfo;
+import capstone.relation.common.user.UserInfo;
 
-public class SecurityUser implements UserDetails, MemberInfo {
-	private Long memberId;
+public class SecurityUser implements UserDetails, UserInfo {
+	private Long userId;
 	private Role role;
 
 	@Override
@@ -27,7 +27,7 @@ public class SecurityUser implements UserDetails, MemberInfo {
 	@Override
 	public String toString() {
 		return "SecurityUser{" +
-			"memberId=" + memberId +
+			"memberId=" + userId +
 			", role=" + role +
 			'}';
 	}
@@ -47,7 +47,7 @@ public class SecurityUser implements UserDetails, MemberInfo {
 
 	@Override
 	public String getUsername() {
-		return String.valueOf(memberId);
+		return String.valueOf(userId);
 	}
 
 	@Override
@@ -71,12 +71,12 @@ public class SecurityUser implements UserDetails, MemberInfo {
 	}
 
 	@Override
-	public Long getMemberId() {
-		return memberId;
+	public Long getUserId() {
+		return userId;
 	}
 
-	private SecurityUser(Long memberId, Role role) {
-		this.memberId = memberId;
+	private SecurityUser(Long userId, Role role) {
+		this.userId = userId;
 		this.role = role;
 	}
 
