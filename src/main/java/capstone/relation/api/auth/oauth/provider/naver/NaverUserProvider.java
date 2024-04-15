@@ -49,8 +49,8 @@ public class NaverUserProvider implements OAuthUserProvider {
 				new TypeReference<Map<String, String>>() {
 				});
 			return responseMap.get("access_token");
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to retrieve access token from Naver", e);
+		} catch (Exception err) {
+			throw new RuntimeException("Failed to retrieve access token from Naver", err);
 		}
 	}
 }

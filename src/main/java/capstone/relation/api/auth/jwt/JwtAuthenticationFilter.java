@@ -61,30 +61,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		Key key = Keys.hmacShaKeyFor(keyBytes);
 		try {
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt).getBody();
-		} catch (ExpiredJwtException e) {
-			expiredTokenResponse(response, e);
-		} catch (Exception e) {
-			invalidTokenResponse(response, e);
+		} catch (ExpiredJwtException err) {
+			expiredTokenResponse(response, err);
+		} catch (Exception err) {
+			invalidTokenResponse(response, err);
 		}
 		return null;
 	}
 
-	private void expiredTokenResponse(HttpServletResponse response, Exception e) throws IOException {
+	private void expiredTokenResponse(HttpServletResponse response, Exception err) throws IOException {
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		response.getWriter().println(
 			objectMapper.writeValueAsString(
-				Map.of("예외", "토큰 만료", "메시지", e.getMessage())
+				Map.of("예외", "토큰 만료", "메시지", err.getMessage())
 			)
 		);
 	}
 
-	private void invalidTokenResponse(HttpServletResponse response, Exception e) throws IOException {
+	private void invalidTokenResponse(HttpServletResponse response, Exception err) throws IOException {
 		response.setContentType("application/json;charset=UTF-8");
 		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 		response.getWriter().println(
 			objectMapper.writeValueAsString(
-				Map.of("예외", "잘못된 토큰", "메시지", e.getMessage())
+				Map.of("예외", "잘못된 토큰", "메시지", err.getMessage())
 			)
 		);
 	}
@@ -98,5 +98,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			principal.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
-
 }

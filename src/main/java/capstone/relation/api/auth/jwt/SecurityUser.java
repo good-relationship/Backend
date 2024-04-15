@@ -11,8 +11,8 @@ import capstone.relation.api.auth.domain.Role;
 import capstone.relation.common.user.UserInfo;
 
 public class SecurityUser implements UserDetails, UserInfo {
-	private Long userId;
-	private Role role;
+	private final Long userId;
+	private final Role role;
 
 	@Override
 	public boolean equals(Object obj) {
@@ -26,10 +26,7 @@ public class SecurityUser implements UserDetails, UserInfo {
 
 	@Override
 	public String toString() {
-		return "SecurityUser{" +
-			"memberId=" + userId +
-			", role=" + role +
-			'}';
+		return "SecurityUser{" + "memberId=" + userId + ", role=" + role + '}';
 	}
 
 	@Override
