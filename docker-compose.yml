@@ -16,7 +16,7 @@ services:
     container_name: good-relation-spring-db-postgres
     image: postgres:13.1-alpine
     environment:
-      - POSTGRES_DB=spring-db-postgres
+      - POSTGRES_DB=good-relation-spring-db-postgres
       - POSTGRES_USER=compose-postgres
       - POSTGRES_PASSWORD=compose-postgres
     ports:
@@ -38,7 +38,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: password
     depends_on:
       - db
-
+  #
   spring:
     container_name: spring-boot-good-relation
     build:
@@ -49,8 +49,8 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://spring-db-postgres:5432/spring-db-postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://good-relation-spring-db-postgres:5432/good-relation-spring-db-postgres
       SPRING_DATASOURCE_USERNAME: compose-postgres
       SPRING_DATASOURCE_PASSWORD: compose-postgres
-
+#
 

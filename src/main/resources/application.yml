@@ -1,7 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/spring-db-postgres
-
+    url: jdbc:postgresql://localhost:5432/good-relation-spring-db-postgres
     username: compose-postgres
     password: compose-postgres
   jpa:
