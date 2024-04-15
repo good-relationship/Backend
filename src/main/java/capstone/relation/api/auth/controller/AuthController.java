@@ -53,7 +53,38 @@ public class AuthController {
 		response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
 		// 리다이렉션 또는 다른 처리 로직
-		response.sendRedirect("http://localhost:3000");
+		response.sendRedirect("http://localhost:3000/login");
+	}
+
+	@GetMapping("/code/kakao")
+	public void getKakaoCode(@RequestParam String code, HttpServletResponse response) throws IOException {
+		String accessToken = authService.getToken(AuthProvider.KAKAO, code);
+		System.out.println("accessToken = " + accessToken);
+		TokenResponse tokenResponse = authService.login(AuthProvider.KAKAO, "Bearer " + accessToken);
+		// 액세스 토큰 쿠키 설정
+		ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokenResponse.getAccessToken())
+			.httpOnly(true) // JavaScript 접근 방지
+			.secure(true) // HTTPS만 허용
+			.sameSite("Strict") // 동일 출처 요구
+			.maxAge(tokenResponse.getAccessTokenExpiredDate())
+			.path("/")
+			.build();
+
+		// 리프레시 토큰 쿠키 설정
+		ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokenResponse.getRefreshToken())
+			.httpOnly(true)
+			.secure(true)
+			.sameSite("Strict")
+			.maxAge(tokenResponse.getRefreshTokenExpiredDate())
+			.path("/")
+			.build();
+
+		// 토큰 쿠키들을 응답에 추가
+		response.addHeader("Set-Cookie", accessTokenCookie.toString());
+		response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+
+		// 리다이렉션 또는 다른 처리 로직
+		response.sendRedirect("http://localhost:3000/login");
 	}
 
 	@PostMapping(value = "/kakao", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -29,7 +29,7 @@ public class AuthService {
 	}
 
 	private User saveOrUpdate(User user) {
-		User savedMember = userRepository.findByEmail(user.getEmail()).orElse(user);
+		User savedMember = userRepository.findByEmailAndProvider(user.getEmail(), user.getProvider()).orElse(user);
 		return userRepository.save(savedMember);
 	}
 
