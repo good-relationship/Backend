@@ -1,0 +1,9 @@
+google.oauth2.client.client-id=
+google.oauth2.client.client-secret=
+facebook.oauth2.client.client-id=
+facebook.oauth2.client.client-secret=
+naver.oauth2.client.client-id=
+naver.oauth2.client.client-secret=
+kakao.oauth2.client.client-id=
+kakao.oauth2.client.client-secret=
+auth.jwt.secret=
