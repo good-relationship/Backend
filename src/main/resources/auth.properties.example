@@ -1,3 +1,5 @@
+### 해당 파일명을 auth.properties 로 변경하시고 환경변수를 넣어주셔야 정상 동작합니다.
+
 google.oauth2.client.client-id=
 google.oauth2.client.client-secret=
 facebook.oauth2.client.client-id=
