@@ -197,18 +197,20 @@ paths:
       summary: 워크스페이스 가입
       description: >
         초대 코드를 통해 워크스페이스에 가입합니다.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                inviteCode:
-                  type: string
-                  example: '1234567890'
+      parameters:
+        - in: query
+          name: inviteCode
+          schema:
+            type: string
+            required: true
+            example: '1234567890'
       responses:
         '200':
           description: 워크스페이스 가입 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceInfo'
         '400':
           description: 'Bad Request'
         '401':
@@ -223,15 +225,13 @@ paths:
       summary: 워크스페이스 초대 되었음을 알림.
       description: >
         사용자가 초대되었음을 알립니다.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                inviteCode:
-                  type: string
-                  example: '1234567890'
+      parameters:
+        - in: query
+          name: inviteCode
+          schema:
+            type: string
+            required: true
+            example: '1234567890'
       responses:
         '200':
           description: 워크스페이스 초대 알림 성공
@@ -435,7 +435,7 @@ components:
         spaceState:
           type: string
           enum: [ hasWorkSpace, noSpace, invited, overflow ]
-          example: invited
+          example: hasWorkSpace
         workspaceId:
           type: string
           format: uuid
