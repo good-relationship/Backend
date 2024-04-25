@@ -443,10 +443,10 @@ components:
         workspaceName:
           type: string
           example: '조은사이'
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserInfo'
+    #        members:
+    #          type: array
+    #          items:
+    #            $ref: '#/components/schemas/UserInfo'
 
     SenderDto:
       type: object
