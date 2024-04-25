@@ -31,11 +31,18 @@ public class AuthService {
 		return tokenProvider.generateTokenResponse(savedUser);
 	}
 
+	//TODO: inviteCode 사용해서 User 생성 이후 초대 여부 보내주기
+	public TokenResponse loginWithCode(AuthProvider authProvider, String code, String inviteCode) {
+		String accessToken = getToken(authProvider, code);
+		TokenResponse response = login(authProvider, accessToken);
+		return response;
+	}
+
 	public void cookieLogin(AuthProvider authProvider, String code, HttpServletResponse response) throws
 		IOException {
 		String accessToken = getToken(authProvider, code);
 		System.out.println("accessToken = " + accessToken);
-		TokenResponse tokenResponse = login(authProvider, "Bearer " + accessToken);
+		TokenResponse tokenResponse = login(authProvider, accessToken);
 		// 액세스 토큰 쿠키 설정
 		ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokenResponse.getAccessToken())
 			.httpOnly(true) // JavaScript 접근 방지
@@ -60,6 +67,11 @@ public class AuthService {
 
 		// 리다이렉션 또는 다른 처리 로직
 		response.sendRedirect("http://localhost:3000/login");
+	}
+
+	public void codeLogin(AuthProvider authProvider, String code) {
+		String accessToken = getToken(authProvider, code);
+
 	}
 
 	private User saveOrUpdate(User user) {

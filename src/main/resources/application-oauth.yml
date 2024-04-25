@@ -11,7 +11,9 @@ oauth2:
     name: Naver
     client-id: ${naver.oauth2.client.client-id}
     client-secret: ${naver.oauth2.client.client-secret}
-    redirectUri: "http://localhost:8080/login/oauth2/code/naver"
+    #    redirectUri: "http://localhost:8080/login/oauth2/code/naver"
+    redirectUri: "http://localhost:3000/login/kakao"
+
     base-url: "https://nid.naver.com"
     token-path: "/oauth2.0/token"
     user-info-path: "/oauth2.0/profile"
@@ -25,7 +27,9 @@ oauth2:
     name: Kakao
     client-id: ${kakao.oauth2.client.client-id}
     client-secret: ${kakao.oauth2.client.client-secret}
-    redirectUri: "http://localhost:8080/login/oauth2/code/kakao"
+    #    redirectUri: "http://localhost:8080/login/oauth2/code/kakao"
+    redirectUri: "http://localhost:3000/login/kakao"
+
     authorizationUri: "https://kauth.kakao.com/oauth/authorize"
     tokenUri: "https://kauth.kakao.com/oauth/token"
     userInfoUri: "https://kapi.kakao.com/v2/user/me"

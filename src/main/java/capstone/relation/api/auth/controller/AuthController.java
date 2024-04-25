@@ -35,11 +35,25 @@ public class AuthController {
 	}
 
 	@PostMapping(value = "/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TokenResponse> loginWithKakaoCode(@RequestParam String code,
+		@RequestParam(required = false) String inviteCode) {
+		System.out.println(code);
+		System.out.println("카카오 로그인");
+		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.KAKAO, code, inviteCode));
+	}
+
+	@PostMapping(value = "/naver", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<TokenResponse> loginWithNaverCode(@RequestParam String code,
+		@RequestParam(required = false) String inviteCode) {
+		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
+	}
+
+	@PostMapping(value = "/token/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<TokenResponse> loginWithKakao(@RequestHeader("Authorization") String accessToken) {
 		return ResponseEntity.ok(authService.login(AuthProvider.KAKAO, accessToken));
 	}
 
-	@PostMapping(value = "/naver", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/token/naver", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<TokenResponse> loginWithNaver(@RequestHeader("Authorization") String accessToken) {
 		return ResponseEntity.ok(authService.login(AuthProvider.NAVER, accessToken));
 	}

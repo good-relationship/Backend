@@ -2,7 +2,9 @@ package capstone.relation.api.auth.jwt;
 
 import java.io.IOException;
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -98,4 +101,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			principal.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
+
+	/*  쿠키 방식 코드 */
+	@Deprecated
+	protected void oldDoFilterInternal(
+		HttpServletRequest request,
+		HttpServletResponse response,
+		FilterChain filterChain
+	) throws ServletException, IOException {
+		String jwt = oldResolveToken(request);
+		if (StringUtils.hasText(jwt)) {
+			Claims claims = resolveClaim(jwt, response);
+			if (claims == null) {
+				return;
+			}
+			updateSecurityContext(claims, jwt);
+		}
+		filterChain.doFilter(request, response);
+	}
+
+	@Deprecated
+	private String oldResolveToken(HttpServletRequest request) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies == null)
+			return null;
+		Optional<String> accessToken = Arrays.stream(cookies).filter(cookie -> "accessToken".equals(cookie.getName()))
+			.findFirst()
+			.map(Cookie::getValue);
+		if (accessToken.isEmpty())
+			return null;
+		return accessToken.get();
+	}
+
 }
