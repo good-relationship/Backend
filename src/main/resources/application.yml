@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/good-relation-spring-db-postgres
+    username: compose-postgres
+    password: compose-postgres
+  jpa:
+    show-sql: 'true'
+    hibernate:
+      ddl-auto: create # 만들어지면 none
+  profiles:
+    active: local # application-local.yml
+    include: oauth
