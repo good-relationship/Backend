@@ -28,7 +28,6 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		System.out.println("필터체인");
 		http
 			.csrf(CsrfConfigurer::disable)
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -43,8 +42,7 @@ public class SecurityConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(
-			List.of("*"));
+		configuration.setAllowedOriginPatterns(List.of("*"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
@@ -52,7 +50,6 @@ public class SecurityConfig {
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
-
 		return source;
 	}
 }
