@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
+import capstone.relation.workspace.WorkSpace;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,6 +54,6 @@ public class User {
 	private Role role;
 
 	@OneToMany(mappedBy = "user")
-	private List<UserSpace> userSpaces;
+	private List<WorkSpace> workSpaces;
 
 }
