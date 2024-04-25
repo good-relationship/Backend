@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import capstone.relation.api.auth.domain.User;
+import capstone.relation.api.auth.jwt.JwtProperties;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
 import capstone.relation.api.auth.oauth.provider.naver.client.NaverOAuthClient;
 import capstone.relation.api.auth.oauth.provider.naver.client.NaverTokenClient;
@@ -22,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class NaverUserProvider implements OAuthUserProvider {
 	private final NaverOAuthClient naverOAuthClient;
 	private final NaverTokenClient naverTokenClient;
+	private final JwtProperties jwtProperties;
+	
 	@Value("${oauth2.naver.client-id}")
 	private String clientId;
 	@Value("${oauth2.naver.client-secret}")
@@ -29,7 +32,8 @@ public class NaverUserProvider implements OAuthUserProvider {
 
 	@Override
 	public User getUser(String authorizationCode) {
-		NaverOAuth2Response response = naverOAuthClient.getUserInfo(authorizationCode);
+		NaverOAuth2Response response = naverOAuthClient.getUserInfo(
+			jwtProperties.getBearerPrefix() + authorizationCode);
 		return response.toEntity();
 	}
 

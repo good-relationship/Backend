@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import capstone.relation.api.auth.domain.User;
+import capstone.relation.api.auth.jwt.JwtProperties;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
 import capstone.relation.api.auth.oauth.provider.kakao.client.KakaoOAuthClient;
 import capstone.relation.api.auth.oauth.provider.kakao.client.KakaoTokenClient;
@@ -21,7 +22,8 @@ import lombok.RequiredArgsConstructor;
 public class KakaoUserProvider implements OAuthUserProvider {
 	private final KakaoOAuthClient kakaoClient;
 	private final KakaoTokenClient kakaoTokenClient;
-
+	private final JwtProperties jwtProperties;
+	
 	@Value("${oauth2.kakao.client-id}")
 	private String clientId;
 
@@ -33,7 +35,8 @@ public class KakaoUserProvider implements OAuthUserProvider {
 
 	@Override
 	public User getUser(String authorizationCode) {
-		KakaoOAuth2Response response = kakaoClient.getUserInfoFromKakao(authorizationCode);
+		KakaoOAuth2Response response = kakaoClient.getUserInfoFromKakao(
+			jwtProperties.getBearerPrefix() + authorizationCode);
 		return response.toEntity();
 	}
 
