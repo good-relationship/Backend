@@ -22,9 +22,22 @@ externalDocs:
 servers:
   - url: 'http://localhost:8080'
 
+tags:
+  - name: Auth
+    description: 로그인 및 인증 관련 API
+  - name: User
+    description: 사용자 정보 관련 API
+  - name: Workspace
+    description: 워크스페이스 관련 API
+  - name: Chat
+    description: 채팅 관련 API(WebSocket)
+
+
 paths:
   /login/oauth2/kakao:
     post:
+      tags:
+        - Auth
       summary: 카카오 로그인 인증
       description: >
         초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.
@@ -56,9 +69,10 @@ paths:
           description: 'Unauthorized'
         '403':
           description: 'Forbidden'
-  
   /login/oauth2/naver:
     post:
+      tags:
+        - Auth
       summary: 네이버 로그인 인증
       description: >
         카카오 로그인 인증과 유사하게 처리합니다. 초대받은 경우만 있는 토큰으로 네이버를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.
@@ -91,6 +105,8 @@ paths:
           description: 'Forbidden'
   /login/oauth2/refresh:
     post:
+      tags:
+        - Auth
       summary: AccessToken 갱신
       description: >
         Refresh Token을 통해 AccessToken을 갱신합니다.
@@ -115,9 +131,189 @@ paths:
           description: 'Unauthorized 리프레시 토큰이 만료된 상황 재로그인 필요'
         '403':
           description: 'Forbidden'
+  /user/info:
+    get:
+      tags:
+        - User
+      summary: 사용자 정보 조회
+      description: >
+        현재 로그인한 사용자의 정보를 조회합니다.
+      responses:
+        '200':
+          description: 사용자 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+
+  /workspace/member:
+    get:
+      tags:
+        - Workspace
+      summary: 워크스페이스 멤버 조회
+      description: >
+        현재 로그인한 사용자가 속한 워크스페이스의 멤버 목록을 조회합니다.
+      responses:
+        '200':
+          description: 워크스페이스 멤버 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserInfo'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+
+  /workspace/info:
+    get:
+      tags:
+        - Workspace
+      summary: 워크스페이스 정보 조회
+      description: >
+        현재 로그인한 사용자가 속한 워크스페이스의 정보를 조회합니다.
+      responses:
+        '200':
+          description: 워크스페이스 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceInfo'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+
+  /workspace/join:
+    post:
+      tags:
+        - Workspace
+      summary: 워크스페이스 가입
+      description: >
+        초대 코드를 통해 워크스페이스에 가입합니다.
+      parameters:
+        - in: query
+          name: inviteCode
+          schema:
+            type: string
+            required: true
+            example: '1234567890'
+      responses:
+        '200':
+          description: 워크스페이스 가입 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceInfo'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+
+  /workspace/invited:
+    post:
+      tags:
+        - Workspace
+      summary: 워크스페이스 초대 되었음을 알림.
+      description: >
+        사용자가 초대되었음을 알립니다.
+      parameters:
+        - in: query
+          name: inviteCode
+          schema:
+            type: string
+            required: true
+            example: '1234567890'
+      responses:
+        '200':
+          description: 워크스페이스 초대 알림 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceInfo'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+  /workspace/school:
+    get:
+      tags:
+        - Workspace
+      summary: 학교 정보 조회
+      description: >
+        전국 대학교 정보를 조회합니다.
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+          description: 학교 이름
+          example: "서울대"
+      responses:
+        '200':
+          description: 학교 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  schools:
+                    type: array
+                    items:
+                      type: string
+                      example: '서울대학교'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+
+  /workspace/create:
+    post:
+      tags:
+        - Workspace
+      summary: 워크스페이스 생성
+      description: >
+        워크스페이스를 생성합니다.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                workspaceName:
+                  type: string
+                  example: '조은사이'
+                schoolName:
+                  type: string
+                  example: '서울대학교'
+      responses:
+        '200':
+          description: 워크스페이스 생성 성공
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
   
   /ws-chat:
     get:
+      tags:
+        - Chat
       summary: 채팅을 위한 WebSocket 연결
       description: >
         채팅 기능을 위한 WebSocket 연결 엔드포인트입니다. 클라이언트는 SockJS와 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다.
@@ -127,6 +323,8 @@ paths:
 
   /ws-chat/topic/message:
     get:
+      tags:
+        - Chat
       summary: 새 메시지 구독
       description: >
         `/topic/message`를 구독하여 새로운 메시지를 수신합니다. 실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
@@ -140,6 +338,8 @@ paths:
 
   /ws-chat/topic/history:
     get:
+      tags:
+        - Chat
       summary: 메시지 히스토리 구독
       description: >
         `/topic/history`를 구독하여 이전 메시지 히스토리를 수신합니다. 실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
@@ -154,6 +354,8 @@ paths:
 
   /ws-chat/app/message:
     post:
+      tags:
+        - Chat
       summary: 메시지 발송
       description: >
         새 메시지를 `/app/message` 경로로 발송합니다. 실제 발송은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
@@ -167,6 +369,8 @@ paths:
           description: 메시지 발송 성공
   /ws-chat/app/history:
     post:
+      tags:
+        - Chat
       summary: 메시지 히스토리 요청
       description: >
         특정 방의 이전 메시지 히스토리를 요청합니다. 실제 요청은 WebSocket 연결 후 STOMP를 통해 이루어집니다.
@@ -186,16 +390,16 @@ components:
     LoginResponse:
       type: object
       properties:
-        hasWorkSpace:
+        spaceState:
           type: string
-          enum: [ hasWorkSpace, noSpace, invited ]
+          enum: [ hasWorkSpace, noSpace, invited, overflow ]
           description: 워크스페이스의 상태
           example: hasWorkSpace
-        workName:
+        workspaceName:
           type: string
           description: 워크스페이스의 이름 만약 워크스페이스가 없는 경우에는 null
           example: '조은사이'
-        workId:
+        workspaceId:
           type: string
           format: uuid
           description: 워크스페이스의 고유 식별자 만약 워크스페이스가 없는 경우에는 null
@@ -208,6 +412,41 @@ components:
           type: string
           description: Access Token 갱신을 위한 Refresh 토큰
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+    UserInfo:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: '1234567890'
+        userName:
+          type: string
+          example: '신중은'
+        userImage:
+          type: string
+          format: uri
+          example: 'https://lh3.googleusercontent.com/ogw/AF2bZyhqowurXq6imx61oPHn5G_c6OIEnucOyJanitxYGFUI498=s32-c-mo'
+        email:
+          type: string
+          example: 'wnddms12345@gmail.com'
+    WorkspaceInfo:
+      type: object
+      properties:
+        spaceState:
+          type: string
+          enum: [ hasWorkSpace, noSpace, invited, overflow ]
+          example: hasWorkSpace
+        workspaceId:
+          type: string
+          format: uuid
+          example: '1234567890'
+        workspaceName:
+          type: string
+          example: '조은사이'
+    #        members:
+    #          type: array
+    #          items:
+    #            $ref: '#/components/schemas/UserInfo'
 
     SenderDto:
       type: object
