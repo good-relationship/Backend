@@ -14,4 +14,5 @@ public class TokenResponse {
 	private Long accessTokenExpiredDate;
 	private Long refreshTokenExpiredDate;
 	private Long memberId;
+	private String hasWorkSpace; //
 }
