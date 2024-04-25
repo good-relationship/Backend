@@ -16,25 +16,33 @@ info:
   version: 0.0.1
 
 externalDocs:
-  description: Find out more about Mejai GG
+  description: Find out more about JoEunSaE
   url: http://example.com
 
 servers:
   - url: 'http://localhost:8080'
 
 paths:
-  /login/auth/kakao:
-    get:
+  /login/oauth2/kakao:
+    post:
       summary: 카카오 로그인 인증
       description: >
         초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.
       parameters:
         - in: query
-          name: inviteToken
+          name: code
+          schema:
+            type: string
+          required: true
+          description: 네이버에서 받아온 AuthorizationCode를 보내주시면 됩니다.
+          example: "네이버에서 받아온 코드"
+        - in: query
+          name: inviteCode
           required: false
           schema:
             type: string
-          description: 초대된 경우에만 있는 토큰
+          description: 초대된 경우에만 있는 코드
+          example: "초대 코드"
       responses:
         '200':
           description: Successful operation
@@ -49,12 +57,19 @@ paths:
         '403':
           description: 'Forbidden'
   
-  /login/auth/naver:
-    get:
+  /login/oauth2/naver:
+    post:
       summary: 네이버 로그인 인증
       description: >
         카카오 로그인 인증과 유사하게 처리합니다. 초대받은 경우만 있는 토큰으로 네이버를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.
       parameters:
+        - in: query
+          name: code
+          schema:
+            type: string
+          required: true
+          description: 네이버에서 받아온 AuthorizationCode를 보내주시면 됩니다.
+          example: "네이버에서 받아온 코드"
         - in: query
           name: inviteToken
           required: false
@@ -74,6 +89,33 @@ paths:
           description: 'Unauthorized'
         '403':
           description: 'Forbidden'
+  /login/oauth2/refresh:
+    post:
+      summary: AccessToken 갱신
+      description: >
+        Refresh Token을 통해 AccessToken을 갱신합니다.
+      parameters:
+        - in: query
+          name: refreshToken
+          schema:
+            type: string
+          required: true
+          description: Refresh Token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      responses:
+        '200':
+          description: AccessToken 갱신 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized 리프레시 토큰이 만료된 상황 재로그인 필요'
+        '403':
+          description: 'Forbidden'
+  
   /ws-chat:
     get:
       summary: 채팅을 위한 WebSocket 연결
@@ -151,12 +193,20 @@ components:
           example: hasWorkSpace
         workName:
           type: string
-          description: 워크스페이스의 이름
+          description: 워크스페이스의 이름 만약 워크스페이스가 없는 경우에는 null
           example: '조은사이'
-        token:
+        workId:
           type: string
-          format: jwt
-          description: 인증을 위한 JWT 토큰
+          format: uuid
+          description: 워크스페이스의 고유 식별자 만약 워크스페이스가 없는 경우에는 null
+          example: '1234567890'
+        accessToken:
+          type: string
+          description: 인증을 위한 Access 토큰
+          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+        refreshToken:
+          type: string
+          description: Access Token 갱신을 위한 Refresh 토큰
           example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
 
     SenderDto:

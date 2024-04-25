@@ -1,0 +1,7 @@
+### 해당 파일명을 auth.properties 로 변경하시고 환경변수를 넣어주셔야 정상 동작합니다.
+
+naver.oauth2.client.client-id=
+naver.oauth2.client.client-secret=
+kakao.oauth2.client.client-id=
+kakao.oauth2.client.client-secret=
+auth.jwt.secret=

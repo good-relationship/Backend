@@ -22,8 +22,8 @@ public class ChatController {
 	public MessageDto newMessage(MessagePublishDto message) throws Exception {
 		System.out.println("Received message: " + message.getContent());
 		System.out.println("Received message: " + message.getRoomId());
-		MessageDto messageDto = messageRepository.addMessage(message);
-		System.out.println("반환값:" + messageDto.toString());
+		MessageDto messageDto = MessageRepository.addMessage(message);
+		System.out.println("반환값:" + messageDto);
 		return messageDto;
 	}
 
@@ -32,14 +32,14 @@ public class ChatController {
 	public HistoryResponseDto history(HistoryPublishDto join) throws Exception {
 		HistoryResponseDto messages = new HistoryResponseDto();
 		System.out.println("Received history: " + join.toString());
-		List<MessageDto> mess = messageRepository.getMessages(join.getRoomId());
+		List<MessageDto> mess = MessageRepository.getMessages(join.getRoomId());
 		if (mess == null) {
 			return messages;
 		}
 		messages.setMessages(mess);
 		messages.setEnd(false);
 		messages.setLastMsgId(mess.get(mess.size() - 1).getMessageId());
-		System.out.println("반환값:" + messages.toString());
+		System.out.println("반환값:" + messages);
 		return messages;
 	}
 }
