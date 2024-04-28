@@ -1,4 +1,4 @@
-package capstone.relation.api.auth.domain;
+package capstone.relation.user.domain;
 
 import java.util.List;
 
@@ -25,12 +25,12 @@ import lombok.NoArgsConstructor;
 public class User {
 
 	@Builder
-	public User(Long id, String profileImage, String username, String email, String provider, Role role) {
+	public User(Long id, String profileImage, String userName, String email, String provider, Role role) {
 		if (!EmailValidator.getInstance().isValid(email)) {
 			throw new IllegalArgumentException("유효하지 않은 이메일 형식입니다.");
 		}
 		this.profileImage = profileImage;
-		this.username = username;
+		this.userName = userName;
 		this.provider = provider;
 		this.email = email;
 		this.role = role;
@@ -42,8 +42,8 @@ public class User {
 
 	@Column(name = "profile_image")
 	private String profileImage; //url
-	@Column(name = "username", nullable = false)
-	private String username;
+	@Column(name = "user_name", nullable = false)
+	private String userName;
 	@Column(name = "email", nullable = false)
 	private String email;
 	@Column(name = "provider", nullable = false)

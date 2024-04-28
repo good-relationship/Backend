@@ -1,4 +1,4 @@
-package capstone.relation.api.auth.domain;
+package capstone.relation.user.domain;
 
 import lombok.Getter;
 

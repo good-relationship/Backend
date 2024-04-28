@@ -1,6 +1,6 @@
 package capstone.relation.workspace;
 
-import capstone.relation.api.auth.domain.User;
+import capstone.relation.user.domain.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

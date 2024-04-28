@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String jwt = resolveToken(request);
 		if (StringUtils.hasText(jwt)) {
 			Claims claims = resolveClaim(jwt, response);
+			System.out.println("JWT" + claims);
 			if (claims == null) {
 				return;
 			}

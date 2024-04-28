@@ -8,12 +8,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import capstone.relation.api.auth.AuthProvider;
-import capstone.relation.api.auth.domain.User;
 import capstone.relation.api.auth.jwt.TokenProvider;
 import capstone.relation.api.auth.jwt.response.RefreshTokenResponse;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
-import capstone.relation.api.auth.repository.UserRepository;
+import capstone.relation.user.domain.User;
+import capstone.relation.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 

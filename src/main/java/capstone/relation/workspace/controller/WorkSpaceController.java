@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import capstone.relation.user.dto.UserInfo;
+import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.SchoolsResponse;
@@ -20,14 +20,14 @@ import capstone.relation.workspace.dto.response.WorkspaceInfo;
 @RequestMapping("/workspace")
 public class WorkSpaceController {
 	@GetMapping("/member")
-	public List<UserInfo> getMember() {
-		List<UserInfo> members = new ArrayList<>();
-		UserInfo userInfo1 = new UserInfo();
-		userInfo1.setDummy();
-		members.add(userInfo1);
-		UserInfo userInfo2 = new UserInfo();
-		userInfo2.setDummy();
-		members.add(userInfo2);
+	public List<UserInfoDto> getMember() {
+		List<UserInfoDto> members = new ArrayList<>();
+		UserInfoDto userInfoDto1 = new UserInfoDto();
+		userInfoDto1.setDummy();
+		members.add(userInfoDto1);
+		UserInfoDto userInfoDto2 = new UserInfoDto();
+		userInfoDto2.setDummy();
+		members.add(userInfoDto2);
 		return members;
 	}
 

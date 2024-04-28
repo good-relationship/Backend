@@ -11,12 +11,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import capstone.relation.api.auth.domain.Role;
-import capstone.relation.api.auth.domain.User;
 import capstone.relation.api.auth.jwt.refreshToken.CollectionRefreshTokenRepository;
 import capstone.relation.api.auth.jwt.refreshToken.RefreshToken;
 import capstone.relation.api.auth.jwt.refreshToken.RefreshTokenRepository;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
+import capstone.relation.user.domain.Role;
+import capstone.relation.user.domain.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
