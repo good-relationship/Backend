@@ -1,4 +1,4 @@
-package capstone.relation.workspace.school.initializer;
+package capstone.relation.common.initializer;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
