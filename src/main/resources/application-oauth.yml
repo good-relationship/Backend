@@ -44,3 +44,7 @@ oauth2:
     tokenUri: "https://accounts.google.com/o/oauth2/token"
     userInfoUri: "https://www.googleapis.com/oauth2/v3/userinfo"
     userNameAttributeName: sub
+
+school:
+  info:
+    url: https://www.career.go.kr/cnet/openapi/getOpenApi

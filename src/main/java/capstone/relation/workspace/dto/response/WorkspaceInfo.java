@@ -1,14 +1,26 @@
 package capstone.relation.workspace.dto.response;
 
 import capstone.relation.workspace.dto.SpaceState;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class WorkspaceInfo {
 	private String spaceState;
 	private String workspaceId;
 	private String workspaceName;
 	// private List<UserInfo> members;
+
+	@Builder
+	public WorkspaceInfo(String workspaceId, String workspaceName, String spaceState) {
+		this.workspaceId = workspaceId;
+		this.workspaceName = workspaceName;
+		this.spaceState = spaceState;
+	}
 
 	public void setDummy() {
 		this.workspaceId = "1234567890";

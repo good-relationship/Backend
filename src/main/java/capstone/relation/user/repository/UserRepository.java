@@ -1,13 +1,13 @@
-package capstone.relation.api.auth.repository;
+package capstone.relation.user.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import capstone.relation.api.auth.domain.User;
+import capstone.relation.user.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-	User findByUsername(String username);
+	User findByUserName(String username);
 
 	Optional<User> findByEmailAndProvider(String email, String provider);
 

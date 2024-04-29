@@ -2,8 +2,8 @@ package capstone.relation.api.auth.oauth.provider.kakao.response;
 
 import java.util.Map;
 
-import capstone.relation.api.auth.domain.Role;
-import capstone.relation.api.auth.domain.User;
+import capstone.relation.user.domain.Role;
+import capstone.relation.user.domain.User;
 
 public record KakaoOAuth2Response(
 	long id,
@@ -31,7 +31,7 @@ public record KakaoOAuth2Response(
 		return User.builder()
 			.provider("kakao")
 			.email(kakao_account.email())
-			.username(kakao_account.profile().nickname())
+			.userName(kakao_account.profile().nickname())
 			.role(Role.USER)
 			.profileImage(kakao_account.profile().profile_image_url())
 			.build();

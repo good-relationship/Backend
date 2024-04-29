@@ -3,7 +3,7 @@ package capstone.relation.user.dto;
 import lombok.Data;
 
 @Data
-public class UserInfo {
+public class UserInfoDto {
 	private String userId;
 	private String userName;
 	private String userImage;

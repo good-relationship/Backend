@@ -1,6 +1,5 @@
 package capstone.relation.workspace.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,62 +9,67 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import capstone.relation.user.dto.UserInfo;
-import capstone.relation.workspace.dto.SpaceState;
+import capstone.relation.user.UserService;
+import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.SchoolsResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
+import capstone.relation.workspace.school.domain.School;
+import capstone.relation.workspace.school.service.SchoolService;
+import capstone.relation.workspace.service.WorkspaceService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/workspace")
+@RequiredArgsConstructor
 public class WorkSpaceController {
+	private final SchoolService schoolService;
+	private final WorkspaceService workspaceService;
+	private final UserService userService;
+
 	@GetMapping("/member")
-	public List<UserInfo> getMember() {
-		List<UserInfo> members = new ArrayList<>();
-		UserInfo userInfo1 = new UserInfo();
-		userInfo1.setDummy();
-		members.add(userInfo1);
-		UserInfo userInfo2 = new UserInfo();
-		userInfo2.setDummy();
-		members.add(userInfo2);
-		return members;
+	public List<UserInfoDto> getMember() {
+		return workspaceService.getMemebers();
 	}
 
 	@GetMapping("/info")
 	public WorkspaceInfo getInfo() {
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		return workspaceInfo;
+		return workspaceService.getWorkspaceInfo();
 	}
 
 	@PostMapping("/join")
 	public WorkspaceInfo join(@RequestParam String inviteCode) {
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		workspaceInfo.setSpaceState(SpaceState.HAS_WORK_SPACE);
-		return workspaceInfo;
+		return workspaceService.joinSpace(inviteCode);
+	}
+
+	//TODO :Swagger
+	@PostMapping("/leave")
+	public void leave() {
+		userService.leaveWorkspace();
 	}
 
 	@PostMapping("/invited")
 	public WorkspaceInfo invited(@RequestParam String inviteCode) {
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		workspaceInfo.setSpaceState(SpaceState.INVITED);
-		return workspaceInfo;
+		return workspaceService.inviteSpace(inviteCode);
+	}
+
+	//TODO : Swagger
+	@GetMapping("/inviteCode")
+	public String invite() {
+		return workspaceService.getInviteCode();
 	}
 
 	@GetMapping("/school")
 	public SchoolsResponse getSchool(@RequestParam String name) {
+		List<School> schools = schoolService.searchSchool(name);
 		SchoolsResponse schoolsResponse = new SchoolsResponse();
-		schoolsResponse.setDummy();
+		schoolsResponse.setBySchools(schools);
 		return schoolsResponse;
 	}
 
 	@PostMapping("/create")
-	public WorkspaceInfo create(@RequestBody CreateSpaceRequest createSpaceRequest) {
-		System.out.println(createSpaceRequest);
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		return workspaceInfo;
+	public WorkspaceInfo create(@Valid @RequestBody CreateSpaceRequest createSpaceRequest) {
+		return workspaceService.createNewSpace(createSpaceRequest);
 	}
 }
