@@ -23,10 +23,7 @@ public class SchoolService {
 
 	//TODO: 미완성
 	public List<School> searchSchool(String name) {
-		SchoolInfoRequest request = new SchoolInfoRequest(apiKey);
-		request.setSearchSchulNm(name);
-		SchoolInfoResponse schoolInfo = schoolInfoClient.getSchoolInfo(request);
-		return SchoolMapper.INSTANCE.toSchoolData(schoolInfo.getDataSearch().getContent());
+		return schoolRepository.findBySchoolNameContaining(name);
 	}
 
 	public void initSchool() {
