@@ -21,7 +21,8 @@ public class UserService {
 
 	public UserInfoDto getUserInfo() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null && authentication.getPrincipal() != null) {
+		if (authentication != null && authentication.getPrincipal() != null
+			&& authentication.getPrincipal() instanceof SecurityUser) {
 			SecurityUser userDetails = (SecurityUser)authentication.getPrincipal();
 			Long userId = userDetails.getUserId();
 			Optional<User> userOptional = userRepository.findById(userId);
@@ -30,6 +31,22 @@ public class UserService {
 			}
 			UserInfoDto userInfoDto = UserMapper.INSTANCE.toUserInfoDto(userOptional.get());
 			return userInfoDto;
+		} else {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+		}
+	}
+
+	public User getUserEntity() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.getPrincipal() != null
+			&& authentication.getPrincipal() instanceof SecurityUser) {
+			SecurityUser userDetails = (SecurityUser)authentication.getPrincipal();
+			Long userId = userDetails.getUserId();
+			Optional<User> userOptional = userRepository.findById(userId);
+			if (userOptional.isEmpty()) {
+				throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+			}
+			return userOptional.get();
 		} else {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
 		}
