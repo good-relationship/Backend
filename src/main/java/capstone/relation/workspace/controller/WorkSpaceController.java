@@ -73,10 +73,6 @@ public class WorkSpaceController {
 
 	@PostMapping("/create")
 	public WorkspaceInfo create(@Valid @RequestBody CreateSpaceRequest createSpaceRequest) {
-		WorkspaceInfo newSpace = workspaceService.createNewSpace(createSpaceRequest);
-		System.out.println(createSpaceRequest);
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		return workspaceInfo;
+		return workspaceService.createNewSpace(createSpaceRequest);
 	}
 }
