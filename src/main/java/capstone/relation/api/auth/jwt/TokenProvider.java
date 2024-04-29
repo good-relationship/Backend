@@ -1,5 +1,8 @@
 package capstone.relation.api.auth.jwt;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
@@ -74,6 +77,26 @@ public class TokenProvider {
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authorityKey);
 
 		return new UsernamePasswordAuthenticationToken(userId, null, Collections.singleton(authority));
+	}
+
+	public String generateInviteCode(String workSpaceId) {
+		String jwt = Jwts.builder()
+			.setSubject(workSpaceId)
+			.signWith(key, SignatureAlgorithm.HS256)
+			.compact();
+		return URLEncoder.encode(jwt, StandardCharsets.UTF_8);
+	}
+
+	public String getWorkSpaceIdByInviteCode(String inviteCode) {
+		try {
+			String inviteToken = URLDecoder.decode(inviteCode, StandardCharsets.UTF_8);
+			Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(inviteToken).getBody();
+			return claims.getSubject();
+		} catch (ExpiredJwtException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "만료된 초대 코드입니다.");
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 초대 코드입니다.");
+		}
 	}
 
 	private String generateAccessToken(User user, Date accessTokenExpiredDate) {
