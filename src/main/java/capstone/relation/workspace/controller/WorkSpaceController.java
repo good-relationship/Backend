@@ -17,6 +17,8 @@ import capstone.relation.workspace.dto.response.SchoolsResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
 import capstone.relation.workspace.school.domain.School;
 import capstone.relation.workspace.school.service.SchoolService;
+import capstone.relation.workspace.service.WorkspaceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorkSpaceController {
 	private final SchoolService schoolService;
+	private final WorkspaceService workspaceService;
 
 	@GetMapping("/member")
 	public List<UserInfoDto> getMember() {
@@ -69,7 +72,8 @@ public class WorkSpaceController {
 	}
 
 	@PostMapping("/create")
-	public WorkspaceInfo create(@RequestBody CreateSpaceRequest createSpaceRequest) {
+	public WorkspaceInfo create(@Valid @RequestBody CreateSpaceRequest createSpaceRequest) {
+		WorkspaceInfo newSpace = workspaceService.createNewSpace(createSpaceRequest);
 		System.out.println(createSpaceRequest);
 		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
 		workspaceInfo.setDummy();

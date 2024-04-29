@@ -26,6 +26,10 @@ public class SchoolService {
 		return schoolRepository.findBySchoolNameContaining(name);
 	}
 
+	public boolean isExistSchool(String name) {
+		return schoolRepository.findByName(name);
+	}
+
 	public void initSchool() {
 		SchoolInfoRequest request = new SchoolInfoRequest(apiKey);
 		SchoolInfoResponse schoolInfo = schoolInfoClient.getSchoolInfo(request);

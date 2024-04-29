@@ -1,5 +1,6 @@
 package capstone.relation.workspace.school.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -20,8 +21,10 @@ import lombok.Setter;
 public class School {
 
 	@Id
+	@Column(name = "campus_name")
 	private String campusName; //1캠퍼스 2캠퍼스
 	@Id
+	@Column(name = "school_name")
 	private String schoolName; //학교명
 
 	private String schoolType; //대학교,전문대학, 사이버대학 등
