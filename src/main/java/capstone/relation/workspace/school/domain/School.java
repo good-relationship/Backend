@@ -1,9 +1,14 @@
 package capstone.relation.workspace.school.domain;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import capstone.relation.workspace.WorkSpace;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,4 +38,12 @@ public class School {
 	private String adres; //주소
 	private String region; //지역 경기도
 	private String estType; //사립 국립 등
+
+	@OneToMany(mappedBy = "school")
+	private Set<WorkSpace> workSpaces = new HashSet<>();
+
+	public void addWorkSpace(WorkSpace workSpace) {
+		this.workSpaces.add(workSpace);
+		workSpace.setSchool(this);
+	}
 }
