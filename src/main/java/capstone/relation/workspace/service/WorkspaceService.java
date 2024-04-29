@@ -1,13 +1,17 @@
 package capstone.relation.workspace.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.user.UserMapper;
 import capstone.relation.user.UserService;
 import capstone.relation.user.domain.User;
+import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
@@ -64,5 +68,29 @@ public class WorkspaceService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
 		}
 		return invitationService.generateInviteCode(workSpace.getId());
+	}
+
+	public WorkspaceInfo getWorkspaceInfo() {
+		User user = userService.getUserEntity();
+		WorkSpace workSpace = user.getWorkSpace();
+		if (workSpace == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
+		}
+		return WorkspaceInfo.builder()
+			.workspaceId(workSpace.getId())
+			.workspaceName(workSpace.getName())
+			.spaceState(SpaceState.HAS_WORK_SPACE)
+			.build();
+	}
+
+	public List<UserInfoDto> getMemebers() {
+		User user = userService.getUserEntity();
+		WorkSpace workSpace = user.getWorkSpace();
+		if (workSpace == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
+		}
+		return workSpace.getUser().stream()
+			.map(UserMapper.INSTANCE::toUserInfoDto)
+			.collect(Collectors.toList());
 	}
 }

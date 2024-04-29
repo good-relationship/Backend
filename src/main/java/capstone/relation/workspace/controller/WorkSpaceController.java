@@ -1,6 +1,5 @@
 package capstone.relation.workspace.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import capstone.relation.user.UserService;
 import capstone.relation.user.dto.UserInfoDto;
-import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.SchoolsResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
@@ -32,29 +30,17 @@ public class WorkSpaceController {
 
 	@GetMapping("/member")
 	public List<UserInfoDto> getMember() {
-		List<UserInfoDto> members = new ArrayList<>();
-		UserInfoDto userInfoDto1 = new UserInfoDto();
-		userInfoDto1.setDummy();
-		members.add(userInfoDto1);
-		UserInfoDto userInfoDto2 = new UserInfoDto();
-		userInfoDto2.setDummy();
-		members.add(userInfoDto2);
-		return members;
+		return workspaceService.getMemebers();
 	}
 
 	@GetMapping("/info")
 	public WorkspaceInfo getInfo() {
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		return workspaceInfo;
+		return workspaceService.getWorkspaceInfo();
 	}
 
 	@PostMapping("/join")
 	public WorkspaceInfo join(@RequestParam String inviteCode) {
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		workspaceInfo.setSpaceState(SpaceState.HAS_WORK_SPACE);
-		return workspaceInfo;
+		return workspaceService.joinSpace(inviteCode);
 	}
 
 	//TODO :Swagger
