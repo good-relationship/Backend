@@ -15,10 +15,16 @@ import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.SchoolsResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
+import capstone.relation.workspace.school.domain.School;
+import capstone.relation.workspace.school.service.SchoolService;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/workspace")
+@RequiredArgsConstructor
 public class WorkSpaceController {
+	private final SchoolService schoolService;
+
 	@GetMapping("/member")
 	public List<UserInfoDto> getMember() {
 		List<UserInfoDto> members = new ArrayList<>();
@@ -56,8 +62,9 @@ public class WorkSpaceController {
 
 	@GetMapping("/school")
 	public SchoolsResponse getSchool(@RequestParam String name) {
+		List<School> schools = schoolService.searchSchool(name);
 		SchoolsResponse schoolsResponse = new SchoolsResponse();
-		schoolsResponse.setDummy();
+		schoolsResponse.setBySchools(schools);
 		return schoolsResponse;
 	}
 
