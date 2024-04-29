@@ -1,7 +1,5 @@
 package capstone.relation.user.domain;
 
-import java.util.List;
-
 import org.apache.commons.validator.routines.EmailValidator;
 
 import capstone.relation.workspace.WorkSpace;
@@ -9,10 +7,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,7 +53,11 @@ public class User {
 	@Column(name = "role", nullable = false)
 	private Role role;
 
-	@OneToMany(mappedBy = "user")
-	private List<WorkSpace> workSpaces;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private WorkSpace workSpace;
+	
+	public void setWorkSpace(WorkSpace workSpace) {
+		this.workSpace = workSpace;
+	}
 
 }
