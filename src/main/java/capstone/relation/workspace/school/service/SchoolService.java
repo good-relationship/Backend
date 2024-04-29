@@ -1,6 +1,7 @@
 package capstone.relation.workspace.school.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class SchoolService {
 		return schoolRepository.findBySchoolNameContaining(name);
 	}
 
-	public boolean isExistSchool(String name) {
+	public Optional<School> getSchoolEntity(String name) {
 		return schoolRepository.findByName(name);
 	}
 

@@ -1,6 +1,7 @@
 package capstone.relation.workspace.school.respository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,6 @@ import capstone.relation.workspace.school.domain.SchoolId;
 public interface SchoolRepository extends JpaRepository<School, SchoolId> {
 	List<School> findBySchoolNameContaining(String name);
 
-	@Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM School s WHERE s.schoolName = :name")
-	boolean findByName(String name);
+	@Query("select s from School s where s.schoolName = :name order by s.campusName limit 1")
+	Optional<School> findByName(String name);
 }
