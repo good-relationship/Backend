@@ -1,4 +1,4 @@
-package capstone.relation.workspace.school;
+package capstone.relation.workspace.school.initializer;
 
 import org.springframework.context.ApplicationEvent;
 
