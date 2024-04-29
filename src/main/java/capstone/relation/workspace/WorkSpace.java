@@ -35,6 +35,7 @@ public class WorkSpace {
 	public void addUser(User user) {
 		this.user.add(user);
 		user.setWorkSpace(this);
+		user.setInvitedWorkspaceId("");
 	}
 
 	public void setName(String name) {

@@ -51,4 +51,16 @@ public class UserService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
 		}
 	}
+
+	public void setInvitedWorkspaceId(String inviteWorkSpaceId) {
+		User user = getUserEntity();
+		user.setInvitedWorkspaceId(inviteWorkSpaceId);
+		userRepository.save(user);
+	}
+
+	public void leaveWorkspace() {
+		User user = getUserEntity();
+		user.setWorkSpace(null);
+		userRepository.save(user);
+	}
 }

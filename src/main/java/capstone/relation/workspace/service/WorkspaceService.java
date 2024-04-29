@@ -23,6 +23,7 @@ public class WorkspaceService {
 	private final SchoolService schoolService;
 	private final UserService userService;
 	private final WorkSpaceRepository workSpaceRepository;
+	private final InvitationService invitationService;
 
 	public WorkspaceInfo createNewSpace(CreateSpaceRequest request) {
 		Optional<School> schoolEntity = schoolService.getSchoolEntity(request.getSchoolName());
@@ -46,5 +47,22 @@ public class WorkspaceService {
 			.workspaceName(workSpace.getName())
 			.spaceState(SpaceState.HAS_WORK_SPACE)
 			.build();
+	}
+
+	public WorkspaceInfo inviteSpace(String inviteCode) {
+		return invitationService.inviteWorkspace(inviteCode);
+	}
+
+	public WorkspaceInfo joinSpace(String inviteCode) {
+		return invitationService.joinWorkspace(inviteCode);
+	}
+
+	public String getInviteCode() {
+		User user = userService.getUserEntity();
+		WorkSpace workSpace = user.getWorkSpace();
+		if (workSpace == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
+		}
+		return invitationService.generateInviteCode(workSpace.getId());
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import capstone.relation.user.UserService;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class WorkSpaceController {
 	private final SchoolService schoolService;
 	private final WorkspaceService workspaceService;
+	private final UserService userService;
 
 	@GetMapping("/member")
 	public List<UserInfoDto> getMember() {
@@ -55,12 +57,21 @@ public class WorkSpaceController {
 		return workspaceInfo;
 	}
 
+	//TODO :Swagger
+	@PostMapping("/leave")
+	public void leave() {
+		userService.leaveWorkspace();
+	}
+
 	@PostMapping("/invited")
 	public WorkspaceInfo invited(@RequestParam String inviteCode) {
-		WorkspaceInfo workspaceInfo = new WorkspaceInfo();
-		workspaceInfo.setDummy();
-		workspaceInfo.setSpaceState(SpaceState.INVITED);
-		return workspaceInfo;
+		return workspaceService.inviteSpace(inviteCode);
+	}
+
+	//TODO : Swagger
+	@GetMapping("/inviteCode")
+	public String invite() {
+		return workspaceService.getInviteCode();
 	}
 
 	@GetMapping("/school")

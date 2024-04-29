@@ -48,6 +48,8 @@ public class User {
 	private String email;
 	@Column(name = "provider", nullable = false)
 	private String provider;
+	@Column(name = "invited_space_id", nullable = true)
+	private String invitedWorkspaceId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role", nullable = false)
@@ -55,9 +57,16 @@ public class User {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private WorkSpace workSpace;
-	
+
 	public void setWorkSpace(WorkSpace workSpace) {
 		this.workSpace = workSpace;
 	}
 
+	public void setInvitedWorkspaceId(String invitedWorkspaceId) {
+		if (invitedWorkspaceId == "") {
+			this.invitedWorkspaceId = null;
+		} else {
+			this.invitedWorkspaceId = invitedWorkspaceId;
+		}
+	}
 }
