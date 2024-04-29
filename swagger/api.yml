@@ -217,6 +217,45 @@ paths:
           description: 'Unauthorized'
         '403':
           description: 'Forbidden'
+  /workspace/leave:
+    post:
+      tags:
+        - Workspace
+      summary: 워크스페이스 탈퇴
+      description: >
+        현재 로그인한 사용자가 속한 워크스페이스에서 탈퇴합니다.
+      responses:
+        '200':
+          description: 워크스페이스 탈퇴 성공
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
+
+  /workspace/inviteCode:
+    get:
+      tags:
+        - Workspace
+      summary: 워크스페이스 초대 코드 조회
+      description: >
+        현재 로그인한 사용자가 속한 워크스페이스의 초대 코드를 조회합니다.
+      responses:
+        '200':
+          description: 워크스페이스 초대 코드 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inviteCode:
+                    type: string
+                    example: '1234567890'
+        '401':
+          description: 'Unauthorized'
+        '403':
+          description: 'Forbidden'
 
   /workspace/invited:
     post:
@@ -321,7 +360,7 @@ paths:
         '101':
           description: Switching Protocols
 
-  /ws-chat/topic/message:
+  /ws-chat/topic/message/{workSpaceId}:
     get:
       tags:
         - Chat
@@ -336,7 +375,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/MessageDto'
 
-  /ws-chat/topic/history:
+  /ws-chat/topic/history/{workSpaceId}:
     get:
       tags:
         - Chat
@@ -352,7 +391,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/HistoryResponseDto'
 
-  /ws-chat/app/message:
+  /ws-chat/app/message/{workSpaceId}:
     post:
       tags:
         - Chat
@@ -367,7 +406,7 @@ paths:
       responses:
         '200':
           description: 메시지 발송 성공
-  /ws-chat/app/history:
+  /ws-chat/app/history/{workSpaceId}:
     post:
       tags:
         - Chat
@@ -465,12 +504,6 @@ components:
     MessagePublishDto:
       type: object
       properties:
-        roomId:
-          type: string
-          example: '1234567890'
-        senderId:
-          type: string
-          example: '1234567890'
         content:
           type: string
           example: '안녕하세요!'
@@ -498,12 +531,6 @@ components:
           type: string
           example: '1234567890'
           required: false
-        senderId:
-          type: string
-          example: '1234567890'
-        roomId:
-          type: string
-          example: '1234567890'
     HistoryResponseDto:
       type: object
       properties:
