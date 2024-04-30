@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import capstone.relation.user.UserService;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
+import capstone.relation.workspace.dto.response.InviteCodeResponse;
 import capstone.relation.workspace.dto.response.SchoolsResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
 import capstone.relation.workspace.school.domain.School;
@@ -43,7 +44,6 @@ public class WorkSpaceController {
 		return workspaceService.joinSpace(inviteCode);
 	}
 
-	//TODO :Swagger
 	@PostMapping("/leave")
 	public void leave() {
 		userService.leaveWorkspace();
@@ -53,10 +53,9 @@ public class WorkSpaceController {
 	public WorkspaceInfo invited(@RequestParam String inviteCode) {
 		return workspaceService.inviteSpace(inviteCode);
 	}
-
-	//TODO : Swagger
+	
 	@GetMapping("/inviteCode")
-	public String invite() {
+	public InviteCodeResponse invite() {
 		return workspaceService.getInviteCode();
 	}
 
