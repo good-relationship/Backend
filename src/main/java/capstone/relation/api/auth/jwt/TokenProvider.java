@@ -75,8 +75,11 @@ public class TokenProvider {
 
 		String authorityKey = Role.USER.getKey() + claims.get(jwtProperties.getAuthorityKey(), String.class);
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authorityKey);
-
 		return new UsernamePasswordAuthenticationToken(userId, null, Collections.singleton(authority));
+	}
+
+	public String getDecodeBearerToken(String bearerToken) {
+		return bearerToken.substring(jwtProperties.getBearerPrefix().length());
 	}
 
 	public String generateInviteCode(String workSpaceId) {
