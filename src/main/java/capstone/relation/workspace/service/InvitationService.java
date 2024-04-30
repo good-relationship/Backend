@@ -31,6 +31,9 @@ public class InvitationService {
 
 	public WorkspaceInfo joinWorkspace(String inviteCode) {
 		WorkSpace workSpace = getWorkSpace(inviteCode);
+		if (workSpace.getId() != userService.getUserEntity().getInvitedWorkspaceId()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이전에 초대를 하지 않은 유저가 접근합니다.");
+		}
 		workSpace.addUser(userService.getUserEntity());
 		workSpaceRepository.save(workSpace);
 		WorkspaceInfo dto = WorkSpaceMapper.INSTANCE.toDto(workSpace);
