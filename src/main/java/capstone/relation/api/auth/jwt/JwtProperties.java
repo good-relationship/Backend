@@ -18,15 +18,15 @@ public class JwtProperties {
 	private String tokenSecret;
 	private String accessTokenHeader;
 
-	public int getAccessTokenExpireTime() {
+	public long getAccessTokenExpireTime() {
 		return dayToMilliSec(accessTokenExpireTime);
 	}
 
-	public int getRefreshTokenExpireTime() {
+	public long getRefreshTokenExpireTime() {
 		return dayToMilliSec(refreshTokenExpireTime);
 	}
 
-	private int dayToMilliSec(int day) {
+	private long dayToMilliSec(long day) {
 		return 1000 * 60 * 60 * 24 * day;
 	}
 }
