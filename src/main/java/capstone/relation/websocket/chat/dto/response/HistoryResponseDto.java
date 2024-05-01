@@ -8,5 +8,5 @@ import lombok.Data;
 public class HistoryResponseDto {
 	private List<MessageDto> messages;
 	private boolean isEnd;
-	private String lastMsgId;
+	private Long lastMsgId;
 }
