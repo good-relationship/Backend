@@ -15,7 +15,6 @@ import org.springframework.web.socket.messaging.StompSubProtocolErrorHandler;
 
 import capstone.relation.api.auth.exception.AuthException;
 
-//TODO: Stomp 관련 에러 로직 처리 모으기 필요
 @Component
 public class StompErrorHandler extends StompSubProtocolErrorHandler {
 	private static final byte[] EMPTY_PAYLOAD = new byte[0];

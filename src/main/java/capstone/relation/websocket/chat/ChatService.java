@@ -28,11 +28,11 @@ public class ChatService {
 	private final UserRepository userRepository;
 	private final WorkSpaceRepository workSpaceRepository;
 
-	//TODO : Exception 클래스 만들어 처리
 	@Transactional(readOnly = false)
 	public MessageDto sendNewMessage(String workSpaceId, String content, SimpMessageHeaderAccessor headerAccessor) {
-		if (content == null || content.isEmpty())
+		if (content == null || content.isEmpty()) {
 			return null;
+		}
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
 		if (userId == null) {
@@ -53,11 +53,13 @@ public class ChatService {
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
 		User user = userRepository.findById(userId).orElse(null);
-		if (user == null)
+		if (user == null) {
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+		}
 		WorkSpace workSpace = user.getWorkSpace();
-		if (workSpace == null)
+		if (workSpace == null) {
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+		}
 		List<Chat> chats;
 		if (lastMsgId == null) {
 			chats = chatRepository.findTop10ByWorkSpaceOrderById(workSpace);

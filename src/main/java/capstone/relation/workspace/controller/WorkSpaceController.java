@@ -53,7 +53,7 @@ public class WorkSpaceController {
 	public WorkspaceInfo invited(@RequestParam String inviteCode) {
 		return workspaceService.inviteSpace(inviteCode);
 	}
-	
+
 	@GetMapping("/inviteCode")
 	public InviteCodeResponse invite() {
 		return workspaceService.getInviteCode();

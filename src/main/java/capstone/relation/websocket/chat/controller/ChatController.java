@@ -27,7 +27,7 @@ public class ChatController {
 	@MessageMapping("/message/{workSpaceId}")
 	@SendTo("/topic/message/{workSpaceId}")
 	public ResponseEntity<MessageDto> newMessage(@DestinationVariable String workSpaceId, MessagePublishDto message,
-		SimpMessageHeaderAccessor headerAccessor) throws Exception { //TODO: 토큰 만료 되는 경우 어떻게 함?
+		SimpMessageHeaderAccessor headerAccessor) throws Exception {
 		try {
 			MessageDto messageDto = chatService.sendNewMessage(workSpaceId, message.getContent(), headerAccessor);
 			System.out.println("Send message: " + messageDto);

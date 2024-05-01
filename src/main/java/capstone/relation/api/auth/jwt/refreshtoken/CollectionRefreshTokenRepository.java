@@ -1,4 +1,4 @@
-package capstone.relation.api.auth.jwt.refreshToken;
+package capstone.relation.api.auth.jwt.refreshtoken;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -36,8 +36,9 @@ public interface ChatMapper {
 
 	@Named("userToSenderDto")
 	default SenderDto userToSenderDto(User user) {
-		if (user == null)
+		if (user == null) {
 			return null;
+		}
 		SenderDto dto = new SenderDto();
 		dto.setSenderId(user.getId().toString());
 		dto.setSenderName(user.getUserName());

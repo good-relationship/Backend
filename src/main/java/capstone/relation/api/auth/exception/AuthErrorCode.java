@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public enum AuthErrorCode {
-	
+
 	INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST, "access token이 이미 만료되었거나 올바르지 않습니다."),
 	INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "refresh token이 이미 만료되었거나 올바르지 않습니다.");
 
@@ -18,4 +18,3 @@ public enum AuthErrorCode {
 		this.message = message;
 	}
 }
-
