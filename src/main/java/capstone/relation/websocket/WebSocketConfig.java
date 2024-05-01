@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private final StompPreHandler stompPreHandler;
 	private final StompErrorHandler stompErrorHandler;
+	private final StompHandshakeHandler customHandshakeHandler;
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -25,7 +26,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.setErrorHandler(stompErrorHandler).addEndpoint("/ws-chat").setAllowedOriginPatterns("*").withSockJS();
+		registry
+			.setErrorHandler(stompErrorHandler)
+			.addEndpoint("/ws-chat")
+			.setAllowedOriginPatterns("*")
+			.setHandshakeHandler(customHandshakeHandler);
+		// .withSockJS();
 	}
 
 	@Override
@@ -33,3 +39,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registration.interceptors(stompPreHandler);
 	}
 }
+
