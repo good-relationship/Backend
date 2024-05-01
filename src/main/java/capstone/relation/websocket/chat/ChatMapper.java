@@ -2,6 +2,7 @@ package capstone.relation.websocket.chat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,6 +26,8 @@ public interface ChatMapper {
 		@Mapping(target = "content", source = "content")
 	})
 	MessageDto chatToMessageDto(Chat chat);
+
+	List<MessageDto> chatToMessageDtoList(List<Chat> chats);
 
 	@Named("localDateTimeToString")
 	default String localDateTimeToString(LocalDateTime localDateTime) {
