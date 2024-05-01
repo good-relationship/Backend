@@ -4,7 +4,5 @@ import lombok.Data;
 
 @Data
 public class HistoryPublishDto {
-	private String lastMsgId;
-	private String senderId;
-	private String roomId;
+	private Long lastMsgId;
 }
