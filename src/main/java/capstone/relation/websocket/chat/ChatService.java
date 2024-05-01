@@ -13,6 +13,7 @@ import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.chat.domain.Chat;
+import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import capstone.relation.websocket.chat.repository.ChatRepository;
 import capstone.relation.workspace.WorkSpace;
@@ -47,17 +48,31 @@ public class ChatService {
 		return ChatMapper.INSTANCE.chatToMessageDto(chat);
 	}
 
-	//TODO : Exception 클래스 만들어 처리
-	public List<MessageDto> getHistory(Long lastMsgId, SimpMessageHeaderAccessor headerAccessor) {
+	public HistoryResponseDto getHistory(Long lastMsgId, SimpMessageHeaderAccessor headerAccessor) {
+		System.out.println("lastMsgId: " + lastMsgId);
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
 		User user = userRepository.findById(userId).orElse(null);
+		if (user == null)
+			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
 		WorkSpace workSpace = user.getWorkSpace();
 		if (workSpace == null)
-			return null;
-		List<Chat> chats = chatRepository.findTop10ByWorkSpaceAndIdLessThanOrderByIdDesc(workSpace,
-			lastMsgId);
-		return ChatMapper.INSTANCE.chatToMessageDtoList(chats);
+			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+		List<Chat> chats;
+		if (lastMsgId == null) {
+			chats = chatRepository.findTop10ByWorkSpaceOrderById(workSpace);
+		} else {
+			chats = chatRepository.findTop10ByWorkSpaceAndIdGreaterThanOrderById(workSpace,
+				lastMsgId);
+		}
+		System.out.println("chats: " + chats);
+		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
+		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
+		historyResponseDto.setEnd(chats.size() < 10);
+		if (!chats.isEmpty()) {
+			historyResponseDto.setLastMsgId(chats.get(chats.size() - 1).getId());
+		}
+		return historyResponseDto;
 	}
 }
 
