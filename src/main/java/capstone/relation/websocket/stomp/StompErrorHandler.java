@@ -1,4 +1,4 @@
-package capstone.relation.websocket;
+package capstone.relation.websocket.stomp;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
