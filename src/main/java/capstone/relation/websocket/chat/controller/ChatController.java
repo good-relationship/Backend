@@ -1,7 +1,6 @@
 package capstone.relation.websocket.chat.controller;
 
 import java.security.Principal;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -15,6 +14,7 @@ import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.websocket.chat.ChatService;
 import capstone.relation.websocket.chat.dto.publish.HistoryPublishDto;
 import capstone.relation.websocket.chat.dto.publish.MessagePublishDto;
+import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import lombok.RequiredArgsConstructor;
 
@@ -46,9 +46,18 @@ public class ChatController {
 	public void history(Principal principal, HistoryPublishDto historyPublishDto,
 		SimpMessageHeaderAccessor headerAccessor) throws
 		Exception {
-		List<MessageDto> messages = chatService.getHistory(historyPublishDto.getLastMsgId(), headerAccessor);
-		System.out.println("Send history: " + messages);
-		System.out.println("Principal: " + principal.getName());
-		simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history", ResponseEntity.ok(messages));
+		try {
+			HistoryResponseDto historyResponseDto = chatService.getHistory(historyPublishDto.getLastMsgId(),
+				headerAccessor);
+			System.out.println("Send history: " + historyResponseDto);
+			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
+				ResponseEntity.ok(historyResponseDto));
+		} catch (AuthException e) {
+			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
+				ResponseEntity.status(401).build());
+		} catch (Exception e) {
+			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
+				ResponseEntity.badRequest().build());
+		}
 	}
 }
