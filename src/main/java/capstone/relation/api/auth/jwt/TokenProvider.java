@@ -60,6 +60,26 @@ public class TokenProvider {
 			.build();
 	}
 
+	public Long getUserId(String accessToken) {
+		Claims claims = decodeAccessToken(accessToken);
+		return Long.parseLong(claims.getSubject());
+	}
+
+	public Long getExpiryFromToken(String accessToken) {
+		Claims claims = decodeAccessToken(accessToken);
+		return claims.getExpiration().getTime();
+	}
+
+	public boolean validateToken(String accessToken) {
+		try {
+			Claims claims = decodeAccessToken(accessToken);
+			System.out.println(claims.getExpiration());
+			return claims.getExpiration().after(new Date());
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public String generateAccessTokenByRefreshToken(String refreshTokenKey) {
 		long now = (new Date().getTime());
 		RefreshToken refreshToken = refreshTokenRepository.findByKey(refreshTokenKey)
