@@ -33,10 +33,14 @@ public class AuthService {
 		User savedUser = saveOrUpdate(user);
 		return tokenProvider.generateTokenResponse(savedUser);
 	}
-	
+
+	@Transactional(readOnly = false)
 	public TokenResponse loginWithCode(AuthProvider authProvider, String code, String inviteCode) {
 		String accessToken = getToken(authProvider, code);
 		TokenResponse response = login(authProvider, accessToken);
+		if (inviteCode == null) {
+			return response;
+		}
 		userRepository.findById(response.getMemberId()).ifPresent(user -> {
 			invitationService.inviteWorkspace(inviteCode);
 		});
