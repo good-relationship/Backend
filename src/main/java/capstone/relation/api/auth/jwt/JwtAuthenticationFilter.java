@@ -129,13 +129,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Deprecated
 	private String oldResolveToken(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
-		if (cookies == null)
+		if (cookies == null) {
 			return null;
+		}
 		Optional<String> accessToken = Arrays.stream(cookies).filter(cookie -> "accessToken".equals(cookie.getName()))
 			.findFirst()
 			.map(Cookie::getValue);
-		if (accessToken.isEmpty())
+		if (accessToken.isEmpty()) {
 			return null;
+		}
 		return accessToken.get();
 	}
 

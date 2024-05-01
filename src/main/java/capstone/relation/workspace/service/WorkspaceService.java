@@ -15,6 +15,7 @@ import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
+import capstone.relation.workspace.dto.response.InviteCodeResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import capstone.relation.workspace.school.domain.School;
@@ -61,13 +62,13 @@ public class WorkspaceService {
 		return invitationService.joinWorkspace(inviteCode);
 	}
 
-	public String getInviteCode() {
+	public InviteCodeResponse getInviteCode() {
 		User user = userService.getUserEntity();
 		WorkSpace workSpace = user.getWorkSpace();
 		if (workSpace == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
 		}
-		return invitationService.generateInviteCode(workSpace.getId());
+		return new InviteCodeResponse(invitationService.generateInviteCode(workSpace.getId()));
 	}
 
 	public WorkspaceInfo getWorkspaceInfo() {

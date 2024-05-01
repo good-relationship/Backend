@@ -1,7 +1,5 @@
 oauth2:
   jwt:
-    accessTokenExpireTime: 1 # 액세스 토큰의 만료 기간을 1일로 설정
-    refreshTokenExpireTime: 7 # 리프레시 토큰의 만료 기간을 7일로 설정
     authorityKey: "roles" # 권한 키를 'roles'로 설정
     bearerPrefix: "Bearer " # 베어러 접두어로 'Bearer ' 사용
     tokenSecret: ${auth.jwt.secret} # 토큰 생성 및 검증에 사용될 비밀 키

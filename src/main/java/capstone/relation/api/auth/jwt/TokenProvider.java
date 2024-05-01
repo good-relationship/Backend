@@ -14,9 +14,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-import capstone.relation.api.auth.jwt.refreshToken.CollectionRefreshTokenRepository;
-import capstone.relation.api.auth.jwt.refreshToken.RefreshToken;
-import capstone.relation.api.auth.jwt.refreshToken.RefreshTokenRepository;
+import capstone.relation.api.auth.jwt.refreshtoken.CollectionRefreshTokenRepository;
+import capstone.relation.api.auth.jwt.refreshtoken.RefreshToken;
+import capstone.relation.api.auth.jwt.refreshtoken.RefreshTokenRepository;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.user.domain.Role;
 import capstone.relation.user.domain.User;
@@ -60,6 +60,26 @@ public class TokenProvider {
 			.build();
 	}
 
+	public Long getUserId(String accessToken) {
+		Claims claims = decodeAccessToken(accessToken);
+		return Long.parseLong(claims.getSubject());
+	}
+
+	public Long getExpiryFromToken(String accessToken) {
+		Claims claims = decodeAccessToken(accessToken);
+		return claims.getExpiration().getTime();
+	}
+
+	public boolean validateToken(String accessToken) {
+		try {
+			Claims claims = decodeAccessToken(accessToken);
+			System.out.println(claims.getExpiration());
+			return claims.getExpiration().after(new Date());
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	public String generateAccessTokenByRefreshToken(String refreshTokenKey) {
 		long now = (new Date().getTime());
 		RefreshToken refreshToken = refreshTokenRepository.findByKey(refreshTokenKey)
@@ -75,8 +95,11 @@ public class TokenProvider {
 
 		String authorityKey = Role.USER.getKey() + claims.get(jwtProperties.getAuthorityKey(), String.class);
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(authorityKey);
-
 		return new UsernamePasswordAuthenticationToken(userId, null, Collections.singleton(authority));
+	}
+
+	public String getDecodeBearerToken(String bearerToken) {
+		return bearerToken.substring(jwtProperties.getBearerPrefix().length());
 	}
 
 	public String generateInviteCode(String workSpaceId) {

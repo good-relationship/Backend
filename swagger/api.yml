@@ -375,7 +375,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/MessageDto'
 
-  /ws-chat/topic/history/{workSpaceId}:
+  /ws-chat/user/topic/history:
     get:
       tags:
         - Chat
@@ -406,7 +406,7 @@ paths:
       responses:
         '200':
           description: 메시지 발송 성공
-  /ws-chat/app/history/{workSpaceId}:
+  /ws-chat/app/history:
     post:
       tags:
         - Chat
@@ -538,7 +538,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MessageDto'
-        isEnd:
+        end:
           type: boolean
           example: false
         lastMsgId:

@@ -11,22 +11,32 @@ import lombok.Setter;
 @Setter
 @Getter
 public class JwtProperties {
-	private int accessTokenExpireTime;
-	private int refreshTokenExpireTime;
+	private long accessTokenExpireDay;
+	private long accessTokenExpireHour;
+	private long accessTokenExpireMin;
+	private long accessTokenExpireSec;
+
+	private long refreshTokenExpireDay;
+	private long refreshTokenExpireHour;
+	private long refreshTokenExpireMin;
+	private long refreshTokenExpireSec;
+
 	private String authorityKey;
 	private String bearerPrefix;
 	private String tokenSecret;
 	private String accessTokenHeader;
 
-	public int getAccessTokenExpireTime() {
-		return dayToMilliSec(accessTokenExpireTime);
+	public long getAccessTokenExpireTime() {
+		return dayToMilliSec(accessTokenExpireDay, accessTokenExpireHour, accessTokenExpireMin, accessTokenExpireSec);
 	}
 
-	public int getRefreshTokenExpireTime() {
-		return dayToMilliSec(refreshTokenExpireTime);
+	public long getRefreshTokenExpireTime() {
+		return dayToMilliSec(accessTokenExpireDay, accessTokenExpireHour, accessTokenExpireMin, accessTokenExpireSec);
 	}
 
-	private int dayToMilliSec(int day) {
-		return 1000 * 60 * 60 * 24 * day;
+	private long dayToMilliSec(long day, long hour, long min, long sec) {
+		return 1000 * (sec + 60 * (min + 60 * (hour + 24 * day)));
+		// return 1000 * 60 * 60 * 24 * day;
 	}
+
 }

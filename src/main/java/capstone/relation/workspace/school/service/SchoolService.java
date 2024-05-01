@@ -22,7 +22,6 @@ public class SchoolService {
 	@Value("${school.api.key}")
 	private String apiKey;
 
-	//TODO: 미완성
 	public List<School> searchSchool(String name) {
 		return schoolRepository.findBySchoolNameContaining(name);
 	}

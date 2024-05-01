@@ -14,27 +14,36 @@ import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.repository.UserRepository;
+import capstone.relation.workspace.service.InvitationService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 	private final Map<AuthProvider, OAuthUserProvider> authRegistrations;
 	private final UserRepository userRepository;
 	private final TokenProvider tokenProvider;
+	private final InvitationService invitationService;
 
-	@Transactional
+	@Transactional(readOnly = false)
 	public TokenResponse login(AuthProvider authProvider, String accessToken) {
 		User user = authRegistrations.get(authProvider).getUser(accessToken);
 		User savedUser = saveOrUpdate(user);
 		return tokenProvider.generateTokenResponse(savedUser);
 	}
 
-	//TODO: inviteCode 사용해서 User 생성 이후 초대 여부 보내주기
+	@Transactional(readOnly = false)
 	public TokenResponse loginWithCode(AuthProvider authProvider, String code, String inviteCode) {
 		String accessToken = getToken(authProvider, code);
 		TokenResponse response = login(authProvider, accessToken);
+		if (inviteCode == null) {
+			return response;
+		}
+		userRepository.findById(response.getMemberId()).ifPresent(user -> {
+			invitationService.inviteWorkspace(inviteCode);
+		});
 		return response;
 	}
 
