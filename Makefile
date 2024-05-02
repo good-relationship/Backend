@@ -3,6 +3,11 @@ SYSTEM_PRUNE = docker system prune -a --force
 VOLUME_PRUNE = docker volume prune -a --force
 CHECK_PS = docker ps -a
 CHECK_DF = docker system df
+COMPOSE_UP = docker compose up
+up : 
+	@echo "COMPOSE UP!!"
+	$(COMPOSE_UP)
+
 clean:
 	@echo "Stopping containers and cleaning up..."
 	$(COMPOSE_DOWN)
@@ -15,4 +20,6 @@ clean:
 	$(CHECK_DF)
 
 # 기본 명령
-all: clean
+all: up
+
+re : clean up
