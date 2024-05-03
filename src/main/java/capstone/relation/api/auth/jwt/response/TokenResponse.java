@@ -11,9 +11,11 @@ import lombok.Data;
 public class TokenResponse {
 	@Schema(description = "인증 방식", example = "Bearer")
 	private String grantType;
-	@Schema(description = "액세스 토큰", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImV4cCI6MTYzNjIwNjIwMCwiaWF0IjoxNjM2MjA1NDAwfQ.7")
+	@Schema(description = "액세스 토큰", example =
+		"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImV4cCI6MTYzNjIwNjIwMCwiaWF0IjoxNjM2MjA1NDAwfQ.7")
 	private String accessToken;
-	@Schema(description = "리프레시 토큰", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImV4cCI6MTYzNjIwNjIwMCwiaWF0IjoxNjM2MjA1NDAwfQ.7")
+	@Schema(description = "리프레시 토큰", example =
+		"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0QGdtYWlsLmNvbSIsImV4cCI6MTYzNjIwNjIwMCwiaWF0IjoxNjM2MjA1NDAwfQ.7")
 	private String refreshToken;
 	@Schema(description = "액세스 토큰 만료 시간", example = "1636206200000")
 	private Long accessTokenExpiredDate;

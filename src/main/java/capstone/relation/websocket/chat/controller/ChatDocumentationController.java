@@ -27,9 +27,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ChatDocumentationController {
 
 	@GetMapping("/topic/message/{workSpaceId}")
-	@Operation(summary = "새 메시지 구독", description = "워크스페이스 ID를 지정하여 새 메시지를 `/topic/message`로 발송합니다. 실제 메시지는 STOMP 프로토콜을 통해 이루어집니다.",
+	@Operation(summary = "새 메시지 구독", description = "워크스페이스 ID를 지정하여 새 메시지를 `/topic/message`로 발송합니다. "
+		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다.",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "메시지 수신 성공", content = @Content(schema = @Schema(implementation = MessageDto.class)))
+			@ApiResponse(responseCode = "200", description = "메시지 수신 성공",
+				content = @Content(schema = @Schema(implementation = MessageDto.class)))
 		}
 	)
 	public ResponseEntity<MessageDto> subscribeMessage(@PathVariable String workSpaceId) {
@@ -37,9 +39,11 @@ public class ChatDocumentationController {
 	}
 
 	@GetMapping("/user/topic/history")
-	@Operation(summary = "메시지 히스토리 구독", description = "/topic/history를 구독하여 이전 메시지 히스토리를 수신합니다. 실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다. 메시지는 10개 단위로 옵니다(페이징).",
+	@Operation(summary = "메시지 히스토리 구독", description = "/topic/history를 구독하여 이전 메시지 히스토리를 수신합니다. "
+		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다. 메시지는 10개 단위로 옵니다(페이징).",
 		responses = {
-			@ApiResponse(responseCode = "200", description = "메시지 히스토리 수신 성공", content = @Content(schema = @Schema(implementation = HistoryResponseDto.class)))
+			@ApiResponse(responseCode = "200", description = "메시지 히스토리 수신 성공",
+				content = @Content(schema = @Schema(implementation = HistoryResponseDto.class)))
 		}
 	)
 	public ResponseEntity<HistoryResponseDto> subscribeHistory() {
@@ -53,7 +57,8 @@ public class ChatDocumentationController {
 	}
 
 	@PostMapping("/app/history")
-	@Operation(summary = "메시지 히스토리 구독", description = "특정 사용자의 메시지 히스토리를 요청 합니다. 메시지 히스토리는 STOMP 프로토콜을 통해 `/topic/history`로 전송됩니다.",
+	@Operation(summary = "메시지 히스토리 구독", description = "특정 사용자의 메시지 히스토리를 요청 합니다. "
+		+ "메시지 히스토리는 STOMP 프로토콜을 통해 `/topic/history`로 전송됩니다.",
 		responses = {
 			@ApiResponse(responseCode = "401", description = "Unauthorized"),
 			@ApiResponse(responseCode = "400", description = "Bad Request")

@@ -37,7 +37,8 @@ public class WorkSpaceController {
 
 	@GetMapping("/member")
 	@Operation(summary = "워크스페이스 멤버 조회", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 멤버 조회 성공", content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
+		@ApiResponse(responseCode = "200", description = "워크스페이스 멤버 조회 성공",
+			content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
 	})
 	public List<UserInfoDto> getMember() {
 		return workspaceService.getMemebers();
@@ -45,7 +46,8 @@ public class WorkSpaceController {
 
 	@GetMapping("/info")
 	@Operation(summary = "워크스페이스 정보 조회", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 정보 조회 성공", content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
+		@ApiResponse(responseCode = "200", description = "워크스페이스 정보 조회 성공",
+			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
 	})
 	public WorkspaceInfo getInfo() {
 		return workspaceService.getWorkspaceInfo();
@@ -53,7 +55,8 @@ public class WorkSpaceController {
 
 	@PostMapping("/join")
 	@Operation(summary = "워크스페이스 가입", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 가입 성공", content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
+		@ApiResponse(responseCode = "200", description = "워크스페이스 가입 성공",
+			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
 	})
 	public WorkspaceInfo join(@RequestParam String inviteCode) {
 		return workspaceService.joinSpace(inviteCode);
@@ -69,7 +72,8 @@ public class WorkSpaceController {
 
 	@PostMapping("/invited")
 	@Operation(summary = "워크스페이스 초대 알림", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 초대 알림 성공", content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
+		@ApiResponse(responseCode = "200", description = "워크스페이스 초대 알림 성공",
+			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
 	})
 	public WorkspaceInfo invited(@RequestParam String inviteCode) {
 		return workspaceService.inviteSpace(inviteCode);
@@ -77,7 +81,8 @@ public class WorkSpaceController {
 
 	@GetMapping("/inviteCode")
 	@Operation(summary = "워크스페이스 초대 코드 조회", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 초대 코드 조회 성공", content = @Content(schema = @Schema(implementation = InviteCodeResponse.class))),
+		@ApiResponse(responseCode = "200", description = "워크스페이스 초대 코드 조회 성공",
+			content = @Content(schema = @Schema(implementation = InviteCodeResponse.class))),
 	})
 	public InviteCodeResponse invite() {
 		return workspaceService.getInviteCode();
@@ -85,7 +90,8 @@ public class WorkSpaceController {
 
 	@GetMapping("/school")
 	@Operation(summary = "학교 정보 조회", responses = {
-		@ApiResponse(responseCode = "200", description = "학교 정보 조회 성공", content = @Content(schema = @Schema(implementation = SchoolsResponse.class)))
+		@ApiResponse(responseCode = "200", description = "학교 정보 조회 성공",
+			content = @Content(schema = @Schema(implementation = SchoolsResponse.class)))
 	})
 	public SchoolsResponse getSchool(@RequestParam String name) {
 		List<School> schools = schoolService.searchSchool(name);

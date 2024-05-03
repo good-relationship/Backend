@@ -45,8 +45,10 @@ public class AuthController {
 	}
 
 	@PostMapping(value = "/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "카카오 로그인 인증", description = "초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = TokenResponse.class)))
+	@Operation(summary = "카카오 로그인 인증", description = "초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. "
+		+ "초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
+	@ApiResponse(responseCode = "200", description = "Successful operation",
+		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
 	public ResponseEntity<TokenResponse> loginWithKakaoCode(
 		@Parameter(description = "카카오에서 받아온 AuthorizationCode", required = true, example = "네이버에서 받아온 코드")
 		@RequestParam String code,
@@ -58,8 +60,10 @@ public class AuthController {
 	}
 
 	@PostMapping(value = "/naver", produces = MediaType.APPLICATION_JSON_VALUE)
-	@Operation(summary = "네이버 로그인 인증", description = "카카오 로그인 인증과 유사하게 처리합니다. 초대받은 경우만 있는 토큰으로 네이버를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = TokenResponse.class)))
+	@Operation(summary = "네이버 로그인 인증", description = "카카오 로그인 인증과 유사하게 처리합니다. "
+		+ "초대받은 경우만 있는 토큰으로 네이버를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
+	@ApiResponse(responseCode = "200", description = "Successful operation",
+		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
 	public ResponseEntity<TokenResponse> loginWithNaverCode(@RequestParam String code,
 		@RequestParam(required = false) String inviteToken) {
 		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteToken));
@@ -67,7 +71,8 @@ public class AuthController {
 
 	@PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "AccessToken 갱신", description = "Refresh Token을 통해 AccessToken을 갱신합니다.")
-	@ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = RefreshTokenResponse.class)))
+	@ApiResponse(responseCode = "200", description = "Successful operation",
+		content = @Content(schema = @Schema(implementation = RefreshTokenResponse.class)))
 	public ResponseEntity<RefreshTokenResponse> refresh(@RequestHeader("Refresh") String refreshToken) {
 		return ResponseEntity.ok(authService.generateAccessToken(refreshToken));
 	}
