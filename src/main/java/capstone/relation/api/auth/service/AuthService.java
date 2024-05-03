@@ -14,6 +14,7 @@ import capstone.relation.api.auth.AuthProvider;
 import capstone.relation.api.auth.jwt.TokenProvider;
 import capstone.relation.api.auth.jwt.response.RefreshTokenResponse;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
+import capstone.relation.api.auth.jwt.response.WorkspaceStateType;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.repository.UserRepository;
@@ -37,7 +38,7 @@ public class AuthService {
 		User savedUser = saveOrUpdate(user);
 		TokenResponse tokenResponse = tokenProvider.generateTokenResponse(savedUser);
 		if (savedUser.getWorkSpace() != null) {
-			tokenResponse.setHasWorkSpace("hasWorkSpace");
+			tokenResponse.setHasWorkSpace(WorkspaceStateType.HAS_WORKSPACE);
 		}
 		return tokenResponse;
 	}
@@ -56,12 +57,12 @@ public class AuthService {
 		WorkSpace workSpace = invitationService.getWorkSpace(inviteCode);
 		User user = userOpt.get();
 		if (user.getWorkSpace() != null) {
-			response.setHasWorkSpace("overflow");
+			response.setHasWorkSpace(WorkspaceStateType.OVERFLOW);
 			return response;
 		}
 		user.setInvitedWorkspaceId(workSpace.getId());
 		userRepository.save(user);
-		response.setHasWorkSpace("invited");
+		response.setHasWorkSpace(WorkspaceStateType.INVITED);
 		return response;
 	}
 
