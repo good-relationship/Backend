@@ -2,10 +2,13 @@ package capstone.relation.api.auth.service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.AuthProvider;
 import capstone.relation.api.auth.jwt.TokenProvider;
@@ -14,6 +17,7 @@ import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.repository.UserRepository;
+import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.service.InvitationService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +35,11 @@ public class AuthService {
 	public TokenResponse login(AuthProvider authProvider, String accessToken) {
 		User user = authRegistrations.get(authProvider).getUser(accessToken);
 		User savedUser = saveOrUpdate(user);
-		return tokenProvider.generateTokenResponse(savedUser);
+		TokenResponse tokenResponse = tokenProvider.generateTokenResponse(savedUser);
+		if (savedUser.getWorkSpace() != null) {
+			tokenResponse.setHasWorkSpace("hasWorkSpace");
+		}
+		return tokenResponse;
 	}
 
 	@Transactional(readOnly = false)
@@ -41,9 +49,19 @@ public class AuthService {
 		if (inviteCode == null) {
 			return response;
 		}
-		userRepository.findById(response.getMemberId()).ifPresent(user -> {
-			invitationService.inviteWorkspace(inviteCode);
-		});
+		Optional<User> userOpt = userRepository.findById(response.getMemberId());
+		if (userOpt.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+		}
+		WorkSpace workSpace = invitationService.getWorkSpace(inviteCode);
+		User user = userOpt.get();
+		if (user.getWorkSpace() != null) {
+			response.setHasWorkSpace("overflow");
+			return response;
+		}
+		user.setInvitedWorkspaceId(workSpace.getId());
+		userRepository.save(user);
+		response.setHasWorkSpace("invited");
 		return response;
 	}
 
@@ -80,7 +98,6 @@ public class AuthService {
 
 	public void codeLogin(AuthProvider authProvider, String code) {
 		String accessToken = getToken(authProvider, code);
-
 	}
 
 	private User saveOrUpdate(User user) {
