@@ -6,7 +6,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.jwt.TokenProvider;
 import capstone.relation.user.UserService;
-import capstone.relation.user.domain.User;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.WorkSpaceMapper;
 import capstone.relation.workspace.dto.SpaceState;
@@ -23,6 +22,9 @@ public class InvitationService {
 
 	public WorkspaceInfo inviteWorkspace(String inviteCode) {
 		WorkSpace workSpace = getWorkSpace(inviteCode);
+		if (workSpace.getUser().contains(userService.getUserEntity())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 가입된 워크스페이스입니다.");
+		}
 		userService.setInvitedWorkspaceId(workSpace.getId());
 		WorkspaceInfo dto = WorkSpaceMapper.INSTANCE.toDto(workSpace);
 		dto.setSpaceState(SpaceState.INVITED);
@@ -45,16 +47,11 @@ public class InvitationService {
 		return tokenProvider.generateInviteCode(workSpaceId);
 	}
 
-	private WorkSpace getWorkSpace(String inviteCode) {
-		User userEntity = userService.getUserEntity();
-		if (userEntity.getWorkSpace() != null) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User already has workspace.");
-		}
+	public WorkSpace getWorkSpace(String inviteCode) {
 
 		String workSpaceId = tokenProvider.getWorkSpaceIdByInviteCode(inviteCode);
-		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid invite code.") {
-			});
+		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "초대코드에 해당하는 워크스페이스가 없습니다."));
 		return workSpace;
 	}
 

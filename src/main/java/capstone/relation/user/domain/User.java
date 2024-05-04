@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "users")
 public class User {
-
+	//TODO: 프로필 이미지 디폴트값 설정 필요
 	@Builder
 	public User(Long id, String profileImage, String userName, String email, String provider, Role role) {
 		if (!EmailValidator.getInstance().isValid(email)) {

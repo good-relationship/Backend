@@ -75,7 +75,24 @@ public class WorkspaceService {
 		User user = userService.getUserEntity();
 		WorkSpace workSpace = user.getWorkSpace();
 		if (workSpace == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
+			String invitedWorkspaceId = user.getInvitedWorkspaceId();
+			if (invitedWorkspaceId == null || invitedWorkspaceId.isEmpty()) {
+				return WorkspaceInfo.builder()
+					.spaceState(SpaceState.NO_SPACE)
+					.build();
+			}
+			workSpace = workSpaceRepository.findById(invitedWorkspaceId)
+				.orElse(null);
+			if (workSpace == null) {
+				return WorkspaceInfo.builder()
+					.spaceState(SpaceState.NO_SPACE)
+					.build();
+			}
+			return WorkspaceInfo.builder()
+				.workspaceId(workSpace.getId())
+				.workspaceName(workSpace.getName())
+				.spaceState(SpaceState.INVITED)
+				.build();
 		}
 		return WorkspaceInfo.builder()
 			.workspaceId(workSpace.getId())
@@ -88,7 +105,14 @@ public class WorkspaceService {
 		User user = userService.getUserEntity();
 		WorkSpace workSpace = user.getWorkSpace();
 		if (workSpace == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
+			String invitedWorkspaceId = user.getInvitedWorkspaceId();
+			if (invitedWorkspaceId == null || invitedWorkspaceId.isEmpty()) {
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+					"User does not have workspace OR invited workspace.");
+			}
+			workSpace = workSpaceRepository.findById(invitedWorkspaceId)
+				.orElseThrow(
+					() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have invited workspace."));
 		}
 		return workSpace.getUser().stream()
 			.map(UserMapper.INSTANCE::toUserInfoDto)
