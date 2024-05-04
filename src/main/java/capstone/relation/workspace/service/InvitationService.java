@@ -22,6 +22,9 @@ public class InvitationService {
 
 	public WorkspaceInfo inviteWorkspace(String inviteCode) {
 		WorkSpace workSpace = getWorkSpace(inviteCode);
+		if (workSpace.getUser().contains(userService.getUserEntity())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 가입된 워크스페이스입니다.");
+		}
 		userService.setInvitedWorkspaceId(workSpace.getId());
 		WorkspaceInfo dto = WorkSpaceMapper.INSTANCE.toDto(workSpace);
 		dto.setSpaceState(SpaceState.INVITED);
