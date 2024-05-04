@@ -1,4 +1,4 @@
-package capstone.relation.websocket;
+package capstone.relation.websocket.chat;
 
 import java.security.Principal;
 

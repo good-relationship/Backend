@@ -1,4 +1,4 @@
-package capstone.relation.websocket.stomp;
+package capstone.relation.websocket.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -7,7 +7,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import capstone.relation.websocket.StompHandshakeHandler;
+import capstone.relation.websocket.chat.StompHandshakeHandler;
+import capstone.relation.websocket.chat.stomp.StompErrorHandler;
+import capstone.relation.websocket.chat.stomp.StompPreHandler;
 import lombok.RequiredArgsConstructor;
 
 @Configuration

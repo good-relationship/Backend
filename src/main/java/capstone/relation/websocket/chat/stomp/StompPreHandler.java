@@ -1,4 +1,4 @@
-package capstone.relation.websocket.stomp;
+package capstone.relation.websocket.chat.stomp;
 
 import java.time.Instant;
 
