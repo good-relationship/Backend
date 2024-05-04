@@ -17,6 +17,8 @@ import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import capstone.relation.websocket.chat.repository.ChatRepository;
 import capstone.relation.workspace.WorkSpace;
+import capstone.relation.workspace.exception.WorkspaceErrorCode;
+import capstone.relation.workspace.exception.WorkspaceException;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -35,17 +37,41 @@ public class ChatService {
 		}
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
+		System.out.println("userId: " + userId);
 		if (userId == null) {
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
 		}
 		User user = userRepository.findById(userId).orElse(null);
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId).orElse(null);
 		if (user == null || workSpace == null || user.getWorkSpace() != workSpace) {
-			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+			throw new WorkspaceException(WorkspaceErrorCode.INVALID_ACCESS);
 		}
 		Chat chat = new Chat(user, workSpace, content, LocalDateTime.now());
 		chatRepository.save(chat);
 		return ChatMapper.INSTANCE.chatToMessageDto(chat);
+	}
+
+	public HistoryResponseDto getRecentHistory(SimpMessageHeaderAccessor headerAccessor) {
+		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+		Long userId = (Long)sessionAttributes.get("userId");
+		User user = userRepository.findById(userId).orElse(null);
+		if (user == null) {
+			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+		}
+		WorkSpace workSpace = user.getWorkSpace();
+		if (workSpace == null) {
+			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+		}
+		System.out.println("workSpace: " + workSpace);
+		List<Chat> chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
+		System.out.println("chats: " + chats);
+		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
+		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
+		historyResponseDto.setEnd(chats.size() < 10);
+		if (!chats.isEmpty()) {
+			historyResponseDto.setLastMsgId(chats.get(chats.size() - 1).getId());
+		}
+		return historyResponseDto;
 	}
 
 	public HistoryResponseDto getHistory(Long lastMsgId, SimpMessageHeaderAccessor headerAccessor) {
@@ -62,9 +88,9 @@ public class ChatService {
 		}
 		List<Chat> chats;
 		if (lastMsgId == null) {
-			chats = chatRepository.findTop10ByWorkSpaceOrderById(workSpace);
+			chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
 		} else {
-			chats = chatRepository.findTop10ByWorkSpaceAndIdGreaterThanOrderById(workSpace,
+			chats = chatRepository.findTop10ByWorkSpaceAndIdLessThanOrderByIdDesc(workSpace,
 				lastMsgId);
 		}
 		System.out.println("chats: " + chats);

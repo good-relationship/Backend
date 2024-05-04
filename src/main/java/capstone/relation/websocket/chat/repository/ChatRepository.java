@@ -9,8 +9,10 @@ import capstone.relation.websocket.chat.domain.Chat;
 import capstone.relation.workspace.WorkSpace;
 
 @Repository
-public interface ChatRepository extends JpaRepository<Chat, Long> {
-	List<Chat> findTop10ByWorkSpaceAndIdGreaterThanOrderById(WorkSpace workSpace, Long lastMsgId);
 
-	List<Chat> findTop10ByWorkSpaceOrderById(WorkSpace workSpace);
+public interface ChatRepository extends JpaRepository<Chat, Long> {
+
+	List<Chat> findTop10ByWorkSpaceAndIdLessThanOrderByIdDesc(WorkSpace workSpace, Long lastMsgId);
+
+	List<Chat> findTop10ByWorkSpaceOrderByIdDesc(WorkSpace workSpace);
 }
