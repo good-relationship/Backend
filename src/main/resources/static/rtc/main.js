@@ -6,6 +6,7 @@ var videoSelect = document.querySelector('select#videoSource');
 var vgaButton = document.querySelector('button#vga');
 var qvgaButton = document.querySelector('button#qvga');
 var hdButton = document.querySelector('button#hd');
+var stopButton = document.querySelector('button#stop');
 var dimensions = document.querySelector('p#dimensions');
 
 audioSelect.onchange = updateStream;
@@ -14,7 +15,7 @@ videoSelect.onchange = updateStream;
 vgaButton.onclick = () => updateStream(vgaConstraints);
 qvgaButton.onclick = () => updateStream(qvgaConstraints);
 hdButton.onclick = () => updateStream(hdConstraints);
-
+stopButton.onclick = stopStream;
 // 기본 비디오 해상도 제약 조건
 var defaultConstraints = {
     video: true,
@@ -79,6 +80,13 @@ function updateStream(constraints = defaultConstraints) {
     navigator.mediaDevices.getUserMedia(constraints)
         .then(gotStream)
         .catch(handleError);
+}
+
+function stopStream() {
+    if (window.stream) {
+        window.stream.getTracks().forEach(track => track.stop());
+        videoElement.srcObject = null;
+    }
 }
 
 function gotStream(stream) {
