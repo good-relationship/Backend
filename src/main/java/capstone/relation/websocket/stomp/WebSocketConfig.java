@@ -7,7 +7,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import capstone.relation.websocket.StompHandshakeHandler;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -31,8 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setErrorHandler(stompErrorHandler)
 			.addEndpoint("/ws-chat")
 			.setAllowedOriginPatterns("*")
-			.setHandshakeHandler(customHandshakeHandler)
-			.withSockJS();
+			.setHandshakeHandler(customHandshakeHandler);
 	}
 
 	@Override
