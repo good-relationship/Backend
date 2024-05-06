@@ -1,4 +1,4 @@
-package capstone.relation.websocket;
+package capstone.relation.websocket.stomp;
 
 import java.security.Principal;
 import java.util.Map;
