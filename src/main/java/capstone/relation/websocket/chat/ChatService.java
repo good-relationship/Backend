@@ -87,7 +87,7 @@ public class ChatService {
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
 		}
 		List<Chat> chats;
-		if (lastMsgId == null) {
+		if (lastMsgId == null || lastMsgId == 0L) {
 			chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
 		} else {
 			chats = chatRepository.findTop10ByWorkSpaceAndIdLessThanOrderByIdDesc(workSpace,
