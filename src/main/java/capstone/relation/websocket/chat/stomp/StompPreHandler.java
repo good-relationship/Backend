@@ -13,6 +13,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import capstone.relation.api.auth.exception.AuthErrorCode;
 import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.api.auth.jwt.TokenProvider;
+import capstone.relation.websocket.SocketRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -20,11 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 public class StompPreHandler implements ChannelInterceptor {
 	private final TokenProvider tokenProvider;
 	private final ThreadPoolTaskScheduler taskScheduler;
+	private final SocketRegistry socketRegistry;
 
-	StompPreHandler(TokenProvider tokenProvider) {
+	StompPreHandler(TokenProvider tokenProvider, SocketRegistry socketRegistry) {
 		this.tokenProvider = tokenProvider;
 		taskScheduler = new ThreadPoolTaskScheduler();
 		taskScheduler.initialize();
+		this.socketRegistry = socketRegistry;
 	}
 
 	@Override
@@ -42,6 +45,7 @@ public class StompPreHandler implements ChannelInterceptor {
 			}
 			Long userId = tokenProvider.getUserId(token);
 			Long expiryTime = tokenProvider.getExpiryFromToken(token); //나중에 만료시간 설정해서 스캐줄러에 넣으려고
+			socketRegistry.registerSession(userId.toString(), accessor.getUser().getName());
 			accessor.getSessionAttributes().put("userId", userId);
 			accessor.getSessionAttributes().put("expiryTime", expiryTime);
 			scheduleSessionExpiry(accessor, expiryTime);
