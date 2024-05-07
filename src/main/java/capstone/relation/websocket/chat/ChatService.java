@@ -78,6 +78,7 @@ public class ChatService {
 		System.out.println("lastMsgId: " + lastMsgId);
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
+		boolean isStart = false;
 		User user = userRepository.findById(userId).orElse(null);
 		if (user == null) {
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
@@ -89,6 +90,7 @@ public class ChatService {
 		List<Chat> chats;
 		if (lastMsgId == null || lastMsgId == 0L) {
 			chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
+			isStart = true;
 		} else {
 			chats = chatRepository.findTop10ByWorkSpaceAndIdLessThanOrderByIdDesc(workSpace,
 				lastMsgId);
@@ -100,6 +102,7 @@ public class ChatService {
 		if (!chats.isEmpty()) {
 			historyResponseDto.setLastMsgId(chats.get(chats.size() - 1).getId());
 		}
+		historyResponseDto.setStart(isStart);
 		return historyResponseDto;
 	}
 }
