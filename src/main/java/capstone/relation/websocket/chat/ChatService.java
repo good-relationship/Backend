@@ -63,7 +63,7 @@ public class ChatService {
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
 		}
 		System.out.println("workSpace: " + workSpace);
-		List<Chat> chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
+		List<Chat> chats = chatRepository.findTop10ByWorkSpaceOrderById(workSpace);
 		System.out.println("chats: " + chats);
 		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
 		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
@@ -89,10 +89,10 @@ public class ChatService {
 		}
 		List<Chat> chats;
 		if (lastMsgId == null || lastMsgId == 0L) {
-			chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
+			chats = chatRepository.findTop10ByWorkSpaceOrderById(workSpace);
 			isStart = true;
 		} else {
-			chats = chatRepository.findTop10ByWorkSpaceAndIdLessThanOrderByIdDesc(workSpace,
+			chats = chatRepository.findTop10ByWorkSpaceAndIdLessThanOrderById(workSpace,
 				lastMsgId);
 		}
 		System.out.println("chats: " + chats);
