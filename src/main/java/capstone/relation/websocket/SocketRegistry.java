@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class SessionRegistry {
+public class SocketRegistry {
 	private final Map<String, String> userIdToSocketIdMap = new ConcurrentHashMap<>();
 
 	public void registerSession(String userId, String socketId) {
 		userIdToSocketIdMap.put(userId, socketId);
 	}
 
-	public String getSessionForSessionId(String userId) {
+	public String getSocketId(String userId) {
 		return userIdToSocketIdMap.get(userId);
 	}
 
