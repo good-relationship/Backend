@@ -12,7 +12,7 @@ import capstone.relation.workspace.WorkSpace;
 
 public interface ChatRepository extends JpaRepository<Chat, Long> {
 
-	List<Chat> findTop10ByWorkSpaceAndIdLessThanOrderById(WorkSpace workSpace, Long lastMsgId);
+	List<Chat> findTop10ByWorkSpaceAndIdIsLessThanOrderByIdDesc(WorkSpace workSpace, Long lastMsgId);
 
-	List<Chat> findTop10ByWorkSpaceOrderById(WorkSpace workSpace);
+	List<Chat> findTop10ByWorkSpaceOrderByIdDesc(WorkSpace workSpace);
 }
