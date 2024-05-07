@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/main/java/capstone/relation/websocket/chat/StompHandshakeHandler.java
-package capstone.relation.websocket.chat;
-========
-package capstone.relation.websocket.stomp;
->>>>>>>> 8323bac8933232be621dd5549580fa8fe90bf58f:src/main/java/capstone/relation/websocket/chat/stomp/StompHandshakeHandler.java
+package capstone.relation.websocket.chat.stomp;
 
 import java.security.Principal;
 import java.util.Map;
