@@ -21,6 +21,8 @@ public class WebSocketEventListener {
 		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
 		System.out.println("User Disconnected : " + userId);
 		System.out.println("socketId : " + socketId);
+		if (userId == null)
+			return;
 		System.out.println("register SocketId" + socketRegistry.getSocketId(userId.toString()));
 		if (socketId == socketRegistry.getSocketId(userId.toString()))
 			socketRegistry.unregisterSession(userId.toString());
