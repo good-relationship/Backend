@@ -1,6 +1,7 @@
 package capstone.relation.websocket.chat;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -66,11 +67,13 @@ public class ChatService {
 		List<Chat> chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
 		System.out.println("chats: " + chats);
 		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
+		historyResponseDto.setStart(true);
+		if (chats.isEmpty()) {
+			return historyResponseDto;
+		}
 		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
 		historyResponseDto.setEnd(chats.size() < 10);
-		if (!chats.isEmpty()) {
-			historyResponseDto.setLastMsgId(chats.get(chats.size() - 1).getId());
-		}
+		historyResponseDto.setLastMsgId(chats.get(0).getId());
 		return historyResponseDto;
 	}
 
@@ -97,12 +100,15 @@ public class ChatService {
 		}
 		System.out.println("chats: " + chats);
 		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
+		historyResponseDto.setStart(isStart);
+		if (chats.isEmpty()) {
+			return historyResponseDto;
+		}
+		Collections.reverse(chats);
 		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
 		historyResponseDto.setEnd(chats.size() < 10);
-		if (!chats.isEmpty()) {
-			historyResponseDto.setLastMsgId(chats.get(chats.size() - 1).getId());
-		}
-		historyResponseDto.setStart(isStart);
+		historyResponseDto.setLastMsgId(chats.get(0).getId());
+
 		return historyResponseDto;
 	}
 }

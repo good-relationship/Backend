@@ -60,7 +60,6 @@ public class ChatController {
 			HistoryResponseDto historyResponseDto;
 			if (historyPublishDto == null) {
 				historyResponseDto = chatService.getRecentHistory(headerAccessor);
-				historyResponseDto.setStart(true);
 			} else {
 				historyResponseDto = chatService.getHistory(historyPublishDto.getLastMsgId(),
 					headerAccessor);
