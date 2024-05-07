@@ -1,4 +1,4 @@
-package capstone.relation.websocket.config;
+package capstone.relation.websocket.stomp;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -7,9 +7,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import capstone.relation.websocket.chat.StompHandshakeHandler;
-import capstone.relation.websocket.chat.stomp.StompErrorHandler;
-import capstone.relation.websocket.chat.stomp.StompPreHandler;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -33,8 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setErrorHandler(stompErrorHandler)
 			.addEndpoint("/ws-chat")
 			.setAllowedOriginPatterns("*")
-			.setHandshakeHandler(customHandshakeHandler)
-			.withSockJS();
+			.setHandshakeHandler(customHandshakeHandler);
 	}
 
 	@Override
