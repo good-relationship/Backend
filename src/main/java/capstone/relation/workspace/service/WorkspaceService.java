@@ -8,12 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.api.auth.jwt.response.WorkspaceStateType;
 import capstone.relation.user.UserMapper;
 import capstone.relation.user.UserService;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.workspace.WorkSpace;
-import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.InviteCodeResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
@@ -50,7 +50,7 @@ public class WorkspaceService {
 		return WorkspaceInfo.builder()
 			.workspaceId(workSpace.getId())
 			.workspaceName(workSpace.getName())
-			.spaceState(SpaceState.HAS_WORK_SPACE)
+			.spaceState(WorkspaceStateType.HAS_WORKSPACE)
 			.build();
 	}
 
@@ -78,26 +78,26 @@ public class WorkspaceService {
 			String invitedWorkspaceId = user.getInvitedWorkspaceId();
 			if (invitedWorkspaceId == null || invitedWorkspaceId.isEmpty()) {
 				return WorkspaceInfo.builder()
-					.spaceState(SpaceState.NO_SPACE)
+					.spaceState(WorkspaceStateType.NO_SPACE)
 					.build();
 			}
 			workSpace = workSpaceRepository.findById(invitedWorkspaceId)
 				.orElse(null);
 			if (workSpace == null) {
 				return WorkspaceInfo.builder()
-					.spaceState(SpaceState.NO_SPACE)
+					.spaceState(WorkspaceStateType.NO_SPACE)
 					.build();
 			}
 			return WorkspaceInfo.builder()
 				.workspaceId(workSpace.getId())
 				.workspaceName(workSpace.getName())
-				.spaceState(SpaceState.INVITED)
+				.spaceState(WorkspaceStateType.INVITED)
 				.build();
 		}
 		return WorkspaceInfo.builder()
 			.workspaceId(workSpace.getId())
 			.workspaceName(workSpace.getName())
-			.spaceState(SpaceState.HAS_WORK_SPACE)
+			.spaceState(WorkspaceStateType.HAS_WORKSPACE)
 			.build();
 	}
 

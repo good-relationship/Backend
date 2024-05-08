@@ -38,11 +38,11 @@ public class AuthService {
 		User savedUser = saveOrUpdate(user);
 		TokenResponse tokenResponse = tokenProvider.generateTokenResponse(savedUser);
 		if (savedUser.getWorkSpace() != null) {
-			tokenResponse.setHasWorkSpace(WorkspaceStateType.HAS_WORKSPACE);
+			tokenResponse.setSpaceState(WorkspaceStateType.HAS_WORKSPACE);
 		} else if (savedUser.getInvitedWorkspaceId() != null) {
-			tokenResponse.setHasWorkSpace(WorkspaceStateType.INVITED);
+			tokenResponse.setSpaceState(WorkspaceStateType.INVITED);
 		} else {
-			tokenResponse.setHasWorkSpace(WorkspaceStateType.NO_SPACE);
+			tokenResponse.setSpaceState(WorkspaceStateType.NO_SPACE);
 		}
 		return tokenResponse;
 	}
@@ -61,12 +61,12 @@ public class AuthService {
 		WorkSpace workSpace = invitationService.getWorkSpace(inviteCode);
 		User user = userOpt.get();
 		if (user.getWorkSpace() != null) {
-			response.setHasWorkSpace(WorkspaceStateType.OVERFLOW);
+			response.setSpaceState(WorkspaceStateType.OVERFLOW);
 			return response;
 		}
 		user.setInvitedWorkspaceId(workSpace.getId());
 		userRepository.save(user);
-		response.setHasWorkSpace(WorkspaceStateType.INVITED);
+		response.setSpaceState(WorkspaceStateType.INVITED);
 		return response;
 	}
 

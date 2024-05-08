@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.jwt.TokenProvider;
+import capstone.relation.api.auth.jwt.response.WorkspaceStateType;
 import capstone.relation.user.UserService;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.WorkSpaceMapper;
-import capstone.relation.workspace.dto.SpaceState;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class InvitationService {
 		}
 		userService.setInvitedWorkspaceId(workSpace.getId());
 		WorkspaceInfo dto = WorkSpaceMapper.INSTANCE.toDto(workSpace);
-		dto.setSpaceState(SpaceState.INVITED);
+		dto.setSpaceState(WorkspaceStateType.INVITED);
 		return dto;
 	}
 
@@ -39,7 +39,7 @@ public class InvitationService {
 		workSpace.addUser(userService.getUserEntity());
 		workSpaceRepository.save(workSpace);
 		WorkspaceInfo dto = WorkSpaceMapper.INSTANCE.toDto(workSpace);
-		dto.setSpaceState(SpaceState.HAS_WORK_SPACE);
+		dto.setSpaceState(WorkspaceStateType.HAS_WORKSPACE);
 		return dto;
 	}
 

@@ -24,5 +24,5 @@ public class TokenResponse {
 	@Schema(description = "사용자 ID", example = "1")
 	private Long memberId;
 	@Schema(description = "워크스페이스 여부", example = "hasWorkSpace")
-	private WorkspaceStateType hasWorkSpace; //
+	private WorkspaceStateType spaceState; //
 }
