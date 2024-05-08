@@ -39,6 +39,8 @@ public class AuthService {
 		TokenResponse tokenResponse = tokenProvider.generateTokenResponse(savedUser);
 		if (savedUser.getWorkSpace() != null) {
 			tokenResponse.setHasWorkSpace(WorkspaceStateType.HAS_WORKSPACE);
+		} else {
+			tokenResponse.setHasWorkSpace(WorkspaceStateType.NO_SPACE);
 		}
 		return tokenResponse;
 	}
