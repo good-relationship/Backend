@@ -40,4 +40,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://good-relation-spring-db-postgres:5432/good-relation-spring-db-postgres
       SPRING_DATASOURCE_USERNAME: compose-postgres
       SPRING_DATASOURCE_PASSWORD: compose-postgres
+    volumes:
+      - spring_data:/spring/data
 
+volumes:
+  spring_data:

@@ -18,6 +18,9 @@ clean:
 	$(CHECK_PS)
 	@echo "Checking the disk usage..."
 	$(CHECK_DF)
+spring :
+	@echo "Spring Boot Application Start!!"
+	sh spring-restart.sh
 
 # 기본 명령
 all: up
