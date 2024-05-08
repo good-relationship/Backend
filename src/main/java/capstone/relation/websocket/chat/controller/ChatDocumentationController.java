@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Profile("!disabled")  // 활성화되지 않음
 @Tag(name = "Chat", description = "채팅 관련 API (WebSocket) /ws-chat 으로 연결을 수립합니다. "
-	+ "클라이언트는 SockJS와 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
+	+ "클라이언트는 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
 @RestController
 @RequestMapping("/ws-chat")
 public class ChatDocumentationController {
