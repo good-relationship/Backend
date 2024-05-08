@@ -65,8 +65,8 @@ public class AuthController {
 	@ApiResponse(responseCode = "200", description = "Successful operation",
 		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
 	public ResponseEntity<TokenResponse> loginWithNaverCode(@RequestParam String code,
-		@RequestParam(required = false) String inviteToken) {
-		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteToken));
+		@RequestParam(required = false) String inviteCode) {
+		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
 	}
 
 	@PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
