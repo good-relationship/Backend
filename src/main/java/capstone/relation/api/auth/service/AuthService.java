@@ -51,7 +51,7 @@ public class AuthService {
 	public TokenResponse loginWithCode(AuthProvider authProvider, String code, String inviteCode) {
 		String accessToken = getToken(authProvider, code);
 		TokenResponse response = login(authProvider, accessToken);
-		if (inviteCode == null) {
+		if (inviteCode == null || inviteCode.equals("null")) {
 			return response;
 		}
 		Optional<User> userOpt = userRepository.findById(response.getMemberId());
