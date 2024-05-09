@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.websocket.meeting.dto.IceDto;
 import capstone.relation.websocket.meeting.dto.JoinDto;
 import capstone.relation.websocket.meeting.dto.MeetingRoomListDto;
 import capstone.relation.websocket.meeting.dto.SdpDto;
@@ -120,4 +121,25 @@ public class MeetingDocumentController {
 	public ResponseEntity<SdpMessageDto> sendAnswer() {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
+
+	@GetMapping("/topic/ice/{roomId}")
+	@Operation(summary = "상대방의 ice candidate를 구독", description = "상대방이 내 offer에 대한 ice candidate를 보내면 해당 메시지를 받습니다."
+		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "메시지 수신 성공",
+				content = @Content(schema = @Schema(implementation = IceDto.class)))
+		}
+	)
+	public ResponseEntity<IceDto> subscribeIce(@PathVariable String roomId) {
+		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
+	}
+
+	@PostMapping("/app/ice/{roomId}")
+	@Operation(summary = "상대방에게 ice candidate를 보냅니다.", description = "상대방에게 ice candidate를 보냅니다."
+		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
+	)
+	public ResponseEntity<Void> sendIce(@PathVariable String roomId, IceDto iceDto) {
+		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
+	}
+
 }
