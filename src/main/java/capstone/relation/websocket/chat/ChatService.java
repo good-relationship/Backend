@@ -68,11 +68,11 @@ public class ChatService {
 		System.out.println("chats: " + chats);
 		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
 		historyResponseDto.setStart(true);
+		historyResponseDto.setEnd(chats.size() < 10);
 		if (chats.isEmpty()) {
 			return historyResponseDto;
 		}
 		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
-		historyResponseDto.setEnd(chats.size() < 10);
 		historyResponseDto.setLastMsgId(chats.get(0).getId());
 		return historyResponseDto;
 	}
