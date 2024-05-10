@@ -31,11 +31,13 @@ public class InvitationService {
 		return dto;
 	}
 
-	public WorkspaceInfo joinWorkspace(String inviteCode) {
-		WorkSpace workSpace = getWorkSpace(inviteCode);
-		if (workSpace.getId() != userService.getUserEntity().getInvitedWorkspaceId()) {
+	public WorkspaceInfo joinWorkspace() {
+		String invitedWorkspaceId = userService.getUserEntity().getInvitedWorkspaceId();
+		if (invitedWorkspaceId == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이전에 초대를 하지 않은 유저가 접근합니다.");
 		}
+		WorkSpace workSpace = workSpaceRepository.findById(invitedWorkspaceId).orElseThrow(
+			() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "초대코드에 해당하는 워크스페이스가 없습니다."));
 		workSpace.addUser(userService.getUserEntity());
 		workSpaceRepository.save(workSpace);
 		WorkspaceInfo dto = WorkSpaceMapper.INSTANCE.toDto(workSpace);

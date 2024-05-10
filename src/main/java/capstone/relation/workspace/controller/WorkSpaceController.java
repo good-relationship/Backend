@@ -54,12 +54,12 @@ public class WorkSpaceController {
 	}
 
 	@PostMapping("/join")
-	@Operation(summary = "워크스페이스 가입", responses = {
+	@Operation(summary = "워크스페이스 가입 이전에 초대 받은 유저는 join을 콜하면 가입됩니다.", responses = {
 		@ApiResponse(responseCode = "200", description = "워크스페이스 가입 성공",
 			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
 	})
-	public WorkspaceInfo join(@RequestParam String inviteCode) {
-		return workspaceService.joinSpace(inviteCode);
+	public WorkspaceInfo join() {
+		return workspaceService.joinSpace();
 	}
 
 	@PostMapping("/leave")
