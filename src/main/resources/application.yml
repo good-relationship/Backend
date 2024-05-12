@@ -3,6 +3,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/good-relation-spring-db-postgres
     username: compose-postgres
     password: compose-postgres
+  data:
+    redis:
+      host: localhost
+      port: 6379
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
