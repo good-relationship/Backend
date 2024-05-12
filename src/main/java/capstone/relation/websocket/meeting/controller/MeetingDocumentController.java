@@ -6,15 +6,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.websocket.meeting.dto.IceDto;
-import capstone.relation.websocket.meeting.dto.JoinDto;
 import capstone.relation.websocket.meeting.dto.MeetingRoomListDto;
 import capstone.relation.websocket.meeting.dto.SdpDto;
 import capstone.relation.websocket.meeting.dto.SdpMessageDto;
+import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
+import capstone.relation.websocket.meeting.dto.response.JoinDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,17 +42,17 @@ public class MeetingDocumentController {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
-	@PostMapping("/app/room/create/{roomName}")
+	@PostMapping("/app/room/create")
 	@Operation(summary = "회의방 생성", description =
 		"새로운 회의방을 생성합니다. 생성된 회의방은 `/topic/{workSpaceId}/meetingRoomList`로 발송됩니다."
 			+ "방이 서버에서 생성되면 해당 유저는 /user/queue/join 으로 roomId와 roomName, 참여자 숫자가 와서 해당 방에 join 할 수 있습니다."
 			+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
-	public ResponseEntity<Void> createMeetingRoom(@PathVariable String roomName) {
+	public ResponseEntity<Void> createMeetingRoom(@RequestBody CreateRoomDto createRoomDto) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
-	@PostMapping("/app/room/leave{roomId}")
+	@PostMapping("/app/room/leave/{roomId}")
 	@Operation(summary = "회의방 나가기", description = "회의방에서 나갑니다. 나가면 해당 방의 참여자 수가 줄어듭니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
