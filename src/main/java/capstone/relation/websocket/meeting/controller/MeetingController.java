@@ -26,7 +26,8 @@ public class MeetingController {
 	public void createRoom(CreateRoomDto createRoomDto,
 		SimpMessageHeaderAccessor headerAccessor) throws Exception {
 		String roomName = createRoomDto.getRoomName();
-		String socketId = socketRegistry.getSocketId((String)headerAccessor.getSessionAttributes().get("userId"));
+		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
+		String socketId = socketRegistry.getSocketId(userId.toString());
 		if (roomName == null || roomName.isEmpty()) {
 			simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join",
 				ResponseEntity.status(401).body("요청 인수가 올바르지 않습니다."));
@@ -42,6 +43,7 @@ public class MeetingController {
 			simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join",
 				ResponseEntity.status(401).body("Access token is already expired or invalid."));
 		} catch (Exception e) {
+			e.printStackTrace();
 			simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join",
 				ResponseEntity.status(500).body("서버 내부 오류가 발생했습니다."));
 		}
