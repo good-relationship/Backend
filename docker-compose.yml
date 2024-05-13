@@ -9,7 +9,15 @@ services:
       - POSTGRES_PASSWORD=compose-postgres
     ports:
       - "5432:5432"
-    # 서비스 명
+  redis:
+    container_name: good-relation-spring-redis
+    image: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=compose-redis
+
+  # 서비스 명
   #  pgadmin:
   #    # 사용할 이미지
   #    image: dpage/pgadmin4
@@ -36,6 +44,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://good-relation-spring-db-postgres:5432/good-relation-spring-db-postgres
       SPRING_DATASOURCE_USERNAME: compose-postgres
