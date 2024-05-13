@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.websocket.meeting.dto.IceDto;
-import capstone.relation.websocket.meeting.dto.MeetingRoomListDto;
 import capstone.relation.websocket.meeting.dto.SdpDto;
 import capstone.relation.websocket.meeting.dto.SdpMessageDto;
 import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
-import capstone.relation.websocket.meeting.dto.response.JoinDto;
+import capstone.relation.websocket.meeting.dto.response.JoinResponseDto;
+import capstone.relation.websocket.meeting.dto.response.MeetingRoomListDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -66,10 +66,10 @@ public class MeetingDocumentController {
 		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "메시지 수신 성공",
-				content = @Content(schema = @Schema(implementation = JoinDto.class)))
+				content = @Content(schema = @Schema(implementation = JoinResponseDto.class)))
 		}
 	)
-	public ResponseEntity<JoinDto> joinMeetingRoom() {
+	public ResponseEntity<JoinResponseDto> joinMeetingRoom() {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
