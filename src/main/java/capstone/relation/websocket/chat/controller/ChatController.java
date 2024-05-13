@@ -68,10 +68,10 @@ public class ChatController {
 			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/history",
 				ResponseEntity.ok(historyResponseDto));
 		} catch (AuthException e) {
-			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
+			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/history",
 				ResponseEntity.status(401).build());
 		} catch (Exception e) {
-			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
+			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/history",
 				ResponseEntity.badRequest().build());
 		}
 	}
