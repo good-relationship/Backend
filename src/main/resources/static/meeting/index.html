@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Test</h1>
+<button onclick="connect()">Connect</button>
+<button onclick="disconnect()">Disconnect</button>
+<button onclick="createRoom()">Create Room</button>
+<script>
+    var stompClient = null;
+
+    function connect() {
+        var socket = new SockJS('/ws-chat');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/{workSpaceId}/meetingRoomList', function (greeting) {
+                alert("Room List Updated: " + greeting.body);
+            });
+            stompClient.subscribe('/user/queue/join', function (message) {
+                alert("Join Message: " + message.body);
+            });
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        console.log("Disconnected");
+    }
+
+    function createRoom() {
+        var roomName = prompt("Enter Room Name:");
+        stompClient.send("/app/room/create", {}, JSON.stringify({'roomName': roomName}));
+    }
+</script>
+</body>
+</html>

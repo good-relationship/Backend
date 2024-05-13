@@ -38,4 +38,5 @@ out/
 
 
 auth.properties
+db.properties
 .DS_Store

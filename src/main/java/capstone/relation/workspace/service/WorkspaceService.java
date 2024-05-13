@@ -58,8 +58,8 @@ public class WorkspaceService {
 		return invitationService.inviteWorkspace(inviteCode);
 	}
 
-	public WorkspaceInfo joinSpace(String inviteCode) {
-		return invitationService.joinWorkspace(inviteCode);
+	public WorkspaceInfo joinSpace() {
+		return invitationService.joinWorkspace();
 	}
 
 	public InviteCodeResponse getInviteCode() {

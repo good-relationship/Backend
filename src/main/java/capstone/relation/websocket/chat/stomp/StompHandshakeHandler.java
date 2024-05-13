@@ -20,6 +20,7 @@ public class StompHandshakeHandler extends DefaultHandshakeHandler {
 		WebSocketHandler wsHandler,
 		Map<String, Object> attributes) {
 		System.out.println("HANDSHAKE");
-		return new StompPrincipal(UUID.randomUUID().toString());
+		String sockId = UUID.randomUUID().toString();
+		return new StompPrincipal(sockId);
 	}
 }

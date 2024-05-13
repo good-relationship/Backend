@@ -38,7 +38,7 @@ public class ChatDocumentationController {
 		throw new UnsupportedOperationException("This endpoint is not implemented.");
 	}
 
-	@GetMapping("/user/topic/history")
+	@GetMapping("/user/queue/history")
 	@Operation(summary = "메시지 히스토리 구독", description = "/topic/history를 구독하여 이전 메시지 히스토리를 수신합니다. "
 		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다. 메시지는 10개 단위로 옵니다(페이징).",
 		responses = {

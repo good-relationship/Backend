@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
 		// 메시지를 구독하는 요청 url
-		config.enableSimpleBroker("/topic");
+		config.enableSimpleBroker("/topic", "/queue");
 		config.setApplicationDestinationPrefixes("/app");
 	}
 
