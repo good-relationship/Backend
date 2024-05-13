@@ -65,7 +65,7 @@ public class ChatController {
 					headerAccessor);
 			}
 			System.out.println("Send history: " + historyResponseDto);
-			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
+			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/history",
 				ResponseEntity.ok(historyResponseDto));
 		} catch (AuthException e) {
 			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/topic/history",
