@@ -13,7 +13,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import capstone.relation.api.auth.exception.AuthErrorCode;
 import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.api.auth.jwt.TokenProvider;
+import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
+import capstone.relation.workspace.WorkSpace;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -22,12 +24,15 @@ public class StompPreHandler implements ChannelInterceptor {
 	private final TokenProvider tokenProvider;
 	private final ThreadPoolTaskScheduler taskScheduler;
 	private final SocketRegistry socketRegistry;
+	private final UserRepository userRepository;
 
-	StompPreHandler(TokenProvider tokenProvider, SocketRegistry socketRegistry) {
+	StompPreHandler(TokenProvider tokenProvider, SocketRegistry socketRegistry,
+		UserRepository userRepository) {
 		this.tokenProvider = tokenProvider;
 		taskScheduler = new ThreadPoolTaskScheduler();
 		taskScheduler.initialize();
 		this.socketRegistry = socketRegistry;
+		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -48,6 +53,15 @@ public class StompPreHandler implements ChannelInterceptor {
 			socketRegistry.registerSession(userId.toString(), accessor.getUser().getName());
 			accessor.getSessionAttributes().put("userId", userId);
 			accessor.getSessionAttributes().put("expiryTime", expiryTime);
+			userRepository.findById(userId).ifPresent(user -> {
+				WorkSpace workSpace = user.getWorkSpace();
+				if (workSpace != null) {
+					accessor.getSessionAttributes().put("workSpaceId", workSpace.getId());
+				} else {
+					throw new AuthException(AuthErrorCode.INVALID_WORKSPACE_STATE_USER);
+				}
+			});
+			System.out.println("워크 스페이스 아이디: " + accessor.getSessionAttributes().get("workSpaceId"));
 			scheduleSessionExpiry(accessor, expiryTime);
 		}
 		return message;
