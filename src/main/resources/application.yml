@@ -1,12 +1,13 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/good-relation-spring-db-postgres
-    username: compose-postgres
-    password: compose-postgres
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${redis.host}
+      port: ${redis.port}
+      password: ${redis.password}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
