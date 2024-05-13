@@ -51,6 +51,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: compose-postgres
     volumes:
       - spring_data:/spring/data
-
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 volumes:
   spring_data:
