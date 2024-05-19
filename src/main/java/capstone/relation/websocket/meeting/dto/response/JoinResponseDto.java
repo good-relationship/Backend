@@ -11,7 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class JoinResponseDto {
 	@Schema(description = "회의실 ID", example = "123")
-	private String roomId;
+	private Long roomId;
 	@Schema(description = "회의실 이름", example = "회의실1")
 	private String roomName;
 	@Schema(description = "회의실 참여자 목록, 들어올 때 당시에 목록 전체를 보내줍니다.")

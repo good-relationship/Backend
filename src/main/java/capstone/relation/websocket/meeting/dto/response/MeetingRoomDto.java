@@ -8,7 +8,7 @@ public class MeetingRoomDto {
 	@Schema(description = "회의실 이름", example = "회의실1")
 	String roomName;
 	@Schema(description = "회의실 ID", example = "123")
-	String roomId;
+	Long roomId;
 	@Schema(description = "회의실 사용자 수", example = "2")
-	Long userCount;
+	int userCount;
 }
