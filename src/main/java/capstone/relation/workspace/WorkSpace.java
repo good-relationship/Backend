@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import capstone.relation.user.domain.User;
+import capstone.relation.websocket.meeting.domain.MeetRoom;
 import capstone.relation.workspace.school.domain.School;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,6 +33,12 @@ public class WorkSpace {
 	@Column(name = "workspace_name")
 	private String name;
 
+	@OneToMany(mappedBy = "workSpace", cascade = CascadeType.ALL)
+	private Set<MeetRoom> meetRooms = new HashSet<>();
+
+	@Column(nullable = false)
+	private boolean deleted;
+
 	public void addUser(User user) {
 		this.user.add(user);
 		user.setWorkSpace(this);
@@ -44,5 +51,14 @@ public class WorkSpace {
 
 	public void setSchool(School school) {
 		this.school = school;
+	}
+
+	public void delete() {
+		this.deleted = true;
+	}
+
+	public void addMeetRoom(MeetRoom meetRoom) {
+		this.meetRooms.add(meetRoom);
+		meetRoom.setWorkSpace(this);
 	}
 }
