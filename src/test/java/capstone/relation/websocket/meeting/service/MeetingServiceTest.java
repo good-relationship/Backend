@@ -131,9 +131,7 @@ class MeetingServiceTest {
 
 		// when
 		MeetingRoomListDto roomList = meetingService.getRoomList(workSpaceId);
-
-		// then
-
+		
 		// then
 		// 순서와 상관없이 목록 검사
 		assertThat(roomList).isNotNull();

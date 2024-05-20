@@ -114,7 +114,18 @@ public class MeetingService {
 		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
 	}
 
-	public Set<String> addUserToRoom(String workspaceId, Long roomId, String userId) {
+	public void leaveRoom(Map<String, Object> sessionAttributes) {
+		String userId = sessionAttributes.get("userId").toString();
+		String workspaceId = sessionAttributes.get("workSpaceId").toString();
+		String meetRoom = userRoomMapping.get(USER_KEY, userId);
+		if (meetRoom == null) {
+			System.out.println("User is not in any room: " + userId);
+			return;
+		}
+		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId);
+	}
+
+	private Set<String> addUserToRoom(String workspaceId, Long roomId, String userId) {
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
 		if (roomParticipants == null) {
 			roomParticipants = new HashMap<>();
@@ -130,7 +141,7 @@ public class MeetingService {
 		return users;
 	}
 
-	public void removeUserFromRoom(String workspaceId, Long roomId, String userId) {
+	private void removeUserFromRoom(String workspaceId, Long roomId, String userId) {
 		userRoomMapping.delete(USER_KEY, userId);
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
 		Set<String> userIds = roomParticipants.get(roomId.toString());
@@ -168,5 +179,4 @@ public class MeetingService {
 		simpMessagingTemplate.convertAndSendToUser(socketId, destination,
 			ResponseEntity.status(status).body(message));
 	}
-
 }
