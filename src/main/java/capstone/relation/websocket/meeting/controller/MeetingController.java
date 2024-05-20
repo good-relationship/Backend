@@ -2,7 +2,6 @@ package capstone.relation.websocket.meeting.controller;
 
 import static org.apache.commons.validator.GenericValidator.*;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -39,9 +38,9 @@ public class MeetingController {
 		}
 	}
 
-	@MessageMapping("/leave/{roomId}")
-	public ResponseEntity<?> leaveRoom() {
-		return ResponseEntity.ok().build();
+	@MessageMapping("/room/leave")
+	public void leaveRoom(SimpMessageHeaderAccessor headerAccessor) {
+		meetingService.leaveRoom(headerAccessor.getSessionAttributes());
 	}
 
 }
