@@ -56,7 +56,12 @@ public class AuthController {
 		@RequestParam(required = false) String inviteCode) {
 		System.out.println(code);
 		System.out.println("카카오 로그인");
-		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.KAKAO, code, inviteCode));
+		try {
+			return ResponseEntity.ok(authService.loginWithCode(AuthProvider.KAKAO, code, inviteCode));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return ResponseEntity.badRequest().build();
+		}
 	}
 
 	@PostMapping(value = "/naver", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -66,7 +71,12 @@ public class AuthController {
 		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
 	public ResponseEntity<TokenResponse> loginWithNaverCode(@RequestParam String code,
 		@RequestParam(required = false) String inviteCode) {
-		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
+		try {
+			return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			return ResponseEntity.badRequest().build();
+		}
 	}
 
 	@PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)

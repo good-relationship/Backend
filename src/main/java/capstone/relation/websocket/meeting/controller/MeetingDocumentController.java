@@ -52,11 +52,11 @@ public class MeetingDocumentController {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
-	@PostMapping("/app/room/leave/{roomId}")
-	@Operation(summary = "회의방 나가기", description = "회의방에서 나갑니다. 나가면 해당 방의 참여자 수가 줄어듭니다."
+	@PostMapping("/app/room/leave")
+	@Operation(summary = "회의방 나가기", description = "현재 참여중인 방에서 나갑니다. 나가면 해당 방의 참여자 수가 줄어듭니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
-	public ResponseEntity<Void> leaveMeetingRoom(@PathVariable String roomId) {
+	public ResponseEntity<Void> leaveMeetingRoom() {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
