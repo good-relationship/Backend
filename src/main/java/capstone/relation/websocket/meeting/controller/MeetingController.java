@@ -1,5 +1,7 @@
 package capstone.relation.websocket.meeting.controller;
 
+import static org.apache.commons.validator.GenericValidator.*;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,12 +24,19 @@ public class MeetingController {
 		meetingService.createRoom(createRoomDto, headerAccessor);
 	}
 
-	@MessageMapping("/app/room/join/{roomId}")
-	public ResponseEntity<?> joinRoom(@DestinationVariable String roomId,
+	@MessageMapping("/room/join/{roomId}")
+	public void joinRoom(@DestinationVariable String roomId,
 		SimpMessageHeaderAccessor headerAccessor) {
-		String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
-		// JoinResponseDto joinResponseDto = meetingService.joinRoom(headerAccessor.getSessionAttributes(), roomId);
-		return ResponseEntity.ok().build();
+		if (roomId == null || roomId.isEmpty()) {
+			return;
+		}
+		if (isLong(roomId)) {
+			try {
+				meetingService.joinRoom(headerAccessor.getSessionAttributes(), Long.parseLong(roomId));
+			} catch (Exception e) {
+				meetingService.sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 400);
+			}
+		}
 	}
 
 	@MessageMapping("/leave/{roomId}")
