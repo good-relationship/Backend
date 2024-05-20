@@ -1,7 +1,9 @@
 package capstone.relation.websocket.meeting.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,7 +58,7 @@ public class MeetingService {
 		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
 		String socketId = socketRegistry.getSocketId(userId.toString());
 		if (roomName == null || roomName.isEmpty()) {
-			sendErrorMessage(socketId, "회의실 이름을 입력해주세요.", "/queue/join", 401);
+			sendErrorMessage(headerAccessor, "회의실 이름을 입력해주세요.", "/queue/join", 401);
 		}
 		try {
 			String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
@@ -66,10 +68,10 @@ public class MeetingService {
 			simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join", joinResponseDto);
 		} catch (AuthException e) {
 			e.printStackTrace();
-			sendErrorMessage(socketId, e.getMessage(), "/queue/join", 401);
+			sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 401);
 		} catch (Exception e) {
 			e.printStackTrace();
-			sendErrorMessage(socketId, "서버 내부 오류가 발생했습니다.", "/queue/join", 500);
+			sendErrorMessage(headerAccessor, "서버 내부 오류가 발생했습니다.", "/queue/join", 500);
 		}
 	}
 
@@ -83,23 +85,39 @@ public class MeetingService {
 		meetRoomRepository.save(meetRoom);
 		workSpace.addMeetRoom(meetRoom);
 		Long roomId = meetRoom.getRoomId();
+		return joinWorkspaceRoom(workSpaceId, userId, roomId);
+	}
+
+	public void joinRoom(Map<String, Object> sessionAttributes, Long roomId) {
+		String userId = sessionAttributes.get("userId").toString();
+		String workspaceId = sessionAttributes.get("workSpaceId").toString();
+		String socketId = socketRegistry.getSocketId(userId);
+		//유저가 이미 회의 방에 있는지 확인
+		String meetRoom = userRoomMapping.get(USER_KEY, userId);
+		if (meetRoom != null) {
+			throw new IllegalArgumentException("User is already in the room: " + userId);
+		}
+		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId, roomId);
+		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join", joinResponseDto);
+	}
+
+	private JoinResponseDto joinWorkspaceRoom(String workSpaceId, String userId, Long roomId) {
+		MeetRoom meetRoom = meetRoomRepository.findById(roomId)
+			.orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
 		Set<String> userIds = addUserToRoom(workSpaceId, roomId, userId);
-		Set<UserInfoDto> userInfoList = new HashSet<>();
+		List<UserInfoDto> userInfoList = new ArrayList<>();
 		for (String id : userIds) {
 			UserInfoDto userInfoDto = new UserInfoDto();
 			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
 			userInfoList.add(userInfoDto);
 		}
-		return new JoinResponseDto(roomId, roomName, userInfoList, (long)userIds.size());
+		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
 	}
 
 	public Set<String> addUserToRoom(String workspaceId, Long roomId, String userId) {
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
-		Set<String> userIds = new HashSet<>();
 		if (roomParticipants == null) {
 			roomParticipants = new HashMap<>();
-		} else {
-			userIds.add(userId);
 		}
 		Set<String> users = roomParticipants.get(roomId.toString());
 		if (users == null) {
@@ -109,7 +127,7 @@ public class MeetingService {
 		roomParticipants.put(roomId.toString(), users);
 		workspaceRoomParticipants.put(WORK_KEY, workspaceId, roomParticipants);
 		userRoomMapping.put(USER_KEY, userId, roomId.toString());
-		return userIds;
+		return users;
 	}
 
 	public void removeUserFromRoom(String workspaceId, Long roomId, String userId) {
@@ -143,34 +161,12 @@ public class MeetingService {
 		return meetingRoomListDto;
 	}
 
-	private void sendErrorMessage(String socketId, String message, String destination, int status) {
+	public void sendErrorMessage(SimpMessageHeaderAccessor headerAccessor, String message, String destination,
+		int status) {
+		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
+		String socketId = socketRegistry.getSocketId(userId.toString());
 		simpMessagingTemplate.convertAndSendToUser(socketId, destination,
 			ResponseEntity.status(status).body(message));
-	}
-
-	public JoinResponseDto joinRoom(Map<String, Object> sessionAttributes, String roomId) {
-		String userId = sessionAttributes.get("userId").toString();
-		if (userId == null) { //TODO: exception
-			throw new IllegalArgumentException("User does not exist: " + userId);
-		}
-		if (roomId == null) { //TODO: exception
-			throw new IllegalArgumentException("Room does not exist: " + roomId);
-		}
-		//유저가 이미 회의 방에 있는지 확인
-		String s = userRoomMapping.get(USER_KEY, userId);
-		if (s != null) {
-			throw new IllegalArgumentException("User is already in the room: " + userId);
-		}
-		// Set<String> userIds = meetingRoomRepository.enterRoom(roomId, userId);
-		// Set<UserInfoDto> userInfoList = new HashSet<>();
-		// for (String id : userIds) {
-		// 	UserInfoDto userInfoDto = new UserInfoDto();
-		// 	userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
-		// 	userInfoList.add(userInfoDto);
-		// }
-		// return new JoinResponseDto(roomId, meetingRoomRepository.getRoomName(roomId), userInfoList,
-		// 	(long)userIds.size());
-		return null;
 	}
 
 }
