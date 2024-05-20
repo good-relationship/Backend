@@ -4,25 +4,65 @@
     <title>WebSocket Test</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .message-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 80%;
+            height: 150px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            font-family: monospace;
+        }
+
+        .message {
+            padding: 5px;
+            margin: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .message:nth-child(odd) {
+            background-color: #eef;
+        }
+
+        pre {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
 <h1>WebSocket Test</h1>
 <button onclick="connect()">Connect</button>
 <button onclick="disconnect()">Disconnect</button>
 <button onclick="createRoom()">Create Room</button>
+
+<div>
+    <h2>Room List Updates</h2>
+    <div id="roomList" class="message-box"></div>
+</div>
+<div>
+    <h2>Join Messages</h2>
+    <div id="joinMessages" class="message-box"></div>
+</div>
+
 <script>
     var stompClient = null;
+    JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE2MjkyOTUzfQ.Advyny2piD8zEvsILzd_4DncAmG2-8UxkUv4AFMP2Mo";
+    WORKSPACE_ID = "f162c91d-ec28-4575-949e-9f1f65f81053";
 
     function connect() {
-        var socket = new SockJS('/ws-chat');
+        var socket = new WebSocket('ws://localhost:8080/ws-chat');
         stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({
+            "Authorization": JWT
+        }, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/{workSpaceId}/meetingRoomList', function (greeting) {
-                alert("Room List Updated: " + greeting.body);
+            stompClient.subscribe('/topic/' + WORKSPACE_ID + '/meetingRoomList', function (greeting) {
+                updateRoomList(JSON.parse(greeting.body));
             });
             stompClient.subscribe('/user/queue/join', function (message) {
-                alert("Join Message: " + message.body);
+                updateJoinMessages(JSON.parse(message.body));
             });
         });
     }
@@ -37,6 +77,24 @@
     function createRoom() {
         var roomName = prompt("Enter Room Name:");
         stompClient.send("/app/room/create", {}, JSON.stringify({'roomName': roomName}));
+    }
+
+    function updateRoomList(message) {
+        var roomList = document.getElementById("roomList");
+        var newMessage = document.createElement("div");
+        newMessage.className = 'message';
+        newMessage.innerHTML = '<pre>' + JSON.stringify(message, null, 2) + '</pre>';
+        roomList.appendChild(newMessage);
+        roomList.scrollTop = roomList.scrollHeight;
+    }
+
+    function updateJoinMessages(message) {
+        var joinMessages = document.getElementById("joinMessages");
+        var newMessage = document.createElement("div");
+        newMessage.className = 'message';
+        newMessage.innerHTML = '<pre>' + JSON.stringify(message, null, 2) + '</pre>';
+        joinMessages.appendChild(newMessage);
+        joinMessages.scrollTop = joinMessages.scrollHeight;
     }
 </script>
 </body>
