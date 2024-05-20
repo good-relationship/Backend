@@ -148,6 +148,13 @@ public class MeetingService {
 		userIds.remove(userId);
 		roomParticipants.put(roomId.toString(), userIds);
 		workspaceRoomParticipants.put(WORK_KEY, workspaceId, roomParticipants);
+		if (userIds.isEmpty()) {
+			MeetRoom meetRoom = meetRoomRepository.findById(roomId).orElse(null);
+			if (meetRoom != null) {
+				meetRoom.setDeleted(true);
+				meetRoomRepository.save(meetRoom);
+			}
+		}
 	}
 
 	public Set<String> getRoomMembers(String workspaceId, Long roomId) {
