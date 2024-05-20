@@ -22,6 +22,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import capstone.relation.user.domain.Role;
+import capstone.relation.user.domain.User;
+import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
 import capstone.relation.websocket.meeting.domain.MeetRoom;
 import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
@@ -41,7 +44,7 @@ class MeetingServiceTest {
 
 	@Mock
 	private SocketRegistry socketRegistry;
-	
+
 	@Mock
 	private WorkSpaceRepository workSpaceRepository;
 
@@ -56,6 +59,9 @@ class MeetingServiceTest {
 	//workspaceId, roomId, userIds
 	@Mock
 	private HashOperations<String, String, String> mockUserRoomMapping;
+
+	@Mock
+	private UserRepository userRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -85,7 +91,8 @@ class MeetingServiceTest {
 			return meetRoom;
 		});
 		given(workspaceRoomParticipants.get(anyString(), anyString())).willReturn(new HashMap<>());
-
+		given(meetRoomRepository.findById(1L)).willReturn(
+			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
 		// when
 		meetingService.createRoom(createRoomDto, headerAccessor);
 
@@ -140,22 +147,35 @@ class MeetingServiceTest {
 			.containsExactlyInAnyOrder(1L, 2L);
 	}
 
-	// @DisplayName("회의 방에 참여할 수 있다.")
-	// @Test
-	// void joinRoom() {
-	// 	// given
-	// 	SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create();
-	// 	Map<String, Object> sessionAttributes = new HashMap<>();
-	// 	sessionAttributes.put("userId", 1L);
-	// 	sessionAttributes.put("workSpaceId", "workspace-1");
-	// 	headerAccessor.setSessionAttributes(sessionAttributes);
-	//
-	// 	given(socketRegistry.getSocketId("1")).willReturn("테스트 소켓 아이디");
-	//
-	// 	// when
-	// 	// meetingService.joinRoom("1", headerAccessor);
-	//
-	// 	// then
-	// 	verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"), any());
-	// }
+	@DisplayName("회의 방에 참여할 수 있다.")
+	@Test
+	void joinRoom() {
+		// given
+		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create();
+		Map<String, Object> sessionAttributes = new HashMap<>();
+		sessionAttributes.put("userId", 1L);
+		sessionAttributes.put("workSpaceId", "workspace-1");
+		headerAccessor.setSessionAttributes(sessionAttributes);
+
+		WorkSpace workSpace = new WorkSpace();
+		workSpace.setId("workspace-1");
+		MeetRoom meetRoom1 = MeetRoom.builder().roomId(1L).roomName("회의실1").deleted(false).workSpace(workSpace).build();
+
+		given(socketRegistry.getSocketId("1")).willReturn("테스트 소켓 아이디");
+		given(meetRoomRepository.findById(11L)).willReturn(Optional.of(meetRoom1));
+		given(userRepository.findById(1L)).willReturn(Optional.of(
+			User.builder()
+				.id(1L)
+				.email("wnddms12345@naver.com")
+				.profileImage("https://avatars.githubusercontent.com/u/77449538?v=4")
+				.userName("김민수")
+				.provider("github")
+				.role(Role.USER)
+				.build()));
+		// when
+		meetingService.joinRoom(sessionAttributes, 11L);
+
+		// then
+		verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"), any());
+	}
 }
