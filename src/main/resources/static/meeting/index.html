@@ -32,10 +32,29 @@
 </head>
 <body>
 <h1>WebSocket Test</h1>
+<div>
+    eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE4ODYxNTQ0fQ.Ast8TkAPyO2lTto253avdOFHhkiC4tjBsF33DPRv4QU
+</div>
+<div>
+    eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE4ODc5MzYwfQ.qY6Tnrc-PtLH_VMrMPdtocT_3z93tdMItt8XbuyVRc0
+</div>
+<label for="jwt">JWT Token:</label>
+<input type="text" id="jwt" placeholder="Enter your JWT token here">
+<br>
 <button onclick="connect()">Connect</button>
 <button onclick="disconnect()">Disconnect</button>
 <button onclick="createRoom()">Create Room</button>
+<button onclick="joinRoom()">Join Room</button>
+<button onclick="leaveRoom()">Leave Room</button>
+<button onclick="getRoomList()">Get Room List</button>
+<div id="roomId"></div>
 
+<div id="videos">
+    <h3>LocalVideo</h3>
+    <video id="localVideo" autoplay muted playsinline></video>
+    <h3>RemoteVideo</h3>
+    <video id="remoteVideo" autoplay playsinline></video>
+</div>
 <div>
     <h2>Room List Updates</h2>
     <div id="roomList" class="message-box"></div>
@@ -44,57 +63,6 @@
     <h2>Join Messages</h2>
     <div id="joinMessages" class="message-box"></div>
 </div>
-
-<script>
-    var stompClient = null;
-    JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE2MjkyOTUzfQ.Advyny2piD8zEvsILzd_4DncAmG2-8UxkUv4AFMP2Mo";
-    WORKSPACE_ID = "f162c91d-ec28-4575-949e-9f1f65f81053";
-
-    function connect() {
-        var socket = new WebSocket('ws://localhost:8080/ws-chat');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({
-            "Authorization": JWT
-        }, function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/' + WORKSPACE_ID + '/meetingRoomList', function (greeting) {
-                updateRoomList(JSON.parse(greeting.body));
-            });
-            stompClient.subscribe('/user/queue/join', function (message) {
-                updateJoinMessages(JSON.parse(message.body));
-            });
-        });
-    }
-
-    function disconnect() {
-        if (stompClient !== null) {
-            stompClient.disconnect();
-        }
-        console.log("Disconnected");
-    }
-
-    function createRoom() {
-        var roomName = prompt("Enter Room Name:");
-        stompClient.send("/app/room/create", {}, JSON.stringify({'roomName': roomName}));
-    }
-
-    function updateRoomList(message) {
-        var roomList = document.getElementById("roomList");
-        var newMessage = document.createElement("div");
-        newMessage.className = 'message';
-        newMessage.innerHTML = '<pre>' + JSON.stringify(message, null, 2) + '</pre>';
-        roomList.appendChild(newMessage);
-        roomList.scrollTop = roomList.scrollHeight;
-    }
-
-    function updateJoinMessages(message) {
-        var joinMessages = document.getElementById("joinMessages");
-        var newMessage = document.createElement("div");
-        newMessage.className = 'message';
-        newMessage.innerHTML = '<pre>' + JSON.stringify(message, null, 2) + '</pre>';
-        joinMessages.appendChild(newMessage);
-        joinMessages.scrollTop = joinMessages.scrollHeight;
-    }
-</script>
+<script src="js/main.js"></script>
 </body>
 </html>
