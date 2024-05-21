@@ -35,9 +35,9 @@ import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 
 @ExtendWith(MockitoExtension.class)
-class MeetingServiceTest {
+class MeetRoomServiceTest {
 	@InjectMocks
-	private MeetingService meetingService;
+	private MeetRoomService meetRoomService;
 
 	@Mock
 	private SimpMessagingTemplate simpMessagingTemplate;
@@ -69,7 +69,7 @@ class MeetingServiceTest {
 		when(redisTemplate.opsForHash()).thenReturn((HashOperations)workspaceRoomParticipants)
 			.thenReturn(mockUserRoomMapping);
 		// MeetingService의 init() 메서드를 명시적으로 호출합니다.
-		meetingService.init();
+		meetRoomService.init();
 	}
 
 	@DisplayName("회의 방을 생성할 수 있다.")
@@ -94,7 +94,7 @@ class MeetingServiceTest {
 		given(meetRoomRepository.findById(1L)).willReturn(
 			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
 		// when
-		meetingService.createRoom(createRoomDto, headerAccessor);
+		meetRoomService.createRoom(createRoomDto, headerAccessor);
 
 		// then
 		ArgumentCaptor<JoinResponseDto> joinResponseCaptor = ArgumentCaptor.forClass(JoinResponseDto.class);
@@ -130,8 +130,8 @@ class MeetingServiceTest {
 		given(workspaceRoomParticipants.get(anyString(), anyString())).willReturn(mockParti);
 
 		// when
-		MeetingRoomListDto roomList = meetingService.getRoomList(workSpaceId);
-		
+		MeetingRoomListDto roomList = meetRoomService.getRoomList(workSpaceId);
+
 		// then
 		// 순서와 상관없이 목록 검사
 		assertThat(roomList).isNotNull();
@@ -171,7 +171,7 @@ class MeetingServiceTest {
 				.role(Role.USER)
 				.build()));
 		// when
-		meetingService.joinRoom(sessionAttributes, 11L);
+		meetRoomService.joinRoom(sessionAttributes, 11L);
 
 		// then
 		verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"), any());

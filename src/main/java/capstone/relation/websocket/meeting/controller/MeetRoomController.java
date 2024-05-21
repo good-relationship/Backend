@@ -8,19 +8,19 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
-import capstone.relation.websocket.meeting.service.MeetingService;
+import capstone.relation.websocket.meeting.service.MeetRoomService;
 import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
-public class MeetingController {
+public class MeetRoomController {
 
-	private final MeetingService meetingService;
+	private final MeetRoomService meetRoomService;
 
 	@MessageMapping("/room/create")
 	public void createRoom(CreateRoomDto createRoomDto,
 		SimpMessageHeaderAccessor headerAccessor) throws Exception {
-		meetingService.createRoom(createRoomDto, headerAccessor);
+		meetRoomService.createRoom(createRoomDto, headerAccessor);
 	}
 
 	@MessageMapping("/room/join/{roomId}")
@@ -31,9 +31,9 @@ public class MeetingController {
 		}
 		if (isLong(roomId)) {
 			try {
-				meetingService.joinRoom(headerAccessor.getSessionAttributes(), Long.parseLong(roomId));
+				meetRoomService.joinRoom(headerAccessor.getSessionAttributes(), Long.parseLong(roomId));
 			} catch (Exception e) {
-				meetingService.sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 400);
+				meetRoomService.sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 400);
 			}
 		}
 	}
@@ -41,12 +41,12 @@ public class MeetingController {
 	@MessageMapping("/room/list")
 	public void requestRoomList(SimpMessageHeaderAccessor headerAccessor) {
 		String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
-		meetingService.sendRoomList(workSpaceId);
+		meetRoomService.sendRoomList(workSpaceId);
 	}
 
 	@MessageMapping("/room/leave")
 	public void leaveRoom(SimpMessageHeaderAccessor headerAccessor) {
-		meetingService.leaveRoom(headerAccessor.getSessionAttributes());
+		meetRoomService.leaveRoom(headerAccessor.getSessionAttributes());
 	}
 
 }

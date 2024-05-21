@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MeetingService {
+public class MeetRoomService {
 	private static final String WORK_KEY = "WORKSPACE_ROOM_PARTICIPANTS";
 	private static final String USER_KEY = "USER_ROOM_MAPPING";
 	private final UserRepository userRepository;
