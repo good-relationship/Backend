@@ -94,14 +94,17 @@ function handleJoin(message) {
             console.log(userInfo);
             var MyUserId = document.getElementById("userId").value;
             if (userInfo.userId != MyUserId) {
-                createPeerConnectionAndSendOffer(userInfo.userId);
+                createPeerConnection(userInfo.userId);
+                pcs[userInfo.userId].createOffer((description) => {
+                    setLocalAndSendOffer(description, userInfo.userId)
+                }, handleCreateOfferError);
             }
         });
     }
 }
 
-//이 함수에서 connection을 만들고 offer도 보낸다.
-function createPeerConnectionAndSendOffer(userId) {
+//이 함수에서 connection을 만든다.
+function createPeerConnection(userId) {
     try {
         var pc = new RTCPeerConnection(pcConfig);
         pc.onicecandidate = function (event) {
@@ -111,12 +114,8 @@ function createPeerConnectionAndSendOffer(userId) {
             handleRemoteStreamAdded(event, userId);
         };
         pc.onremovestream = handleRemoteStreamRemoved;
-        pcs[userId] = pc;
         pc.addStream(localStream);
-        pc.createOffer((description) => {
-            setLocalAndSendOffer(description, userId)
-        }, handleCreateOfferError);
-
+        pcs[userId] = pc;
     } catch (e) {
         console.log('Failed to create PeerConnection, exception: ' + e.message);
         alert('Cannot create RTCPeerConnection object.');
@@ -128,6 +127,7 @@ function handleOffer(message) {
     console.log("handleOffer");
     console.log(message);
     var userId = message.userId; //보낸사람의 ID
+    createPeerConnection(userId);
     var sessionDescription = message.sessionDescription;
     pcs[userId].setRemoteDescription(sessionDescription);
     pcs[userId].createAnswer().then(
