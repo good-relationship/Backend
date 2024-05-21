@@ -52,6 +52,14 @@ public class MeetingDocumentController {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
+	@PostMapping("/app/room/list")
+	@Operation(summary = "회의방 목록 요청", description = "현재 워크스페이스에 있는 회의방 목록을 요청합니다."
+		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
+	)
+	public ResponseEntity<Void> requestMeetingRoomList() {
+		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
+	}
+
 	@PostMapping("/app/room/leave")
 	@Operation(summary = "회의방 나가기", description = "현재 참여중인 방에서 나갑니다. 나가면 해당 방의 참여자 수가 줄어듭니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."

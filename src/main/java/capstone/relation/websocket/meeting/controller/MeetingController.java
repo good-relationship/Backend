@@ -38,6 +38,12 @@ public class MeetingController {
 		}
 	}
 
+	@MessageMapping("/room/list")
+	public void requestRoomList(SimpMessageHeaderAccessor headerAccessor) {
+		String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
+		meetingService.sendRoomList(workSpaceId);
+	}
+
 	@MessageMapping("/room/leave")
 	public void leaveRoom(SimpMessageHeaderAccessor headerAccessor) {
 		meetingService.leaveRoom(headerAccessor.getSessionAttributes());
