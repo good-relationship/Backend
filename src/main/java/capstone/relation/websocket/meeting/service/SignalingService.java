@@ -21,4 +21,13 @@ public class SignalingService {
 		sdpMessageDto.setUserId(myId.toString()); // 보내는 사람 ID로 갈아 껴줌.
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/offer/" + roomId, sdpMessageDto);
 	}
+
+	//TODO: 둘이 하는일 같으니까 합치자.
+	public void sendAnswer(String roomId, SdpMessageDto sdpMessageDto, Long myId) {
+		System.out.println("sendAnswer");
+		String destId = sdpMessageDto.getUserId();
+		String socketId = socketRegistry.getSocketId(destId);
+		sdpMessageDto.setUserId(myId.toString()); // 보내는 사람 ID로 갈아 껴줌.
+		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/answer/" + roomId, sdpMessageDto);
+	}
 }
