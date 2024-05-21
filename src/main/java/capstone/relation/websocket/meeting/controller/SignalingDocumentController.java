@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	+ "클라이언트는 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
 @RestController
 @RequestMapping("/ws-chat")
-public class ConnectionDocumentController {
+public class SignalingDocumentController {
 	@GetMapping("/topic/offer/{roomId}")
 	@Operation(summary = "새로운 offer 가 왔는지 구독", description =
 		"현재 들어가 있는 회의방의 roomId를 기반으로 구독하며 해당 메시지를 받으면 `/app/answer`로 상대방 userId와 내 description(sdp)을 함께 발송합니다. "
