@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 	+ "클라이언트는 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
 @RestController
 @RequestMapping("/ws-chat")
-public class MeetingDocumentController {
+public class MeetRoomDocumentController {
 
 	@GetMapping("/topic/{workSpaceId}/meetingRoomList")
 	@Operation(summary = "현재 워크스페이스에 있는 회의방 목록을 구독", description = "새로운 room이 생기거나 사라지면 해당 메시지를 받습니다."
