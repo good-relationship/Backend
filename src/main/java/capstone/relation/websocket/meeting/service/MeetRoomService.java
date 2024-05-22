@@ -70,13 +70,17 @@ public class MeetRoomService {
 			sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 401);
 		} catch (Exception e) {
 			e.printStackTrace();
-			sendErrorMessage(headerAccessor, "서버 내부 오류가 발생했습니다.", "/queue/join", 500);
+			sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 400);
 		}
 	}
 
 	private JoinResponseDto createAndJoin(String workSpaceId, String userId, String roomName) {
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid workspace ID"));
+		String meetRoomId = userRoomMapping.get(USER_KEY, userId);
+		if (meetRoomId != null) {
+			throw new IllegalArgumentException("User is already in the room: " + userId);
+		}
 		MeetRoom meetRoom = MeetRoom.builder()
 			.roomName(roomName)
 			.deleted(false)
