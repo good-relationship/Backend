@@ -1,6 +1,7 @@
 package capstone.relation.user.dto;
 
 import capstone.relation.user.domain.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ public class UserInfoDto {
 	@Schema(description = "사용자 이메일", example = "wnddms12345@naver.com")
 	private String email;
 
+	@Hidden
 	public void setByUserEntity(User user) {
 		this.userId = user.getId();
 		this.userName = user.getUserName();

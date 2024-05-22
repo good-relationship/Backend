@@ -29,15 +29,14 @@ import capstone.relation.websocket.SocketRegistry;
 import capstone.relation.websocket.meeting.domain.MeetRoom;
 import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
 import capstone.relation.websocket.meeting.dto.response.JoinResponseDto;
-import capstone.relation.websocket.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.websocket.meeting.repository.MeetRoomRepository;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 
 @ExtendWith(MockitoExtension.class)
-class MeetingServiceTest {
+class MeetRoomServiceTest {
 	@InjectMocks
-	private MeetingService meetingService;
+	private MeetRoomService meetRoomService;
 
 	@Mock
 	private SimpMessagingTemplate simpMessagingTemplate;
@@ -69,7 +68,7 @@ class MeetingServiceTest {
 		when(redisTemplate.opsForHash()).thenReturn((HashOperations)workspaceRoomParticipants)
 			.thenReturn(mockUserRoomMapping);
 		// MeetingService의 init() 메서드를 명시적으로 호출합니다.
-		meetingService.init();
+		meetRoomService.init();
 	}
 
 	@DisplayName("회의 방을 생성할 수 있다.")
@@ -94,7 +93,7 @@ class MeetingServiceTest {
 		given(meetRoomRepository.findById(1L)).willReturn(
 			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
 		// when
-		meetingService.createRoom(createRoomDto, headerAccessor);
+		meetRoomService.createRoom(createRoomDto, headerAccessor);
 
 		// then
 		ArgumentCaptor<JoinResponseDto> joinResponseCaptor = ArgumentCaptor.forClass(JoinResponseDto.class);
@@ -130,19 +129,26 @@ class MeetingServiceTest {
 		given(workspaceRoomParticipants.get(anyString(), anyString())).willReturn(mockParti);
 
 		// when
-		MeetingRoomListDto roomList = meetingService.getRoomList(workSpaceId);
-		
+		meetRoomService.sendRoomList(workSpaceId);
+
 		// then
 		// 순서와 상관없이 목록 검사
-		assertThat(roomList).isNotNull();
-		assertThat(roomList.getMeetingRoomList()).hasSize(2);
-		assertThat(roomList.getMeetingRoomList())
-			.extracting("roomName")
-			.containsExactlyInAnyOrder("회의실1", "회의실2");
+		verify(simpMessagingTemplate).convertAndSendToUser(anyString(), eq("/queue/roomList"), any());
 
-		assertThat(roomList.getMeetingRoomList())
-			.extracting("roomId")
-			.containsExactlyInAnyOrder(1L, 2L);
+		// 방 목록을 받아올 때, 방의 이름과 ID를 확인합니다.
+		ArgumentCaptor<Map<String, Object>> roomListCaptor = ArgumentCaptor.forClass(Map.class);
+		verify(simpMessagingTemplate).convertAndSendToUser(anyString(), eq("/queue/roomList"),
+			roomListCaptor.capture());
+		Map<String, Object> roomList = roomListCaptor.getValue();
+		//TODO: Check
+		assertThat(roomList).isNotNull();
+		assertThat(roomList).containsKeys("rooms");
+		assertThat(roomList.get("rooms")).isInstanceOf(Set.class);
+		Set<Map<String, Object>> rooms = (Set<Map<String, Object>>)roomList.get("rooms");
+		assertThat(rooms).hasSize(2);
+		assertThat(rooms).anyMatch(room -> room.get("roomId").equals(1L) && room.get("roomName").equals("회의실1"));
+		assertThat(rooms).anyMatch(room -> room.get("roomId").equals(2L) && room.get("roomName").equals("회의실2"));
+
 	}
 
 	@DisplayName("회의 방에 참여할 수 있다.")
@@ -171,7 +177,7 @@ class MeetingServiceTest {
 				.role(Role.USER)
 				.build()));
 		// when
-		meetingService.joinRoom(sessionAttributes, 11L);
+		meetRoomService.joinRoom(sessionAttributes, 11L);
 
 		// then
 		verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"), any());

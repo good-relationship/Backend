@@ -2,42 +2,116 @@
 <html>
 <head>
     <title>WebSocket Test</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .message-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 80%;
+            height: 150px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            font-family: monospace;
+        }
+
+        .message {
+            padding: 5px;
+            margin: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .message:nth-child(odd) {
+            background-color: #eef;
+        }
+
+        pre {
+            margin: 0;
+        }
+
+        .video-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .user-id {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        video {
+            width: 300px;
+            height: 200px;
+            background-color: black;
+        }
+
+        #videos {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #localVideoContainer, #remoteVideosContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        #localVideo {
+            border: 2px solid blue;
+        }
+
+        #remoteVideos video {
+            border: 2px solid green;
+        }
+    </style>
 </head>
 <body>
 <h1>WebSocket Test</h1>
+<div>
+    eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE4ODYxNTQ0fQ.Ast8TkAPyO2lTto253avdOFHhkiC4tjBsF33DPRv4QU
+</div>
+<div>
+    eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE4ODc5MzYwfQ.qY6Tnrc-PtLH_VMrMPdtocT_3z93tdMItt8XbuyVRc0
+</div>
+<label for="jwt">JWT Token:</label>
+<input type="text" id="jwt" placeholder="Enter your JWT token here">
+<label for="userId">UserId:</label>
+<input type="text" id="userId" placeholder="Enter your UserId here">
+<label for="workspaceId">workspaceId:</label>
+<input type="text" id="workspaceId" placeholder="Enter your workspaceId here">
+<br>
+<br>
 <button onclick="connect()">Connect</button>
 <button onclick="disconnect()">Disconnect</button>
 <button onclick="createRoom()">Create Room</button>
-<script>
-    var stompClient = null;
+<button onclick="joinRoom()">Join Room</button>
+<button onclick="leaveRoom()">Leave Room</button>
+<button onclick="getRoomList()">Get Room List</button>
+<div id="roomId"></div>
 
-    function connect() {
-        var socket = new SockJS('/ws-chat');
-        stompClient = Stomp.over(socket);
-        stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/{workSpaceId}/meetingRoomList', function (greeting) {
-                alert("Room List Updated: " + greeting.body);
-            });
-            stompClient.subscribe('/user/queue/join', function (message) {
-                alert("Join Message: " + message.body);
-            });
-        });
-    }
-
-    function disconnect() {
-        if (stompClient !== null) {
-            stompClient.disconnect();
-        }
-        console.log("Disconnected");
-    }
-
-    function createRoom() {
-        var roomName = prompt("Enter Room Name:");
-        stompClient.send("/app/room/create", {}, JSON.stringify({'roomName': roomName}));
-    }
-</script>
+<div id="videos">
+    <h3>Local Video</h3>
+    <div id="localVideoContainer">
+        <video id="localVideo" autoplay muted playsinline></video>
+    </div>
+    <h3>Remote Videos</h3>
+    <div id="remoteVideosContainer">
+        <div id="remoteVideos"></div>
+    </div>
+</div>
+<div>
+    <h2>Room List Updates</h2>
+    <div id="roomList" class="message-box"></div>
+</div>
+<div>
+    <h2>Join Messages</h2>
+    <div id="joinMessages" class="message-box"></div>
+</div>
+<script src="js/main.js"></script>
 </body>
 </html>

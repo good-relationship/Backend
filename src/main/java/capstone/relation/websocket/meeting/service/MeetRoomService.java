@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MeetingService {
+public class MeetRoomService {
 	private static final String WORK_KEY = "WORKSPACE_ROOM_PARTICIPANTS";
 	private static final String USER_KEY = "USER_ROOM_MAPPING";
 	private final UserRepository userRepository;
@@ -63,8 +63,7 @@ public class MeetingService {
 		try {
 			String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
 			JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId.toString(), roomName);
-			MeetingRoomListDto roomList = getRoomList(workSpaceId);
-			simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", roomList);
+			sendRoomList(workSpaceId);
 			simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join", joinResponseDto);
 		} catch (AuthException e) {
 			e.printStackTrace();
@@ -163,8 +162,7 @@ public class MeetingService {
 		return stringSetHashMap.get(roomId.toString());
 	}
 
-	public MeetingRoomListDto getRoomList(String workSpaceId) {
-		// Set<String> roomList = meetingRoomRepository.getRoomList(workSpaceId);
+	public void sendRoomList(String workSpaceId) {
 		Set<MeetRoom> meetRooms = meetRoomRepository.findAllByWorkSpaceId(workSpaceId);
 		MeetingRoomListDto meetingRoomListDto = new MeetingRoomListDto();
 		System.out.println("workSpaceId = " + workSpaceId);
@@ -176,7 +174,7 @@ public class MeetingService {
 			meetingRoomDto.setUserCount(getRoomMembers(workSpaceId, meetRoom.getRoomId()).size());
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
-		return meetingRoomListDto;
+		simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", meetingRoomListDto);
 	}
 
 	public void sendErrorMessage(SimpMessageHeaderAccessor headerAccessor, String message, String destination,
