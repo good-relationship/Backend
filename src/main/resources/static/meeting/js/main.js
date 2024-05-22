@@ -2,7 +2,7 @@
 
 var stompClient = null;
 var JWT = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJVU0VSIiwiZXhwIjoxNzE4ODYxNTQ0fQ.Ast8TkAPyO2lTto253avdOFHhkiC4tjBsF33DPRv4QU";
-var WORKSPACE_ID = "f162c91d-ec28-4575-949e-9f1f65f81053";
+
 var roomId;
 
 var localStream;
@@ -27,6 +27,11 @@ function connect() {
     var jwtToken = document.getElementById("jwt").value;
     if (!jwtToken) {
         alert("Please enter a JWT token.");
+        return;
+    }
+    var WORKSPACE_ID = document.getElementById("workspaceId").value;
+    if (!WORKSPACE_ID) {
+        alert("Please enter a workspace ID.");
         return;
     }
     var socket = new WebSocket('ws://localhost:8080/ws-chat');
@@ -259,7 +264,7 @@ function handleRemoteStreamAdded(event, userId) {
         existingVideo.srcObject = event.streams[0];
         return;
     }
-    
+
     var videoElement = document.createElement('video');
     videoElement.id = 'remoteVideo_' + userId;
     videoElement.autoplay = true;
