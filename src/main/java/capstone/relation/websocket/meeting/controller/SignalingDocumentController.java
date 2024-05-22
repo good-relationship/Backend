@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.websocket.meeting.dto.IceDto;
-import capstone.relation.websocket.meeting.dto.SdpDto;
 import capstone.relation.websocket.meeting.dto.SdpMessageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Profile("!disabled")  // 활성화되지 않음
-@Tag(name = "Meet Connection", description = "미팅 관련 API (WebSocket) /ws-chat 으로 연결을 수립합니다. "
+@Tag(name = "Meet Signaling", description = "미팅 관련 API (WebSocket) /ws-chat 으로 연결을 수립합니다. "
 	+ "클라이언트는 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
 @RestController
 @RequestMapping("/ws-chat")
@@ -42,7 +41,7 @@ public class SignalingDocumentController {
 	@Operation(summary = "상대방에게 offer를 보냅니다.", description = "상대방에게 offer를 보냅니다. 이건 Room에 Join하면 보냅니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
-	public ResponseEntity<Void> sendOffer(@PathVariable String roomId, SdpDto sdpDto) {
+	public ResponseEntity<Void> sendOffer(@PathVariable String roomId, SdpMessageDto sdpDto) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
@@ -58,16 +57,16 @@ public class SignalingDocumentController {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
-	@PostMapping("/app/answer")
+	@PostMapping("/app/answer/{roomId}")
 	@Operation(summary = "상대방에게 answer를 보냅니다.", description = "상대방의 offer에 대한 answer를 보냅니다."
 		+ "userId 는 상대방 id입니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
-	public ResponseEntity<SdpMessageDto> sendAnswer() {
+	public ResponseEntity<SdpMessageDto> sendAnswer(@PathVariable String roomId) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
-	@GetMapping("/topic/ice/{roomId}")
+	@GetMapping("/user/queue/ice/{roomId}")
 	@Operation(summary = "상대방의 ice candidate를 구독", description = "상대방이 내 offer에 대한 ice candidate를 보내면 해당 메시지를 받습니다."
 		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
 		responses = {
