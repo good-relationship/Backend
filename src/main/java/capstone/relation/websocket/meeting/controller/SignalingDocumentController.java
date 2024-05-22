@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Profile("!disabled")  // 활성화되지 않음
-@Tag(name = "Meet Signaling", description = "미팅 관련 API (WebSocket) /ws-chat 으로 연결을 수립합니다. "
+@Tag(name = "MeetSignaling", description = "미팅 관련 API (WebSocket) /ws-chat 으로 연결을 수립합니다. "
 	+ "클라이언트는 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
 @RestController
 @RequestMapping("/ws-chat")
@@ -45,7 +45,7 @@ public class SignalingDocumentController {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
-	@GetMapping("/user/queue/answer")
+	@GetMapping("/user/queue/answer/{roomId}")
 	@Operation(summary = "상대방의 answer를 구독", description = "상대방이 내 offer에 대한 answer를 보내면 해당 메시지를 받습니다."
 		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
 		responses = {
@@ -53,7 +53,7 @@ public class SignalingDocumentController {
 				content = @Content(schema = @Schema(implementation = SdpMessageDto.class)))
 		}
 	)
-	public ResponseEntity<SdpMessageDto> subscribeAnswer() {
+	public ResponseEntity<SdpMessageDto> subscribeAnswer(@PathVariable String roomId) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
