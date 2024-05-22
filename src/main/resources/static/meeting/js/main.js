@@ -15,14 +15,13 @@ var pcConfig = {
 };
 
 var localVideo = document.querySelector('#localVideo');
-var remoteVideos = document.querySelector('#remoteVideo');
+var remoteVideos = document.querySelector('#remoteVideos');
 
 // Set up audio and video regardless of what devices are present.
 var sdpConstraints = {
     offerToReceiveAudio: true,
     offerToReceiveVideo: true
 };
-
 
 function connect() {
     var jwtToken = document.getElementById("jwt").value;
@@ -83,6 +82,12 @@ function handleJoin(message) {
         console.log('Answer message received:', messageOutput);
         handleAnswer(JSON.parse(messageOutput.body));
     });
+    stompClient.subscribe("/user/queue/ice/" + roomId, function (messageOutput) {
+            console.log('Ice message received:', messageOutput);
+            handleIceRequest(JSON.parse(messageOutput.body));
+        }
+    );
+
     if (message.userCount === 1 || message.userCount === "1") {//내가 방을 만든 경우
         console.log('Created room ' + message.roomId);
     } else {//내가 방에 조인한 경우
@@ -110,11 +115,10 @@ function createPeerConnection(userId) {
         pc.onicecandidate = function (event) {
             handleIceCandidate(event, userId);
         };
-        pc.onaddstream = function (event) {
+        pc.ontrack = function (event) {
             handleRemoteStreamAdded(event, userId);
         };
-        pc.onremovestream = handleRemoteStreamRemoved;
-        pc.addStream(localStream);
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream)); // 변경된 부분: addTrack 사용
         pcs[userId] = pc;
     } catch (e) {
         console.log('Failed to create PeerConnection, exception: ' + e.message);
@@ -143,6 +147,8 @@ function handleAnswer(message) {
     console.log(message);
     var userId = message.userId;
     var sessionDescription = message.sessionDescription;
+    console.log("userId" + userId);
+    console.log("sessionDescription" + sessionDescription);
     pcs[userId].setRemoteDescription(sessionDescription);
 }
 
@@ -174,26 +180,31 @@ window.onbeforeunload = function () {
     sendMessage({type: 'bye'});
 };
 
-
 function handleIceCandidate(event, userId) {
     console.log('icecandidate event: ', event);
     if (event.candidate) {
-        // sendMessage({
-        //     type: 'candidate',
-        //     label: event.candidate.sdpMLineIndex,
-        //     id: event.candidate.sdpMid,
-        //     candidate: event.candidate.candidate,
-        //     userId: userId
-        // });
+        stompClient.send("/app/ice/" + roomId, {}, JSON.stringify({
+            sdpMLineIndex: event.candidate.sdpMLineIndex,
+            sdpMid: event.candidate.sdpMid,
+            candidate: event.candidate.candidate,
+            userId: userId
+        }));
     } else {
         console.log('End of candidates.');
     }
 }
 
+function handleIceRequest(message) {
+    var candidate = new RTCIceCandidate({
+        sdpMLineIndex: message.sdpMLineIndex,
+        candidate: message.candidate
+    });
+    pcs[message.userId].addIceCandidate(candidate);
+}
+
 function handleCreateOfferError(event) {
     console.log('createOffer() error: ', event);
 }
-
 
 function setLocalAndSendAnswer(sessionDescription, userId) {
     console.log('setLocalAndSendMessage sending message', sessionDescription);
@@ -206,7 +217,6 @@ function setLocalAndSendAnswer(sessionDescription, userId) {
         userId: userId,
         sessionDescription: sessionDescription
     }));
-
 }
 
 function onCreateSessionDescriptionError(error) {
@@ -241,15 +251,32 @@ function requestTurn(turnURL) {
     }
 }
 
-function handleRemoteStreamAdded(event) {
-    console.log('Remote stream added for user:', userId);
-    remoteStreams[userId] = event.stream;
+function handleRemoteStreamAdded(event, userId) {
+    remoteStreams[userId] = event.streams[0];
 
+    var existingVideo = document.getElementById('remoteVideo_' + userId);
+    if (existingVideo) {
+        existingVideo.srcObject = event.streams[0];
+        return;
+    }
+    
     var videoElement = document.createElement('video');
     videoElement.id = 'remoteVideo_' + userId;
     videoElement.autoplay = true;
-    videoElement.srcObject = event.stream;
-    remoteVideos.appendChild(videoElement);
+    videoElement.playsinline = true;
+    videoElement.srcObject = event.streams[0];
+
+    var container = document.createElement('div');
+    container.className = 'video-container';
+    container.appendChild(videoElement);
+
+    var userIdElement = document.createElement('div');
+    userIdElement.className = 'user-id';
+    userIdElement.textContent = 'User: ' + userId;
+    container.appendChild(userIdElement);
+
+    remoteVideos.appendChild(container);
+
 }
 
 function handleRemoteStreamRemoved(event) {
