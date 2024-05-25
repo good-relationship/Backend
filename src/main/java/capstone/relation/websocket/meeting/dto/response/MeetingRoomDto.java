@@ -1,5 +1,8 @@
 package capstone.relation.websocket.meeting.dto.response;
 
+import java.util.List;
+
+import capstone.relation.user.dto.UserInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -11,4 +14,7 @@ public class MeetingRoomDto {
 	Long roomId;
 	@Schema(description = "회의실 사용자 수", example = "2")
 	int userCount;
+
+	@Schema(description = "회의실 참여 유저 정보")
+	List<UserInfoDto> userInfoList;
 }

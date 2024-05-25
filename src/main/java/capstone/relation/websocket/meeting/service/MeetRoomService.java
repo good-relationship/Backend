@@ -143,6 +143,7 @@ public class MeetRoomService {
 		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
 	}
 
+	@Transactional(readOnly = false)
 	public void leaveRoom(Map<String, Object> sessionAttributes) {
 		String userId = sessionAttributes.get("userId").toString();
 		String workspaceId = sessionAttributes.get("workSpaceId").toString();
@@ -207,7 +208,15 @@ public class MeetRoomService {
 			MeetingRoomDto meetingRoomDto = new MeetingRoomDto();
 			meetingRoomDto.setRoomId(roomId);
 			meetingRoomDto.setRoomName(meetRoom.getRoomName());
-			meetingRoomDto.setUserCount(getRoomMembers(workSpaceId, roomId).size());
+			Set<String> roomMembers = getRoomMembers(workSpaceId, roomId);
+			meetingRoomDto.setUserCount(roomMembers.size());
+			List<UserInfoDto> userInfoList = new ArrayList<>();
+			for (String userId : roomMembers) {
+				UserInfoDto userInfoDto = new UserInfoDto();
+				userRepository.findById(Long.parseLong(userId)).ifPresent(userInfoDto::setByUserEntity);
+				userInfoList.add(userInfoDto);
+			}
+			meetingRoomDto.setUserInfoList(userInfoList);
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
 		simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", meetingRoomListDto);
