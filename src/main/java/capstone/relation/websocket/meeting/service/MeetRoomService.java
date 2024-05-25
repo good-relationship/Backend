@@ -126,6 +126,7 @@ public class MeetRoomService {
 			throw new IllegalArgumentException("User is already in the room: " + userId);
 		}
 		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId, roomId);
+		sendRoomList(workspaceId);
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join", joinResponseDto);
 	}
 
@@ -150,6 +151,7 @@ public class MeetRoomService {
 			System.out.println("User is not in any room: " + userId);
 			return;
 		}
+		sendRoomList(workspaceId);
 		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId);
 	}
 
