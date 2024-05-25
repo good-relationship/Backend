@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import capstone.relation.api.auth.exception.AuthException;
+import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
@@ -74,13 +75,35 @@ public class MeetRoomService {
 		}
 	}
 
+	public boolean isUserInRoom(String userId) {
+		return userRoomMapping.get(USER_KEY, userId) != null;
+	}
+
+	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
+		if (!isUserInRoom(userId.toString())) {
+			return new RoomInfoDto();
+		}
+		String roomId = userRoomMapping.get(USER_KEY, userId.toString());
+		System.out.println("roomId = " + roomId);
+		System.out.println("userId = " + userId);
+		Set<String> userIds = getRoomMembers(workspaceId, Long.parseLong(roomId));
+		List<UserInfoDto> userInfoList = new ArrayList<>();
+		for (String id : userIds) {
+			UserInfoDto userInfoDto = new UserInfoDto();
+			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
+			userInfoList.add(userInfoDto);
+		}
+		return new RoomInfoDto(true, Long.parseLong(roomId),
+			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
+	}
+
 	private JoinResponseDto createAndJoin(String workSpaceId, String userId, String roomName) {
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid workspace ID"));
-		String meetRoomId = userRoomMapping.get(USER_KEY, userId);
-		if (meetRoomId != null) {
+		if (isUserInRoom(userId)) {
 			throw new IllegalArgumentException("User is already in the room: " + userId);
 		}
+
 		MeetRoom meetRoom = MeetRoom.builder()
 			.roomName(roomName)
 			.deleted(false)
@@ -88,7 +111,9 @@ public class MeetRoomService {
 		meetRoomRepository.save(meetRoom);
 		workSpace.addMeetRoom(meetRoom);
 		Long roomId = meetRoom.getRoomId();
-		return joinWorkspaceRoom(workSpaceId, userId, roomId);
+		return
+
+			joinWorkspaceRoom(workSpaceId, userId, roomId);
 	}
 
 	public void joinRoom(Map<String, Object> sessionAttributes, Long roomId) {
@@ -149,33 +174,38 @@ public class MeetRoomService {
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
 		Set<String> userIds = roomParticipants.get(roomId.toString());
 		userIds.remove(userId);
-		roomParticipants.put(roomId.toString(), userIds);
-		workspaceRoomParticipants.put(WORK_KEY, workspaceId, roomParticipants);
+
 		if (userIds.isEmpty()) {
 			MeetRoom meetRoom = meetRoomRepository.findById(roomId).orElse(null);
 			if (meetRoom != null) {
 				meetRoom.setDeleted(true);
 				meetRoomRepository.save(meetRoom);
 			}
+			roomParticipants.remove(roomId.toString());
+		} else {
+			roomParticipants.put(roomId.toString(), userIds);
+		}
+		if (roomParticipants.isEmpty()) {
+			workspaceRoomParticipants.delete(WORK_KEY, workspaceId);
+		} else {
+			workspaceRoomParticipants.put(WORK_KEY, workspaceId, roomParticipants);
 		}
 	}
 
 	public Set<String> getRoomMembers(String workspaceId, Long roomId) {
-		System.out.println("workspaceId = " + workspaceId);
-		HashMap<String, Set<String>> stringSetHashMap = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
-		return stringSetHashMap.get(roomId.toString());
+		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId.toString());
+		return roomParticipants.get(roomId.toString());
 	}
 
 	public void sendRoomList(String workSpaceId) {
 		Set<MeetRoom> meetRooms = meetRoomRepository.findAllByWorkSpaceId(workSpaceId);
 		MeetingRoomListDto meetingRoomListDto = new MeetingRoomListDto();
-		System.out.println("workSpaceId = " + workSpaceId);
 		for (MeetRoom meetRoom : meetRooms) {
-			System.out.println("meetRoom.getRoomId() = " + meetRoom.getRoomId());
+			Long roomId = meetRoom.getRoomId();
 			MeetingRoomDto meetingRoomDto = new MeetingRoomDto();
-			meetingRoomDto.setRoomId(meetRoom.getRoomId());
+			meetingRoomDto.setRoomId(roomId);
 			meetingRoomDto.setRoomName(meetRoom.getRoomName());
-			meetingRoomDto.setUserCount(getRoomMembers(workSpaceId, meetRoom.getRoomId()).size());
+			meetingRoomDto.setUserCount(getRoomMembers(workSpaceId, roomId).size());
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
 		simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", meetingRoomListDto);
