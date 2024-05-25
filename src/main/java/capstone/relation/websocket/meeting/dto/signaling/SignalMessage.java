@@ -1,4 +1,4 @@
-package capstone.relation.websocket.meeting.dto;
+package capstone.relation.websocket.meeting.dto.signaling;
 
 import lombok.Data;
 

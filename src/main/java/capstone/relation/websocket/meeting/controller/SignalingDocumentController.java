@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import capstone.relation.websocket.meeting.dto.IceDto;
-import capstone.relation.websocket.meeting.dto.SdpMessageDto;
+import capstone.relation.websocket.meeting.dto.signaling.IceDto;
+import capstone.relation.websocket.meeting.dto.signaling.SdpMessageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

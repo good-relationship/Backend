@@ -5,8 +5,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import capstone.relation.websocket.meeting.dto.IceDto;
-import capstone.relation.websocket.meeting.dto.SdpMessageDto;
+import capstone.relation.websocket.meeting.dto.signaling.IceDto;
+import capstone.relation.websocket.meeting.dto.signaling.SdpMessageDto;
 import capstone.relation.websocket.meeting.service.SignalingService;
 import lombok.RequiredArgsConstructor;
 

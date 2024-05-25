@@ -4,8 +4,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import capstone.relation.websocket.SocketRegistry;
-import capstone.relation.websocket.meeting.dto.IceDto;
-import capstone.relation.websocket.meeting.dto.SdpMessageDto;
+import capstone.relation.websocket.meeting.dto.signaling.IceDto;
+import capstone.relation.websocket.meeting.dto.signaling.SdpMessageDto;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -39,5 +39,5 @@ public class SignalingService {
 		iceDto.setUserId(myId.toString()); // 보내는 사람 ID로 갈아 껴줌.
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/ice/" + roomId, iceDto);
 	}
-	
+
 }
