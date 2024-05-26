@@ -152,8 +152,8 @@ public class MeetRoomService {
 			System.out.println("User is not in any room: " + userId);
 			return;
 		}
-		sendRoomList(workspaceId);
 		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId);
+		sendRoomList(workspaceId);
 	}
 
 	private Set<String> addUserToRoom(String workspaceId, Long roomId, String userId) {
