@@ -63,9 +63,8 @@ public class MeetRoomService {
 		}
 		try {
 			String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
-			JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId.toString(), roomName);
+			createRoom(workSpaceId, userId.toString(), roomName);
 			sendRoomList(workSpaceId);
-			simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join", joinResponseDto);
 		} catch (AuthException e) {
 			e.printStackTrace();
 			sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 401);
@@ -97,7 +96,7 @@ public class MeetRoomService {
 			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
 	}
 
-	private JoinResponseDto createAndJoin(String workSpaceId, String userId, String roomName) {
+	private void createRoom(String workSpaceId, String userId, String roomName) {
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid workspace ID"));
 		if (isUserInRoom(userId)) {
@@ -110,10 +109,6 @@ public class MeetRoomService {
 			.build();
 		meetRoomRepository.save(meetRoom);
 		workSpace.addMeetRoom(meetRoom);
-		Long roomId = meetRoom.getRoomId();
-		return
-
-			joinWorkspaceRoom(workSpaceId, userId, roomId);
 	}
 
 	public void joinRoom(Map<String, Object> sessionAttributes, Long roomId) {
