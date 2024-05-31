@@ -21,11 +21,12 @@ public class WebSocketEventListener {
 		// String sessionId = headerAccessor.getSessionId();
 		String socketId = headerAccessor.getUser().getName();
 		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
+		String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
 		System.out.println("User Disconnected : " + userId);
 		System.out.println("socketId : " + socketId);
 		if (userId == null)
 			return;
-		meetRoomService.leaveRoom(headerAccessor.getSessionAttributes());
+		meetRoomService.leaveRoom(userId, workSpaceId);
 		System.out.println("register SocketId" + socketRegistry.getSocketId(userId.toString()));
 		if (socketId == socketRegistry.getSocketId(userId.toString()))
 			socketRegistry.unregisterSession(userId.toString());

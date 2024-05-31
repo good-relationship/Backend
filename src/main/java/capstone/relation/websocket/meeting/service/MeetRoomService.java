@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.user.dto.RoomInfoDto;
@@ -54,23 +55,19 @@ public class MeetRoomService {
 	}
 
 	@Transactional(readOnly = false)
-	public void createRoom(CreateRoomDto createRoomDto, SimpMessageHeaderAccessor headerAccessor) {
+	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto, Long userId, String workSpaceId) {
 		String roomName = createRoomDto.getRoomName();
-		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
-		String socketId = socketRegistry.getSocketId(userId.toString());
 		if (roomName == null || roomName.isEmpty()) {
-			sendErrorMessage(headerAccessor, "회의실 이름을 입력해주세요.", "/queue/join", 401);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
 		}
 		try {
-			String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
-			createRoom(workSpaceId, userId.toString(), roomName);
+			JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId.toString(), roomName);
 			sendRoomList(workSpaceId);
+			return joinResponseDto;
 		} catch (AuthException e) {
-			e.printStackTrace();
-			sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 401);
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
 		} catch (Exception e) {
-			e.printStackTrace();
-			sendErrorMessage(headerAccessor, e.getMessage(), "/queue/join", 400);
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 	}
 
@@ -96,7 +93,7 @@ public class MeetRoomService {
 			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
 	}
 
-	private void createRoom(String workSpaceId, String userId, String roomName) {
+	private JoinResponseDto createAndJoin(String workSpaceId, String userId, String roomName) {
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid workspace ID"));
 		if (isUserInRoom(userId)) {
@@ -109,20 +106,20 @@ public class MeetRoomService {
 			.build();
 		meetRoomRepository.save(meetRoom);
 		workSpace.addMeetRoom(meetRoom);
+		Long roomId = meetRoom.getRoomId();
+		return joinWorkspaceRoom(workSpaceId, userId, roomId);
 	}
 
-	public void joinRoom(Map<String, Object> sessionAttributes, Long roomId) {
-		String userId = sessionAttributes.get("userId").toString();
-		String workspaceId = sessionAttributes.get("workSpaceId").toString();
-		String socketId = socketRegistry.getSocketId(userId);
+	public JoinResponseDto joinRoom(Long userId, String workspaceId, Long roomId) {
+
 		//유저가 이미 회의 방에 있는지 확인
 		String meetRoom = userRoomMapping.get(USER_KEY, userId);
 		if (meetRoom != null) {
 			throw new IllegalArgumentException("User is already in the room: " + userId);
 		}
-		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId, roomId);
+		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId.toString(), roomId);
 		sendRoomList(workspaceId);
-		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/join", joinResponseDto);
+		return joinResponseDto;
 	}
 
 	private JoinResponseDto joinWorkspaceRoom(String workSpaceId, String userId, Long roomId) {
@@ -139,15 +136,12 @@ public class MeetRoomService {
 	}
 
 	@Transactional(readOnly = false)
-	public void leaveRoom(Map<String, Object> sessionAttributes) {
-		String userId = sessionAttributes.get("userId").toString();
-		String workspaceId = sessionAttributes.get("workSpaceId").toString();
-		String meetRoom = userRoomMapping.get(USER_KEY, userId);
+	public void leaveRoom(Long userId, String workspaceId) {
+		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
 		if (meetRoom == null) {
-			System.out.println("User is not in any room: " + userId);
-			return;
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in any room");
 		}
-		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId);
+		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId.toString());
 		sendRoomList(workspaceId);
 	}
 

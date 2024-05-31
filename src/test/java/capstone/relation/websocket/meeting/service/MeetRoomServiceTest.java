@@ -93,7 +93,7 @@ class MeetRoomServiceTest {
 		given(meetRoomRepository.findById(1L)).willReturn(
 			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
 		// when
-		meetRoomService.createRoom(createRoomDto, headerAccessor);
+		meetRoomService.createAndJoinRoom(createRoomDto, 1L, "workspace-1");
 
 		// then
 		ArgumentCaptor<JoinResponseDto> joinResponseCaptor = ArgumentCaptor.forClass(JoinResponseDto.class);
@@ -177,7 +177,7 @@ class MeetRoomServiceTest {
 				.role(Role.USER)
 				.build()));
 		// when
-		meetRoomService.joinRoom(sessionAttributes, 11L);
+		meetRoomService.joinRoom(1L, "workspace-1", 1L);
 
 		// then
 		verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"), any());
