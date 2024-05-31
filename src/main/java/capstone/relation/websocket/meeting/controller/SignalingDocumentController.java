@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.websocket.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.websocket.meeting.dto.signaling.IceDto;
 import capstone.relation.websocket.meeting.dto.signaling.SdpMessageDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Profile("!disabled")  // 활성화되지 않음
-@Tag(name = "MeetSignaling", description = "미팅 관련 API (WebSocket) /ws-chat 으로 연결을 수립합니다. "
+@Tag(name = "MeetSignaling", description = "미팅 소켓 관련 (WebSocket) /ws-chat 으로 연결을 수립합니다. "
 	+ "클라이언트는 Stomp를 사용하여 이 엔드포인트에 연결할 수 있습니다")
 @RestController
 @RequestMapping("/ws-chat")
@@ -86,4 +87,15 @@ public class SignalingDocumentController {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
+	@GetMapping("/topic/{workSpaceId}/meetingRoomList")
+	@Operation(summary = "현재 워크스페이스에 있는 회의방 목록을 구독", description = "새로운 room이 생기거나 사라지면 해당 메시지를 받습니다."
+		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "메시지 히스토리 수신 성공",
+				content = @Content(schema = @Schema(implementation = MeetingRoomListDto.class)))
+		}
+	)
+	public ResponseEntity<MeetingRoomListDto> subscribeMeetingRoomList() {
+		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
+	}
 }
