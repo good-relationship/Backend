@@ -1,13 +1,13 @@
-package capstone.relation.websocket.meeting.controller;
+package capstone.relation.websocket.signaling.controller;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import capstone.relation.websocket.meeting.dto.signaling.IceDto;
-import capstone.relation.websocket.meeting.dto.signaling.SdpMessageDto;
-import capstone.relation.websocket.meeting.service.SignalingService;
+import capstone.relation.websocket.signaling.dto.IceDto;
+import capstone.relation.websocket.signaling.dto.SdpMessageDto;
+import capstone.relation.websocket.signaling.service.SignalingService;
 import lombok.RequiredArgsConstructor;
 
 @Controller

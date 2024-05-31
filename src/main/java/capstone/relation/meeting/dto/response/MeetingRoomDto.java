@@ -1,4 +1,4 @@
-package capstone.relation.websocket.meeting.dto.response;
+package capstone.relation.meeting.dto.response;
 
 import java.util.List;
 

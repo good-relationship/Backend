@@ -3,8 +3,8 @@ package capstone.relation.workspace;
 import java.util.HashSet;
 import java.util.Set;
 
+import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.user.domain.User;
-import capstone.relation.websocket.meeting.domain.MeetRoom;
 import capstone.relation.workspace.school.domain.School;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package capstone.relation.websocket.meeting.service;
+package capstone.relation.meeting.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -22,14 +22,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import capstone.relation.meeting.domain.MeetRoom;
+import capstone.relation.meeting.dto.request.CreateRoomDto;
+import capstone.relation.meeting.dto.response.JoinResponseDto;
+import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.user.domain.Role;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
-import capstone.relation.websocket.meeting.domain.MeetRoom;
-import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
-import capstone.relation.websocket.meeting.dto.response.JoinResponseDto;
-import capstone.relation.websocket.meeting.repository.MeetRoomRepository;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 

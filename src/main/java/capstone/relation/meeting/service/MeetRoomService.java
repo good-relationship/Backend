@@ -1,4 +1,4 @@
-package capstone.relation.websocket.meeting.service;
+package capstone.relation.meeting.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,16 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.exception.AuthException;
+import capstone.relation.meeting.domain.MeetRoom;
+import capstone.relation.meeting.dto.request.CreateRoomDto;
+import capstone.relation.meeting.dto.response.JoinResponseDto;
+import capstone.relation.meeting.dto.response.MeetingRoomDto;
+import capstone.relation.meeting.dto.response.MeetingRoomListDto;
+import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
-import capstone.relation.websocket.meeting.domain.MeetRoom;
-import capstone.relation.websocket.meeting.dto.request.CreateRoomDto;
-import capstone.relation.websocket.meeting.dto.response.JoinResponseDto;
-import capstone.relation.websocket.meeting.dto.response.MeetingRoomDto;
-import capstone.relation.websocket.meeting.dto.response.MeetingRoomListDto;
-import capstone.relation.websocket.meeting.repository.MeetRoomRepository;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import jakarta.annotation.PostConstruct;

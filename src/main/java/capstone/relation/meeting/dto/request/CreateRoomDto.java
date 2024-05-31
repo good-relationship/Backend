@@ -1,4 +1,4 @@
-package capstone.relation.websocket.meeting.dto.request;
+package capstone.relation.meeting.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

@@ -4,11 +4,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import capstone.relation.meeting.service.MeetRoomService;
 import capstone.relation.user.UserService;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
-import capstone.relation.websocket.meeting.service.MeetRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

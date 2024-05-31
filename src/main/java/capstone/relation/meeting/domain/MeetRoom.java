@@ -1,4 +1,4 @@
-package capstone.relation.websocket.meeting.domain;
+package capstone.relation.meeting.domain;
 
 import org.hibernate.annotations.SQLRestriction;
 
@@ -42,5 +42,5 @@ public class MeetRoom {
 		this.roomName = roomName;
 		this.deleted = deleted;
 	}
-	
+
 }

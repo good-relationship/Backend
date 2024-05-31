@@ -5,7 +5,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import capstone.relation.websocket.meeting.service.MeetRoomService;
+import capstone.relation.meeting.service.MeetRoomService;
 import lombok.RequiredArgsConstructor;
 
 @Component

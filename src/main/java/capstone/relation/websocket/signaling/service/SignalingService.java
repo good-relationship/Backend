@@ -1,11 +1,11 @@
-package capstone.relation.websocket.meeting.service;
+package capstone.relation.websocket.signaling.service;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import capstone.relation.websocket.SocketRegistry;
-import capstone.relation.websocket.meeting.dto.signaling.IceDto;
-import capstone.relation.websocket.meeting.dto.signaling.SdpMessageDto;
+import capstone.relation.websocket.signaling.dto.IceDto;
+import capstone.relation.websocket.signaling.dto.SdpMessageDto;
 import lombok.RequiredArgsConstructor;
 
 @Service
