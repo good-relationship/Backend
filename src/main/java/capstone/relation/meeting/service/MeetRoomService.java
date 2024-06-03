@@ -113,7 +113,7 @@ public class MeetRoomService {
 	public JoinResponseDto joinRoom(Long userId, String workspaceId, Long roomId) {
 
 		//유저가 이미 회의 방에 있는지 확인
-		String meetRoom = userRoomMapping.get(USER_KEY, userId);
+		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
 		if (meetRoom != null) {
 			throw new IllegalArgumentException("User is already in the room: " + userId);
 		}
