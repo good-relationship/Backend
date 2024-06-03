@@ -1,11 +1,13 @@
 package capstone.relation.meeting.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
@@ -31,14 +33,22 @@ public class MeetRoomController {
 	)
 	public JoinResponseDto createRoom(@RequestBody CreateRoomDto createRoomDto) throws Exception {
 		User user = userService.getUserEntity();
-		return meetRoomService.createAndJoinRoom(createRoomDto, user.getId(), user.getWorkSpace().getId());
+		try {
+			return meetRoomService.createAndJoinRoom(createRoomDto, user.getId(), user.getWorkSpace().getId());
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
 	}
 
 	@PostMapping("/join/{roomId}")
 	@Operation(summary = "회의방 참여", description = "회의방에 참여합니다.")
-	public JoinResponseDto joinRoom(@RequestParam Long roomId) {
+	public JoinResponseDto joinRoom(@PathVariable Long roomId) {
 		User user = userService.getUserEntity();
-		return meetRoomService.joinRoom(user.getId(), user.getWorkSpace().getId(), roomId);
+		try {
+			return meetRoomService.joinRoom(user.getId(), user.getWorkSpace().getId(), roomId);
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
 	}
 
 	@GetMapping("/list")
