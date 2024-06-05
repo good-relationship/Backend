@@ -63,7 +63,7 @@ public class SignalingDocumentController {
 		+ "userId 는 상대방 id입니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
-	public ResponseEntity<SdpMessageDto> sendAnswer(@PathVariable String roomId) {
+	public ResponseEntity<SdpMessageDto> sendAnswer(@PathVariable String roomId, SdpMessageDto sdpDto) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
