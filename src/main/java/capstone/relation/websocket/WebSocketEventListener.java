@@ -24,11 +24,13 @@ public class WebSocketEventListener {
 		String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
 		System.out.println("User Disconnected : " + userId);
 		System.out.println("socketId : " + socketId);
-		if (userId == null)
+		if (userId == null) {
 			return;
+		}
 		meetRoomService.leaveRoom(userId, workSpaceId);
 		System.out.println("register SocketId" + socketRegistry.getSocketId(userId.toString()));
-		if (socketId == socketRegistry.getSocketId(userId.toString()))
+		if (socketId == socketRegistry.getSocketId(userId.toString())) {
 			socketRegistry.unregisterSession(userId.toString());
+		}
 	}
 }

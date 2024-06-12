@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (code) {
         console.log('Authorization code:', code);
-        fetch(`http://localhost:8080/login/oauth2/naver?code=${code}`, {
+        fetch(`https://d7de-121-135-181-35.ngrok-free.app/login/oauth2/naver?code=${code}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

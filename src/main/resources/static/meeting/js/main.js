@@ -34,7 +34,7 @@ function connect() {
         alert("Please enter a workspace ID.");
         return;
     }
-    var socket = new WebSocket('ws://localhost:8080/ws-chat');
+    var socket = new WebSocket('wss://e7cf-121-135-181-35.ngrok-free.app/ws-chat');
     stompClient = Stomp.over(socket);
     stompClient.connect({
         "Authorization": jwtToken
@@ -58,9 +58,6 @@ function connect() {
             if (localStream) { //이전에 stream은 얻어왔다고 생각한다.
                 handleJoin(JSON.parse(message.body));
             }
-        });
-        stompClient.subscribe('/topic/messages', function (messageOutput) {
-            onMessageReceived(JSON.parse(messageOutput.body));
         });
     });
 }
