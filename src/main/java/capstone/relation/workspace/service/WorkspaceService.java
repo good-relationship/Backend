@@ -51,6 +51,7 @@ public class WorkspaceService {
 			.workspaceId(workSpace.getId())
 			.workspaceName(workSpace.getName())
 			.spaceState(WorkspaceStateType.HAS_WORKSPACE)
+			.schoolName(school.getSchoolName())
 			.build();
 	}
 
@@ -97,6 +98,7 @@ public class WorkspaceService {
 		return WorkspaceInfo.builder()
 			.workspaceId(workSpace.getId())
 			.workspaceName(workSpace.getName())
+			.schoolName(workSpace.getSchool().getSchoolName())
 			.spaceState(WorkspaceStateType.HAS_WORKSPACE)
 			.build();
 	}
