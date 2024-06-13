@@ -25,6 +25,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
+import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.user.domain.Role;
 import capstone.relation.user.domain.User;
@@ -82,7 +83,6 @@ class MeetRoomServiceTest {
 		sessionAttributes.put("workSpaceId", "workspace-1");
 		headerAccessor.setSessionAttributes(sessionAttributes);
 
-		given(socketRegistry.getSocketId("1")).willReturn("테스트 소켓 아이디");
 		given(workSpaceRepository.findById("workspace-1")).willReturn(Optional.of(new WorkSpace()));
 		given(meetRoomRepository.save(any(MeetRoom.class))).willAnswer(invocation -> {
 			MeetRoom meetRoom = invocation.getArgument(0);
@@ -92,15 +92,13 @@ class MeetRoomServiceTest {
 		given(workspaceRoomParticipants.get(anyString(), anyString())).willReturn(new HashMap<>());
 		given(meetRoomRepository.findById(1L)).willReturn(
 			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
+
 		// when
-		meetRoomService.createAndJoinRoom(createRoomDto, 1L, "workspace-1");
+		JoinResponseDto joinResponse = meetRoomService.createAndJoinRoom(createRoomDto, 1L, "workspace-1");
 
 		// then
-		ArgumentCaptor<JoinResponseDto> joinResponseCaptor = ArgumentCaptor.forClass(JoinResponseDto.class);
-		verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"),
-			joinResponseCaptor.capture());
-
-		JoinResponseDto joinResponse = joinResponseCaptor.getValue();
+		verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/topic/workspace-1/meetingRoomList"),
+			any(MeetingRoomListDto.class));
 		assertThat(joinResponse).isNotNull();
 		assertThat(joinResponse.getRoomName()).isEqualTo("테스트 방이름");
 		assertThat(joinResponse.getRoomId()).isEqualTo(1L);
@@ -132,23 +130,17 @@ class MeetRoomServiceTest {
 		meetRoomService.sendRoomList(workSpaceId);
 
 		// then
-		// 순서와 상관없이 목록 검사
-		verify(simpMessagingTemplate).convertAndSendToUser(anyString(), eq("/queue/roomList"), any());
-
-		// 방 목록을 받아올 때, 방의 이름과 ID를 확인합니다.
-		ArgumentCaptor<Map<String, Object>> roomListCaptor = ArgumentCaptor.forClass(Map.class);
-		verify(simpMessagingTemplate).convertAndSendToUser(anyString(), eq("/queue/roomList"),
+		ArgumentCaptor<MeetingRoomListDto> roomListCaptor = ArgumentCaptor.forClass(MeetingRoomListDto.class);
+		verify(simpMessagingTemplate, times(1)).convertAndSend(eq("/topic/workspace-1/meetingRoomList"),
 			roomListCaptor.capture());
-		Map<String, Object> roomList = roomListCaptor.getValue();
-		//TODO: Check
-		assertThat(roomList).isNotNull();
-		assertThat(roomList).containsKeys("rooms");
-		assertThat(roomList.get("rooms")).isInstanceOf(Set.class);
-		Set<Map<String, Object>> rooms = (Set<Map<String, Object>>)roomList.get("rooms");
-		assertThat(rooms).hasSize(2);
-		assertThat(rooms).anyMatch(room -> room.get("roomId").equals(1L) && room.get("roomName").equals("회의실1"));
-		assertThat(rooms).anyMatch(room -> room.get("roomId").equals(2L) && room.get("roomName").equals("회의실2"));
 
+		MeetingRoomListDto roomList = roomListCaptor.getValue();
+		assertThat(roomList).isNotNull();
+		assertThat(roomList.getMeetingRoomList()).hasSize(2);
+		assertThat(roomList.getMeetingRoomList()).anyMatch(
+			room -> room.getRoomId().equals(1L) && room.getRoomName().equals("회의실1"));
+		assertThat(roomList.getMeetingRoomList()).anyMatch(
+			room -> room.getRoomId().equals(2L) && room.getRoomName().equals("회의실2"));
 	}
 
 	@DisplayName("회의 방에 참여할 수 있다.")
@@ -164,9 +156,7 @@ class MeetRoomServiceTest {
 		WorkSpace workSpace = new WorkSpace();
 		workSpace.setId("workspace-1");
 		MeetRoom meetRoom1 = MeetRoom.builder().roomId(1L).roomName("회의실1").deleted(false).workSpace(workSpace).build();
-
-		given(socketRegistry.getSocketId("1")).willReturn("테스트 소켓 아이디");
-		given(meetRoomRepository.findById(11L)).willReturn(Optional.of(meetRoom1));
+		given(meetRoomRepository.findById(1L)).willReturn(Optional.of(meetRoom1));
 		given(userRepository.findById(1L)).willReturn(Optional.of(
 			User.builder()
 				.id(1L)
@@ -176,10 +166,13 @@ class MeetRoomServiceTest {
 				.provider("github")
 				.role(Role.USER)
 				.build()));
+		given(workspaceRoomParticipants.get(anyString(), anyString())).willReturn(new HashMap<>());
 		// when
-		meetRoomService.joinRoom(1L, "workspace-1", 1L);
+		JoinResponseDto joinResponseDto = meetRoomService.joinRoom(1L, "workspace-1", 1L);
 
 		// then
-		verify(simpMessagingTemplate).convertAndSendToUser(eq("테스트 소켓 아이디"), eq("/queue/join"), any());
+		assertThat(joinResponseDto).isNotNull();
+		assertThat(joinResponseDto.getRoomId()).isEqualTo(1L);
+		assertThat(joinResponseDto.getRoomName()).isEqualTo("회의실1");
 	}
 }
