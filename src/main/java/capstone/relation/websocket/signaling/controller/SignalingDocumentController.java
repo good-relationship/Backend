@@ -1,5 +1,7 @@
 package capstone.relation.websocket.signaling.controller;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
+import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.websocket.signaling.dto.IceDto;
 import capstone.relation.websocket.signaling.dto.SdpMessageDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -96,6 +99,18 @@ public class SignalingDocumentController {
 		}
 	)
 	public ResponseEntity<MeetingRoomListDto> subscribeMeetingRoomList() {
+		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
+	}
+
+	@GetMapping("/topic/meetingRoom/{roomId}/users")
+	@Operation(summary = "특정 회의방의 유저 목록을 구독", description = "회의에서 유저가 나가거나, 새로운 유저가 들어오면 방에 있는 유저는 해당 메시지를 받습니다."
+		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "메시지 히스토리 수신 성공",
+				content = @Content(schema = @Schema(implementation = MeetingRoomListDto.class)))
+		}
+	)
+	public List<UserInfoDto> subscribeMeetingRoom(@PathVariable String workSpaceId, @PathVariable String roomId) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 }

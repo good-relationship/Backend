@@ -132,6 +132,7 @@ public class MeetRoomService {
 			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
 			userInfoList.add(userInfoDto);
 		}
+		sendUserList(workSpaceId, roomId);
 		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
 	}
 
@@ -142,6 +143,7 @@ public class MeetRoomService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in any room");
 		}
 		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId.toString());
+		sendUserList(workspaceId, Long.parseLong(meetRoom));
 		sendRoomList(workspaceId);
 	}
 
@@ -209,6 +211,17 @@ public class MeetRoomService {
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
 		simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", meetingRoomListDto);
+	}
+
+	private void sendUserList(String workSpaceId, Long roomId) {
+		Set<String> userIds = getRoomMembers(workSpaceId, roomId);
+		List<UserInfoDto> userInfoList = new ArrayList<>();
+		for (String userId : userIds) {
+			UserInfoDto userInfoDto = new UserInfoDto();
+			userRepository.findById(Long.parseLong(userId)).ifPresent(userInfoDto::setByUserEntity);
+			userInfoList.add(userInfoDto);
+		}
+		simpMessagingTemplate.convertAndSend("/topic/meetingRoom/" + roomId + "/users", userInfoList);
 	}
 
 	public void sendErrorMessage(SimpMessageHeaderAccessor headerAccessor, String message, String destination,
