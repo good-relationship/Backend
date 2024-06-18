@@ -1,0 +1,5 @@
+spring:
+  config:
+    import:
+      - classpath:config/dev/application-db-dev.yml
+      - classpath:config/dev/application-oauth-dev.yml

@@ -1,24 +1,6 @@
 spring:
-  datasource:
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
-  data:
-    redis:
-      host: ${redis.host}
-      port: ${redis.port}
-  #      password: ${redis.password}
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
-  jpa:
-    show-sql: 'true'
-    hibernate:
-      ddl-auto: update # 만들어지면 none
   profiles:
-    active: local # application-local.yml
-    include: oauth
-
+    active: prod
 springdoc:
   packages-to-scan: capstone.relation
   default-consumes-media-type: application/json;charset=UTF-8
