@@ -36,6 +36,15 @@ public class UserService {
 		}
 	}
 
+	public UserInfoDto getUserInfo(Long userId) {
+		Optional<User> userOptional = userRepository.findById(userId);
+		if (userOptional.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+		}
+		UserInfoDto userInfoDto = UserMapper.INSTANCE.toUserInfoDto(userOptional.get());
+		return userInfoDto;
+	}
+
 	public User getUserEntity() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null && authentication.getPrincipal() != null

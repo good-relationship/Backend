@@ -16,6 +16,7 @@ import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.websocket.signaling.dto.IceDto;
 import capstone.relation.websocket.signaling.dto.SdpMessageDto;
+import capstone.relation.websocket.signaling.dto.SdpResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -34,10 +35,10 @@ public class SignalingDocumentController {
 			+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "메시지 수신 성공",
-				content = @Content(schema = @Schema(implementation = SdpMessageDto.class)))
+				content = @Content(schema = @Schema(implementation = SdpResponseDto.class)))
 		}
 	)
-	public ResponseEntity<SdpMessageDto> subScribeOffer(@PathVariable String roomId) {
+	public ResponseEntity<SdpResponseDto> subScribeOffer(@PathVariable String roomId) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
@@ -54,10 +55,10 @@ public class SignalingDocumentController {
 		+ "실제 구독은 WebSocket 연결 후 STOMP를 통해 이루어집니다.",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "메시지 수신 성공",
-				content = @Content(schema = @Schema(implementation = SdpMessageDto.class)))
+				content = @Content(schema = @Schema(implementation = SdpResponseDto.class)))
 		}
 	)
-	public ResponseEntity<SdpMessageDto> subscribeAnswer(@PathVariable String roomId) {
+	public ResponseEntity<SdpResponseDto> subscribeAnswer(@PathVariable String roomId) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 
