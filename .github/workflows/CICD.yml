@@ -3,7 +3,7 @@ name: CI and Deploy to Amazon EC2
 # 2 워크플로가 시작될 조건 지정
 env:
   AWS_REGION: ap-northeast-2
-  S3_BUCKET_NAME: github-action-s3-joeunsai-bucket 
+  S3_BUCKET_NAME: github-action-s3-joeunsai-bucket
   CODE_DEPLOY_APPLICATION_NAME: my-codedeploy-app
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: my-codedeploy-deployment-group
 permissions:
@@ -25,11 +25,13 @@ jobs:
       - name: Make application.properties
         run: |
           cd ./src/main/resources
-          touch ./db.properties
-          touch ./auth.properties
+          mkdir -p ./config/prod
+          cd ./config/prod
+          touch ./application-db-prod.yml
+          touch ./application-oauth-prod.yml
 
-          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./db.properties
-          echo "${{ secrets.AUTH_PROPERTIES }}" >> ./auth.properties
+          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application-db-prod.yml
+          echo "${{ secrets.AUTH_PROPERTIES }}" >> ./application-oauth-prod.yml
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: EditorConfig Format

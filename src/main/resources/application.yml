@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
 springdoc:
   packages-to-scan: capstone.relation
   default-consumes-media-type: application/json;charset=UTF-8
