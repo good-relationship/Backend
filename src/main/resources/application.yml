@@ -7,14 +7,14 @@ spring:
     redis:
       host: ${redis.host}
       port: ${redis.port}
-      password: ${redis.password}
+  #      password: ${redis.password}
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   jpa:
     show-sql: 'true'
     hibernate:
-      ddl-auto: create # 만들어지면 none
+      ddl-auto: update # 만들어지면 none
   profiles:
     active: local # application-local.yml
     include: oauth

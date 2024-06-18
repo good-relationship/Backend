@@ -23,12 +23,15 @@ compileTestJava.options.encoding = 'UTF-8'
 check.dependsOn editorconfigCheck // checkstyle이 설정 되어 있을 시, editorconfigCheck 후 checkstyle 진행
 
 group = 'good_relation'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
     sourceCompatibility = '17'
 }
 
+jar {
+    enabled = false
+}
 configurations {
     compileOnly {
         extendsFrom annotationProcessor

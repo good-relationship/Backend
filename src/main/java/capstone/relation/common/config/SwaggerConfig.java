@@ -33,6 +33,7 @@ public class SwaggerConfig {
 				.bearerFormat("JWT"));
 
 		return new OpenAPI()
+			.addServersItem(new Server().url("https://joeun.duckdns.org"))
 			.addServersItem(new Server().url("http://localhost:8080"))
 			.components(new Components())
 			.info(info)
