@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat WebSocket</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+<div id="main-content" class="container">
+    <h2>WebSocket 채팅</h2>
+    <div>
+        <button id="connect" class="btn btn-primary" type="button">연결</button>
+        <button id="disconnect" class="btn btn-warning" type="button" disabled="disabled">연결 해제</button>
+        <div>
+            <button id="loadHistory" class="btn btn-info" type="button">기록 불러오기</button>
+        </div>
+    </div>
+    <div>
+        <input type="text" id="name" placeholder="여기에 이름을 입력하세요..." class="form-control">
+        <button id="setName" class="btn btn-secondary" type="button">이름 설정</button>
+    </div>
+    <div>
+        <input type="text" id="content" placeholder="여기에 메시지를 입력하세요..." class="form-control">
+        <button id="send" class="btn btn-success" type="button">보내기</button>
+    </div>
+    <div>
+        <table id="conversation" class="table table-striped">
+            <thead>
+            <tr>
+                <th>메시지</th>
+            </tr>
+            </thead>
+            <tbody id="message"></tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

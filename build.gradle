@@ -2,15 +2,13 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'org.ec4j.editorconfig' version '0.0.3'
+    id 'org.ec4j.editorconfig' version '0.1.0'
     id 'checkstyle'
 }
 
 editorconfig {
     excludes = ['build']
 }
-
-check.dependsOn editorconfigCheck // checkstyle이 설정 되어 있을 시, editorconfigCheck 후 checkstyle 진행
 
 
 checkstyle {
@@ -22,14 +20,18 @@ checkstyle {
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
+check.dependsOn editorconfigCheck // checkstyle이 설정 되어 있을 시, editorconfigCheck 후 checkstyle 진행
 
 group = 'good_relation'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
     sourceCompatibility = '17'
 }
 
+jar {
+    enabled = false
+}
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -46,18 +48,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 
     implementation 'org.postgresql:postgresql:42.7.2'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
-//    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:3.2.4'
 
     //JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    //redis
+    implementation 'io.lettuce:lettuce-core'
 
     // apache common
     implementation 'org.apache.commons:commons-lang3:3.14.0'
@@ -81,6 +86,9 @@ dependencies {
     testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final' // if you are using mapstruct in test code
 
     testImplementation 'org.springframework.security:spring-security-test'
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 }
 
 tasks.named('test') {

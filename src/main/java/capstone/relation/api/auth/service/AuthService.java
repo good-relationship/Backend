@@ -2,39 +2,71 @@ package capstone.relation.api.auth.service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.AuthProvider;
-import capstone.relation.api.auth.domain.User;
 import capstone.relation.api.auth.jwt.TokenProvider;
 import capstone.relation.api.auth.jwt.response.RefreshTokenResponse;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
+import capstone.relation.api.auth.jwt.response.WorkspaceStateType;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
-import capstone.relation.api.auth.repository.UserRepository;
+import capstone.relation.user.domain.User;
+import capstone.relation.user.repository.UserRepository;
+import capstone.relation.workspace.WorkSpace;
+import capstone.relation.workspace.service.InvitationService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 	private final Map<AuthProvider, OAuthUserProvider> authRegistrations;
 	private final UserRepository userRepository;
 	private final TokenProvider tokenProvider;
+	private final InvitationService invitationService;
 
-	@Transactional
+	@Transactional(readOnly = false)
 	public TokenResponse login(AuthProvider authProvider, String accessToken) {
 		User user = authRegistrations.get(authProvider).getUser(accessToken);
 		User savedUser = saveOrUpdate(user);
-		return tokenProvider.generateTokenResponse(savedUser);
+		TokenResponse tokenResponse = tokenProvider.generateTokenResponse(savedUser);
+		if (savedUser.getWorkSpace() != null) {
+			tokenResponse.setSpaceState(WorkspaceStateType.HAS_WORKSPACE);
+		} else if (savedUser.getInvitedWorkspaceId() != null) {
+			tokenResponse.setSpaceState(WorkspaceStateType.INVITED);
+		} else {
+			tokenResponse.setSpaceState(WorkspaceStateType.NO_SPACE);
+		}
+		return tokenResponse;
 	}
 
-	//TODO: inviteCode 사용해서 User 생성 이후 초대 여부 보내주기
+	@Transactional(readOnly = false)
 	public TokenResponse loginWithCode(AuthProvider authProvider, String code, String inviteCode) {
 		String accessToken = getToken(authProvider, code);
 		TokenResponse response = login(authProvider, accessToken);
+		if (inviteCode == null || inviteCode.isEmpty() || inviteCode.isBlank() || inviteCode.equals("null")) {
+			return response;
+		}
+		Optional<User> userOpt = userRepository.findById(response.getMemberId());
+		if (userOpt.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
+		}
+		WorkSpace workSpace = invitationService.getWorkSpace(inviteCode);
+		User user = userOpt.get();
+		if (user.getWorkSpace() != null) {
+			response.setSpaceState(WorkspaceStateType.OVERFLOW);
+			return response;
+		}
+		user.setInvitedWorkspaceId(workSpace.getId());
+		userRepository.save(user);
+		response.setSpaceState(WorkspaceStateType.INVITED);
 		return response;
 	}
 
@@ -71,7 +103,6 @@ public class AuthService {
 
 	public void codeLogin(AuthProvider authProvider, String code) {
 		String accessToken = getToken(authProvider, code);
-
 	}
 
 	private User saveOrUpdate(User user) {

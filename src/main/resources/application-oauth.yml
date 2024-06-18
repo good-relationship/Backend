@@ -1,7 +1,5 @@
 oauth2:
   jwt:
-    accessTokenExpireTime: 1 # 액세스 토큰의 만료 기간을 1일로 설정
-    refreshTokenExpireTime: 7 # 리프레시 토큰의 만료 기간을 7일로 설정
     authorityKey: "roles" # 권한 키를 'roles'로 설정
     bearerPrefix: "Bearer " # 베어러 접두어로 'Bearer ' 사용
     tokenSecret: ${auth.jwt.secret} # 토큰 생성 및 검증에 사용될 비밀 키
@@ -12,7 +10,7 @@ oauth2:
     client-id: ${naver.oauth2.client.client-id}
     client-secret: ${naver.oauth2.client.client-secret}
     #    redirectUri: "http://localhost:8080/login/oauth2/code/naver"
-    redirectUri: "http://localhost:3000/login/kakao"
+    redirectUri: "http://localhost:3000/api/login/naver"
 
     base-url: "https://nid.naver.com"
     token-path: "/oauth2.0/token"
@@ -27,9 +25,7 @@ oauth2:
     name: Kakao
     client-id: ${kakao.oauth2.client.client-id}
     client-secret: ${kakao.oauth2.client.client-secret}
-    #    redirectUri: "http://localhost:8080/login/oauth2/code/kakao"
-    redirectUri: "http://localhost:3000/login/kakao"
-
+    redirectUri: ${kakao.oauth2.client.client-redirect}
     authorizationUri: "https://kauth.kakao.com/oauth/authorize"
     tokenUri: "https://kauth.kakao.com/oauth/token"
     userInfoUri: "https://kapi.kakao.com/v2/user/me"
@@ -44,3 +40,7 @@ oauth2:
     tokenUri: "https://accounts.google.com/o/oauth2/token"
     userInfoUri: "https://www.googleapis.com/oauth2/v3/userinfo"
     userNameAttributeName: sub
+
+school:
+  info:
+    url: https://www.career.go.kr/cnet/openapi/getOpenApi

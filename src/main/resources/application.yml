@@ -1,12 +1,30 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/good-relation-spring-db-postgres
-    username: compose-postgres
-    password: compose-postgres
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+  data:
+    redis:
+      host: ${redis.host}
+      port: ${redis.port}
+  #      password: ${redis.password}
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   jpa:
     show-sql: 'true'
     hibernate:
-      ddl-auto: create # 만들어지면 none
+      ddl-auto: update # 만들어지면 none
   profiles:
     active: local # application-local.yml
     include: oauth
+
+springdoc:
+  packages-to-scan: capstone.relation
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: alpha

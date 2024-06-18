@@ -7,8 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import capstone.relation.api.auth.domain.Role;
 import capstone.relation.common.user.UserInfo;
+import capstone.relation.user.domain.Role;
 
 public class SecurityUser implements UserDetails, UserInfo {
 	private final Long userId;
