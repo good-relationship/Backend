@@ -110,7 +110,7 @@ public class SignalingDocumentController {
 				content = @Content(schema = @Schema(implementation = MeetingRoomListDto.class)))
 		}
 	)
-	public List<UserInfoDto> subscribeMeetingRoom(@PathVariable String workSpaceId, @PathVariable String roomId) {
+	public List<UserInfoDto> subscribeMeetingRoom(@PathVariable String roomId) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
 }
