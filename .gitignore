@@ -36,5 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-!**/src/main/resources/config/
+!**/src/main/resources/config/dev/
+!**/src/main/resources/config/prod/
 .DS_Store
