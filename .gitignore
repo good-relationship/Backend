@@ -36,7 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 
-
-auth.properties
-db.properties
+!**/src/main/resources/config/
 .DS_Store
