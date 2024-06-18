@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PROJECT_ROOT="/home/ec2-user"
-JAR_FILE="$PROJECT_ROOT/good_relation-0.0.1.jar"
+JAR_FILE="good_relation-0.0.1.jar"
 
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
 
