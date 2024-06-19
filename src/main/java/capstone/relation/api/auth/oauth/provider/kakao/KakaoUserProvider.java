@@ -30,7 +30,7 @@ public class KakaoUserProvider implements OAuthUserProvider {
 	@Value("${oauth2.kakao.client-secret}")
 	private String clientSecret;
 
-	@Value("${oauth2.kakao.redirect-uri}")
+	@Value("${oauth2.kakao.redirectUri}")
 	private String redirectUri;
 
 	@Override
