@@ -140,7 +140,7 @@ public class MeetRoomService {
 	public void leaveRoom(Long userId, String workspaceId) {
 		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
 		if (meetRoom == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in any room");
+			return;
 		}
 		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId.toString());
 		sendUserList(workspaceId, Long.parseLong(meetRoom));
@@ -166,6 +166,9 @@ public class MeetRoomService {
 	private void removeUserFromRoom(String workspaceId, Long roomId, String userId) {
 		userRoomMapping.delete(USER_KEY, userId);
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
+		if (roomParticipants == null) {
+			return;
+		}
 		Set<String> userIds = roomParticipants.get(roomId.toString());
 		userIds.remove(userId);
 
@@ -188,6 +191,8 @@ public class MeetRoomService {
 
 	public Set<String> getRoomMembers(String workspaceId, Long roomId) {
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId.toString());
+		if (roomParticipants == null)
+			return new HashSet<>();
 		return roomParticipants.get(roomId.toString());
 	}
 
