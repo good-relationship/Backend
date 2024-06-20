@@ -191,8 +191,9 @@ public class MeetRoomService {
 
 	public Set<String> getRoomMembers(String workspaceId, Long roomId) {
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId.toString());
-		if (roomParticipants == null)
+		if (roomParticipants == null) {
 			return new HashSet<>();
+		}
 		return roomParticipants.get(roomId.toString());
 	}
 
