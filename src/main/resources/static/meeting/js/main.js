@@ -34,7 +34,7 @@ function connect() {
         alert("Please enter a workspace ID.");
         return;
     }
-    var socket = new WebSocket('wss://e7cf-121-135-181-35.ngrok-free.app/ws-chat');
+    var socket = new WebSocket('wss://joeun.duckdns.org/ws-chat');
     stompClient = Stomp.over(socket);
     stompClient.connect({
         "Authorization": jwtToken

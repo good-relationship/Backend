@@ -1,12 +1,13 @@
 let currentUserName = "익명"; // 기본 사용자 이름 설정
 
-const stompClient = new StompJs.Client({
-    webSocketFactory: () => new SockJS('/ws-chat'), // 서버 URL에 맞춰 조정하세요.
-    reconnectDelay: 5000,
-    debug: (str) => console.log(str),
-});
-
+var socket = new WebSocket('wss://joeun.duckdns.org/ws-chat');
+var stompClient = Stomp.over(socket);
 stompClient.onConnect = (frame) => {
+    var jwtToken = document.getElementById("jwt").value;
+    if (!jwtToken) {
+        alert("Please enter a JWT token.");
+        return;
+    }
     console.log('연결됨: ' + frame);
     setConnected(true);
 
@@ -15,6 +16,7 @@ stompClient.onConnect = (frame) => {
         const messageObj = JSON.parse(message.body);
         showGreeting(messageObj.content, messageObj.sender.senderName);
     });
+
 
     // 채팅 기록 구독
     stompClient.subscribe('/topic/history', (history) => {

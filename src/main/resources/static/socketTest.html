@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>STOMP Connection</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<input type="text" id="jwtToken" placeholder="Enter JWT Token">
+<button onclick="connect()">Connect</button>
+<button onclick="disconnect()">Disconnect</button>
+<button onclick="send()">send</button>
+<script>
+    let stompClient = null;
+
+    function connect() {
+        const jwtToken = document.getElementById('jwtToken').value;
+
+        const headers = {
+            Authorization: jwtToken
+        };
+
+        const socket = new WebSocket('wss://joeun.duckdns.org/ws-chat');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect(headers, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/test/connection', function (message) {
+                console.log('Received: ' + message.body);
+            });
+        }, function (error) {
+            console.error('Error: ' + error);
+        });
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+        }
+        console.log("Disconnected");
+    }
+
+    function send() {
+        stompClient.send('/app/test/connection', {}, JSON.stringify({name: 'Joeun'}));
+    }
+</script>
+</body>
+</html>

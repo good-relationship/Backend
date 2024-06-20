@@ -75,4 +75,11 @@ public class ChatController {
 				ResponseEntity.badRequest().build());
 		}
 	}
+
+	@MessageMapping("/test/connection")
+	@SendTo("/topic/test/connection")
+	public String testConnection() {
+		System.out.println("Test connection");
+		return "Test connection";
+	}
 }
