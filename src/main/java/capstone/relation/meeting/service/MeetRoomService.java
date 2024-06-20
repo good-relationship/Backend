@@ -197,7 +197,7 @@ public class MeetRoomService {
 		return roomParticipants.get(roomId.toString());
 	}
 
-	public void sendRoomList(String workSpaceId) {
+	public MeetingRoomListDto sendRoomList(String workSpaceId) {
 		Set<MeetRoom> meetRooms = meetRoomRepository.findAllByWorkSpaceId(workSpaceId);
 		MeetingRoomListDto meetingRoomListDto = new MeetingRoomListDto();
 		for (MeetRoom meetRoom : meetRooms) {
@@ -206,6 +206,9 @@ public class MeetRoomService {
 			meetingRoomDto.setRoomId(roomId);
 			meetingRoomDto.setRoomName(meetRoom.getRoomName());
 			Set<String> roomMembers = getRoomMembers(workSpaceId, roomId);
+			if (roomMembers == null) {
+				return meetingRoomListDto;
+			}
 			meetingRoomDto.setUserCount(roomMembers.size());
 			List<UserInfoDto> userInfoList = new ArrayList<>();
 			for (String userId : roomMembers) {
@@ -217,6 +220,7 @@ public class MeetRoomService {
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
 		simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", meetingRoomListDto);
+		return meetingRoomListDto;
 	}
 
 	private void sendUserList(String workSpaceId, Long roomId) {

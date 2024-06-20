@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
+import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.meeting.service.MeetRoomService;
 import capstone.relation.user.UserService;
 import capstone.relation.user.domain.User;
@@ -55,9 +56,9 @@ public class MeetRoomController {
 	@Operation(summary = "회의방 목록 요청", description = "현재 워크스페이스에 있는 회의방 목록을 요청합니다.\n"
 		+ "이것에 대한 응답은 `/topic/{workSpaceId}/meetingRoomList`로 이루어집니다.\n"
 	)
-	public void requestRoomList() {
+	public MeetingRoomListDto requestRoomList() {
 		User user = userService.getUserEntity();
-		meetRoomService.sendRoomList(user.getWorkSpace().getId());
+		return meetRoomService.sendRoomList(user.getWorkSpace().getId());
 	}
 
 	@PostMapping("/leave")
