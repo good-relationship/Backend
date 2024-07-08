@@ -15,4 +15,8 @@ public class IceDto {
 	private String candidate;
 	@Schema(description = "상대방 ID", example = "1")
 	private String userId;
+
+	@Schema(description = "메시지 타입 \n"
+		+ "ScreenShare | Video", example = "ScreenShare")
+	private SignalMessageType type;
 }

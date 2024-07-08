@@ -25,10 +25,10 @@ public class SignalingService {
 		SdpResponseDto sdpResponseDto = new SdpResponseDto();
 		sdpResponseDto.setUserInfo(userService.getUserInfo(myId));
 		sdpResponseDto.setSessionDescription(sdpMessageDto.getSessionDescription());
+		sdpResponseDto.setType(sdpMessageDto.getType());
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/offer/" + roomId, sdpResponseDto);
 	}
 
-	//TODO: 둘이 하는일 같으니까 합치자.
 	public void sendAnswer(String roomId, SdpMessageDto sdpMessageDto, Long myId) {
 		System.out.println("sendAnswer");
 		String socketId = socketRegistry.getSocketId(sdpMessageDto.getUserId());
@@ -36,6 +36,7 @@ public class SignalingService {
 
 		sdpResponseDto.setUserInfo(userService.getUserInfo(myId));
 		sdpResponseDto.setSessionDescription(sdpMessageDto.getSessionDescription());
+		sdpResponseDto.setType(sdpMessageDto.getType());
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/answer/" + roomId, sdpResponseDto);
 	}
 
@@ -44,6 +45,7 @@ public class SignalingService {
 		String destId = iceDto.getUserId();
 		String socketId = socketRegistry.getSocketId(destId);
 		iceDto.setUserId(myId.toString()); // 보내는 사람 ID로 갈아 껴줌.
+		iceDto.setType(iceDto.getType());
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/ice/" + roomId, iceDto);
 	}
 

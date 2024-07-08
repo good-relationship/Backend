@@ -10,4 +10,8 @@ public class SdpMessageDto {
 	private String userId;
 	@Schema(description = "offer description 즉 createOffer 함수 이벤트 description 값을 그대로 여기 넣어서 보내면 됩니다.")
 	private SdpDto sessionDescription;
+
+	@Schema(description = "메시지 타입 \n"
+		+ "ScreenShare | Video", example = "SceenShare")
+	private SignalMessageType type;
 }
