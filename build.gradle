@@ -52,6 +52,12 @@ dependencies {
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta'
 
+    // 테스트
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework:spring-messaging'
+    testImplementation 'org.springframework:spring-websocket'
+    testRuntimeOnly 'com.h2database:h2'
+
     implementation 'org.postgresql:postgresql:42.7.2'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -72,7 +78,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     //feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.0'
