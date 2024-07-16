@@ -42,9 +42,10 @@ public class StompPreHandler implements ChannelInterceptor {
 			System.out.println("preSend CONNECT가 실행");
 			String token = accessor.getFirstNativeHeader("Authorization");
 			System.out.println("token: " + token);
-			if (token == null) {
+			if (token == null || !token.startsWith("Bearer ")) {
 				throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
 			}
+			token = token.substring(7); // Remove "Bearer " prefix
 			if (!tokenProvider.validateToken(token)) {
 				throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
 			}
