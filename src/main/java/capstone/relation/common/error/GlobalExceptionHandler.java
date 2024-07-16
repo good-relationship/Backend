@@ -19,8 +19,8 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ProblemDetail> handleAllException(Exception e, HttpServletRequest request) {
-		ProblemDetail problemDetail = ProblemDetailCreator.create(e, request, HttpStatus.BAD_REQUEST);
+	public ResponseEntity<ProblemDetail> handleAllException(Exception ex, HttpServletRequest request) {
+		ProblemDetail problemDetail = ProblemDetailCreator.create(ex, request, HttpStatus.BAD_REQUEST);
 
 		return ResponseEntity.badRequest().body(problemDetail);
 	}

@@ -12,20 +12,20 @@ public class ProblemDetailCreator {
 	private ProblemDetailCreator() {
 	}
 
-	public static ProblemDetail create(Exception e, HttpServletRequest request, HttpStatus status) {
-		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, e.getMessage());
+	public static ProblemDetail create(Exception ex, HttpServletRequest request, HttpStatus status) {
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
 		problemDetail.setInstance(URI.create(request.getRequestURI()));
-		problemDetail.setTitle(e.getClass().getSimpleName());
+		problemDetail.setTitle(ex.getClass().getSimpleName());
 		return problemDetail;
 	}
 
-	public static ProblemDetail createValidationDetails(MethodArgumentNotValidException e, HttpServletRequest request,
+	public static ProblemDetail createValidationDetails(MethodArgumentNotValidException ex, HttpServletRequest request,
 		HttpStatus status) {
-		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, e.getMessage());
+		ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
 		problemDetail.setInstance(URI.create(request.getRequestURI()));
-		problemDetail.setTitle(e.getClass().getSimpleName());
+		problemDetail.setTitle(ex.getClass().getSimpleName());
 
-		problemDetail.setProperty("validationError", e.getBindingResult()
+		problemDetail.setProperty("validationError", ex.getBindingResult()
 			.getFieldErrors()
 			.stream()
 			.map(ValidationError::of)
