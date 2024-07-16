@@ -6,6 +6,12 @@ plugins {
     id 'checkstyle'
 }
 
+configurations {
+    all {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+}
+
 editorconfig {
     excludes = ['build']
 }
