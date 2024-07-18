@@ -25,6 +25,12 @@ jobs:
       - name: Make application.properties
         run: |
           cd ./src/main/resources
+          touch application.yml
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.yml
+          
+          touch application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD_PROPERTIES }}" >> ./application-prod.yml
+          
           mkdir -p ./config/prod
           cd ./config/prod
           touch ./application-db-prod.yml
