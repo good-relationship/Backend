@@ -25,7 +25,6 @@ jobs:
       - name: Make application.properties
         run: |
           cd ./src/main/resources
-          
           mkdir -p ./config/prod
           cd ./config/prod
           touch ./application-db-prod.yml
