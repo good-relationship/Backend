@@ -22,7 +22,7 @@ public class UserController {
 	private final MeetRoomService meetRoomService;
 
 	@GetMapping("/info")
-	@Operation(summary = "사용자 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
+	@Operation(summary = "사용자 정보 조회 액션확인", description = "현재 로그인한 사용자의 정보를 조회합니다.")
 	public UserInfoDto getInfo() {
 		return userService.getUserInfo();
 	}
