@@ -25,19 +25,10 @@ jobs:
       - name: Make application.properties
         run: |
           cd ./src/main/resources
-          touch application.yml
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" >> ./application.yml
-          
-          touch application-prod.yml
-          echo "${{ secrets.APPLICATION_PROD_PROPERTIES }}" >> ./application-prod.yml
-          
           mkdir -p ./config/prod
           cd ./config/prod
-          touch ./application-db-prod.yml
-          touch ./application-oauth-prod.yml
-
-          echo "${{ secrets.DATABASE_PROPERTIES }}" >> ./application-db-prod.yml
-          echo "${{ secrets.AUTH_PROPERTIES }}" >> ./application-oauth-prod.yml
+          echo "${{ secrets.DATABASE_PROPERTIES }}" > ./application-db-prod.yml
+          echo "${{ secrets.AUTH_PROPERTIES }}" > ./application-oauth-prod.yml
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: EditorConfig Format
@@ -56,7 +47,6 @@ jobs:
         run: |
           aws deploy push \
             --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-            --ignore-hidden-files \
             --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
             --source .
         # (6) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
