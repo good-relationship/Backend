@@ -27,12 +27,8 @@ jobs:
           cd ./src/main/resources
           mkdir -p ./config/prod
           cd ./config/prod
-          DB_PROPERTIES="\"${{ secrets.DATABASE_PROPERTIES }}\""
-          AUTH_PROPERTIES="\"${{ secrets.AUTH_PROPERTIES }}\""
-          echo "$DB_PROPERTIES" > ./application-db-prod.yml
-          echo "$AUTH_PROPERTIES" > ./application-oauth-prod.yml
-      #          echo "${{ secrets.DATABASE_PROPERTIES }}" > ./application-db-prod.yml
-      #          echo "${{ secrets.AUTH_PROPERTIES }}" > ./application-oauth-prod.yml
+          echo "${{ secrets.DATABASE_PROPERTIES }}" > ./application-db-prod.yml
+          echo "${{ secrets.AUTH_PROPERTIES }}" > ./application-oauth-prod.yml
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: EditorConfig Format
