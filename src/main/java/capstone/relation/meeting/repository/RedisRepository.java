@@ -60,7 +60,7 @@ public class RedisRepository {
 			roomParticipants.remove(roomId.toString());
 		else
 			roomParticipants.put(roomId.toString(), userIds);
-	
+
 		if (roomParticipants.isEmpty())
 			workspaceRoomParticipants.delete(WORK_KEY, workspaceId);
 		else
