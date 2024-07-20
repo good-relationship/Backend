@@ -72,7 +72,7 @@ public class SecurityUser implements UserDetails, UserInfo {
 		return userId;
 	}
 
-	private SecurityUser(Long userId, Role role) {
+	public SecurityUser(Long userId, Role role) {
 		this.userId = userId;
 		this.role = role;
 	}

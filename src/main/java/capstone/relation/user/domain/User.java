@@ -36,6 +36,7 @@ public class User {
 		this.provider = provider;
 		this.email = email;
 		this.role = role;
+		this.id = id;
 	}
 
 	@Id

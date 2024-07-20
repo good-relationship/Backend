@@ -17,15 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.exception.AuthException;
+import capstone.relation.common.util.SecurityUtil;
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.meeting.repository.MeetRoomRepository;
+import capstone.relation.user.UserService;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
-import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
@@ -38,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class MeetRoomService {
 	private static final String WORK_KEY = "WORKSPACE_ROOM_PARTICIPANTS";
 	private static final String USER_KEY = "USER_ROOM_MAPPING";
-	private final UserRepository userRepository;
+	private final UserService userService;
 	private final WorkSpaceRepository workSpaceRepository;
 	private final MeetRoomRepository meetRoomRepository;
 	private final SocketRegistry socketRegistry;
@@ -55,11 +56,13 @@ public class MeetRoomService {
 	}
 
 	@Transactional(readOnly = false)
-	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto, Long userId, String workSpaceId) {
+	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto) {
+		Long userId = SecurityUtil.getCurrentUserId();
 		String roomName = createRoomDto.getRoomName();
 		if (roomName == null || roomName.isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
 		}
+		String workSpaceId = userService.getUserWorkSpaceId(userId);
 		try {
 			JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId.toString(), roomName);
 			sendRoomList(workSpaceId);
@@ -83,12 +86,7 @@ public class MeetRoomService {
 		System.out.println("roomId = " + roomId);
 		System.out.println("userId = " + userId);
 		Set<String> userIds = getRoomMembers(workspaceId, Long.parseLong(roomId));
-		List<UserInfoDto> userInfoList = new ArrayList<>();
-		for (String id : userIds) {
-			UserInfoDto userInfoDto = new UserInfoDto();
-			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
-			userInfoList.add(userInfoDto);
-		}
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		return new RoomInfoDto(true, Long.parseLong(roomId),
 			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
 	}
@@ -110,13 +108,14 @@ public class MeetRoomService {
 		return joinWorkspaceRoom(workSpaceId, userId, roomId);
 	}
 
-	public JoinResponseDto joinRoom(Long userId, String workspaceId, Long roomId) {
-
+	public JoinResponseDto joinRoom(Long roomId) {
+		Long userId = SecurityUtil.getCurrentUserId();
 		//유저가 이미 회의 방에 있는지 확인
+		String workspaceId = userService.getUserWorkSpaceId(userId);
 		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
-		if (meetRoom != null) {
+		if (meetRoom != null)
 			throw new IllegalArgumentException("User is already in the room: " + userId);
-		}
+
 		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId.toString(), roomId);
 		sendRoomList(workspaceId);
 		return joinResponseDto;
@@ -126,18 +125,14 @@ public class MeetRoomService {
 		MeetRoom meetRoom = meetRoomRepository.findById(roomId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
 		Set<String> userIds = addUserToRoom(workSpaceId, roomId, userId);
-		List<UserInfoDto> userInfoList = new ArrayList<>();
-		for (String id : userIds) {
-			UserInfoDto userInfoDto = new UserInfoDto();
-			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
-			userInfoList.add(userInfoDto);
-		}
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		sendUserList(workSpaceId, roomId);
 		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
 	}
 
 	@Transactional(readOnly = false)
-	public void leaveRoom(Long userId, String workspaceId) {
+	public void leaveRoom(Long userId) {
+		String workspaceId = userService.getUserWorkSpaceId(userId);
 		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
 		if (meetRoom == null) {
 			return;
@@ -211,11 +206,6 @@ public class MeetRoomService {
 			}
 			meetingRoomDto.setUserCount(roomMembers.size());
 			List<UserInfoDto> userInfoList = new ArrayList<>();
-			for (String userId : roomMembers) {
-				UserInfoDto userInfoDto = new UserInfoDto();
-				userRepository.findById(Long.parseLong(userId)).ifPresent(userInfoDto::setByUserEntity);
-				userInfoList.add(userInfoDto);
-			}
 			meetingRoomDto.setUserInfoList(userInfoList);
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
@@ -223,14 +213,15 @@ public class MeetRoomService {
 		return meetingRoomListDto;
 	}
 
+	public MeetingRoomListDto sendRoomList() {
+		Long userId = SecurityUtil.getCurrentUserId();
+		String workSpaceId = userService.getUserWorkSpaceId(userId);
+		return sendRoomList(workSpaceId);
+	}
+
 	private void sendUserList(String workSpaceId, Long roomId) {
 		Set<String> userIds = getRoomMembers(workSpaceId, roomId);
-		List<UserInfoDto> userInfoList = new ArrayList<>();
-		for (String userId : userIds) {
-			UserInfoDto userInfoDto = new UserInfoDto();
-			userRepository.findById(Long.parseLong(userId)).ifPresent(userInfoDto::setByUserEntity);
-			userInfoList.add(userInfoDto);
-		}
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		simpMessagingTemplate.convertAndSend("/topic/meetingRoom/" + roomId + "/users", userInfoList);
 	}
 

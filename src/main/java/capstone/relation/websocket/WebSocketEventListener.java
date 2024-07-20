@@ -27,7 +27,7 @@ public class WebSocketEventListener {
 		if (userId == null) {
 			return;
 		}
-		meetRoomService.leaveRoom(userId, workSpaceId);
+		meetRoomService.leaveRoom(userId);
 		System.out.println("register SocketId" + socketRegistry.getSocketId(userId.toString()));
 		if (socketId == socketRegistry.getSocketId(userId.toString())) {
 			socketRegistry.unregisterSession(userId.toString());
