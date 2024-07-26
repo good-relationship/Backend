@@ -23,7 +23,6 @@ import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.meeting.repository.RedisRepository;
 import capstone.relation.security.WithMockCustomUser;
 import capstone.relation.user.UserService;
-import capstone.relation.user.repository.UserRepository;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 
@@ -43,16 +42,11 @@ class MeetRoomServiceTest {
 
 	@Mock
 	private MeetRoomRepository mockMeetRoomRepository;
-
-	//workspaceId, roomId, userIds
-
-	@Mock
-	private UserRepository mockUserRepository;
-
+	
 	@Mock
 	private RedisRepository mockRedisRepository;
 
-	@DisplayName("회의 방을 생성하고 가입할 수 있다..")
+	@DisplayName("회의 방을 생성하고 가입할 수 있다.")
 	@WithMockCustomUser
 	@Test
 	void createAndJoinRoom() {
@@ -105,7 +99,7 @@ class MeetRoomServiceTest {
 
 		given(mockUserService.getUserWorkSpaceId(1L)).willReturn("workspace-1");
 		given(mockWorkSpaceRepository.findById("workspace-1")).willReturn(Optional.of(new WorkSpace()));
-		given(mockRedisRepository.isUserInRoom("1")).willReturn(true);
+		given(mockRedisRepository.isUserInRoom(1L)).willReturn(true);
 
 		// when & then
 		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(createRoomDto))
@@ -113,11 +107,33 @@ class MeetRoomServiceTest {
 			.hasMessage("User is already in the room: 1");
 	}
 
-	@DisplayName("회의 방의 정보를 받아올 수 있다.")
+	@DisplayName("워크스페이스에 참여한 모든 유저에게 회의실 목록을 전송할 수 있다.")
+	@Test
+	public void sendRoomList() {
+		// given
+		given(mockWorkSpaceRepository.findById("workspace-1")).willReturn(Optional.of(new WorkSpace()));
+
+		// when
+		meetRoomService.sendRoomList("workspace-1");
+
+		// then
+		verify(mockSimpMessagingTemplate, times(1)).convertAndSend(eq("/topic/workspace-1/meetingRoomList"),
+			any(MeetingRoomListDto.class));
+	}
+
+	@DisplayName("회의실을 나갈 수 있다.")
 	@WithMockCustomUser
 	@Test
-	void getRoomInfo() {
-		//given
+	public void leaveRoom() {
+		// given
 		given(mockUserService.getUserWorkSpaceId(1L)).willReturn("workspace-1");
+		given(mockRedisRepository.isUserInRoom(1L)).willReturn(true);
+		given(mockRedisRepository.getUserRoomId(1L)).willReturn("1");
+
+		// when
+		meetRoomService.leaveRoom(1L);
+
+		// then
+		verify(mockRedisRepository, times(1)).removeUserFromRoom("workspace-1", 1L, "1");
 	}
 }
