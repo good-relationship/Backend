@@ -18,6 +18,17 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(ex.getReason(), ex.getStatusCode());
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ProblemDetail> handleIllegalArgumentException(IllegalArgumentException ex,
+		HttpServletRequest request) {
+		ProblemDetail problemDetail = ProblemDetailCreator.create(ex, request, HttpStatus.BAD_REQUEST);
+		problemDetail.setTitle("Invalid Argument");
+		problemDetail.setStatus(HttpStatus.BAD_REQUEST.value());
+		problemDetail.setDetail(ex.getMessage());
+
+		return ResponseEntity.badRequest().body(problemDetail);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ProblemDetail> handleAllException(Exception ex, HttpServletRequest request) {
 		ProblemDetail problemDetail = ProblemDetailCreator.create(ex, request, HttpStatus.BAD_REQUEST);
