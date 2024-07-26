@@ -26,12 +26,12 @@ public class RedisRepository {
 		userRoomMapping = redisTemplate.opsForHash();
 	}
 
-	public boolean isUserInRoom(String userId) {
-		return userRoomMapping.get(USER_KEY, userId) != null;
+	public boolean isUserInRoom(Long userId) {
+		return userRoomMapping.get(USER_KEY, userId.toString()) != null;
 	}
 
-	public String getUserRoomId(String userId) {
-		return userRoomMapping.get(USER_KEY, userId);
+	public String getUserRoomId(Long userId) {
+		return userRoomMapping.get(USER_KEY, userId.toString());
 	}
 
 	public void addUserToRoom(String workspaceId, Long roomId, String userId) {
