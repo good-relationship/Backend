@@ -28,7 +28,7 @@ public class UserController {
 	}
 
 	@GetMapping("/room/info")
-	@Operation(summary = "사용자 방 정보 조회", description = "현재 로그인한 사용자의 방 정보를 조회합니다.")
+	@Operation(summary = "사용자 회의 방 정보 조회", description = "현재 로그인한 사용자의 회의 방 정보를 조회합니다.")
 	public RoomInfoDto getRoomInfo() {
 		User user = userService.getUserEntity();
 		Long userId = user.getId();

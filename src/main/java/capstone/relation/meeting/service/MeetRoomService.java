@@ -5,14 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.common.util.SecurityUtil;
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
@@ -24,7 +21,6 @@ import capstone.relation.meeting.repository.RedisRepository;
 import capstone.relation.user.UserService;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
-import capstone.relation.websocket.SocketRegistry;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,48 +33,25 @@ public class MeetRoomService {
 	private final WorkSpaceRepository workSpaceRepository;
 	private final MeetRoomRepository meetRoomRepository;
 	private final RedisRepository redisRepository;
-	private final SocketRegistry socketRegistry;
 	private final SimpMessagingTemplate simpMessagingTemplate;
 
 	@Transactional(readOnly = false)
 	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto) {
-		Long userId = SecurityUtil.getCurrentUserId();
 		String roomName = createRoomDto.getRoomName();
 		if (roomName == null || roomName.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
+		Long userId = SecurityUtil.getCurrentUserId();
 		String workSpaceId = userService.getUserWorkSpaceId(userId);
-		try {
-			JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId.toString(), roomName);
-			sendRoomList(workSpaceId);
-			return joinResponseDto;
-		} catch (AuthException e) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-		}
+		JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId, roomName);
+		sendRoomList(workSpaceId);
+		return joinResponseDto;
 	}
 
-	public boolean isUserInRoom(String userId) {
-		return redisRepository.isUserInRoom(userId);
-	}
-
-	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
-		if (!isUserInRoom(userId.toString()))
-			return new RoomInfoDto();
-
-		String roomId = redisRepository.getUserRoom(userId.toString());
-		Set<String> userIds = redisRepository.getRoomMembers(workspaceId, Long.parseLong(roomId));
-		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
-		return new RoomInfoDto(true, Long.parseLong(roomId),
-			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
-	}
-
-	private JoinResponseDto createAndJoin(String workSpaceId, String userId, String roomName) {
+	private JoinResponseDto createAndJoin(String workSpaceId, Long userId, String roomName) {
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid workspace ID"));
-		if (isUserInRoom(userId))
+			.orElseThrow(() -> new IllegalArgumentException("유저의 워크스페이스 정보가 없습니다."));
+		if (redisRepository.isUserInRoom(userId.toString()))
 			throw new IllegalArgumentException("User is already in the room: " + userId);
-
 		MeetRoom meetRoom = MeetRoom.builder()
 			.roomName(roomName)
 			.deleted(false)
@@ -86,14 +59,25 @@ public class MeetRoomService {
 		meetRoomRepository.save(meetRoom);
 		workSpace.addMeetRoom(meetRoom);
 		Long roomId = meetRoom.getRoomId();
-		return joinWorkspaceRoom(workSpaceId, userId, roomId);
+		return joinWorkspaceRoom(workSpaceId, userId.toString(), roomId);
+	}
+
+	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
+		if (!redisRepository.isUserInRoom(userId.toString()))
+			throw new IllegalArgumentException("User is not in any room: " + userId);
+
+		String roomId = redisRepository.getUserRoomId(userId.toString());
+		Set<String> userIds = redisRepository.getRoomMembers(workspaceId, Long.parseLong(roomId));
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
+		return new RoomInfoDto(true, Long.parseLong(roomId),
+			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
 	}
 
 	public JoinResponseDto joinRoom(Long roomId) {
 		Long userId = SecurityUtil.getCurrentUserId();
 		String workspaceId = userService.getUserWorkSpaceId(userId);
-		String meetRoom = redisRepository.getUserRoom(userId.toString());
-		if (meetRoom != null)
+		String meetRoomId = redisRepository.getUserRoomId(userId.toString());
+		if (meetRoomId != null)
 			throw new IllegalArgumentException("User is already in the room: " + userId);
 
 		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId.toString(), roomId);
@@ -114,7 +98,7 @@ public class MeetRoomService {
 	@Transactional(readOnly = false)
 	public void leaveRoom(Long userId) {
 		String workspaceId = userService.getUserWorkSpaceId(userId);
-		String meetRoom = redisRepository.getUserRoom(userId.toString());
+		String meetRoom = redisRepository.getUserRoomId(userId.toString());
 		if (meetRoom == null)
 			return;
 		redisRepository.removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId.toString());
@@ -155,11 +139,4 @@ public class MeetRoomService {
 		simpMessagingTemplate.convertAndSend("/topic/meetingRoom/" + roomId + "/users", userInfoList);
 	}
 
-	public void sendErrorMessage(SimpMessageHeaderAccessor headerAccessor, String message, String destination,
-		int status) {
-		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
-		String socketId = socketRegistry.getSocketId(userId.toString());
-		simpMessagingTemplate.convertAndSendToUser(socketId, destination,
-			ResponseEntity.status(status).body(message));
-	}
 }

@@ -30,7 +30,7 @@ public class RedisRepository {
 		return userRoomMapping.get(USER_KEY, userId) != null;
 	}
 
-	public String getUserRoom(String userId) {
+	public String getUserRoomId(String userId) {
 		return userRoomMapping.get(USER_KEY, userId);
 	}
 
