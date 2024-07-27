@@ -68,11 +68,16 @@ public class RedisRepository {
 
 	}
 
-	public Set<String> getRoomMembers(String workspaceId, Long roomId) {
+	public Set<String> getRoomMemberIds(String workspaceId, Long roomId) {
 		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
 		if (roomParticipants == null) {
 			return new HashSet<>();
 		}
 		return roomParticipants.get(roomId.toString());
+	}
+
+	public void deleteAll() {
+		redisTemplate.delete(WORK_KEY);
+		redisTemplate.delete(USER_KEY);
 	}
 }

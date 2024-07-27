@@ -1,6 +1,5 @@
 package capstone.relation.meeting.service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -80,7 +79,7 @@ public class MeetRoomService {
 			throw new IllegalArgumentException("User is not in any room: " + userId);
 
 		Long roomId = Long.parseLong(redisRepository.getUserRoomId(userId));
-		Set<String> userIds = redisRepository.getRoomMembers(workspaceId, roomId);
+		Set<String> userIds = redisRepository.getRoomMemberIds(workspaceId, roomId);
 		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		return new RoomInfoDto(true, roomId, getRoomName(roomId), userInfoList);
 	}
@@ -92,7 +91,7 @@ public class MeetRoomService {
 	 */
 	private String getRoomName(Long roomId) {
 		return meetRoomRepository.findById(roomId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid room ID : " + roomId))
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid room ID : " + roomId))
 			.getRoomName();
 	}
 
@@ -115,6 +114,7 @@ public class MeetRoomService {
 
 	/**
 	 * 미팅룸에 참여합니다.
+	 * 웹소켓으로 변경된 사용자 목록을 전송합니다.
 	 * @param workSpaceId 워크스페이스 ID
 	 * @param userId 사용자 ID
 	 * @param roomId 미팅룸 ID
@@ -122,9 +122,9 @@ public class MeetRoomService {
 	 */
 	private JoinResponseDto joinWorkspaceRoom(String workSpaceId, Long userId, Long roomId) {
 		MeetRoom meetRoom = meetRoomRepository.findById(roomId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid room ID"));
 		redisRepository.addUserToRoom(workSpaceId, roomId, userId.toString());
-		Set<String> userIds = redisRepository.getRoomMembers(workSpaceId, roomId);
+		Set<String> userIds = redisRepository.getRoomMemberIds(workSpaceId, roomId);
 		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		sendUserList(workSpaceId, roomId);
 		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
@@ -132,6 +132,7 @@ public class MeetRoomService {
 
 	/**
 	 * 미팅룸에서 나갑니다.
+	 * 웹소켓으로 변경된 사용자 목록을 전송합니다.
 	 * @param userId 사용자 ID
 	 */
 	@Transactional(readOnly = false)
@@ -139,7 +140,7 @@ public class MeetRoomService {
 		String workspaceId = userService.getUserWorkSpaceId(userId);
 		String meetRoomId = redisRepository.getUserRoomId(userId);
 		if (meetRoomId == null)
-			return;
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in any room: " + userId);
 		redisRepository.removeUserFromRoom(workspaceId, Long.parseLong(meetRoomId), userId.toString());
 		sendUserList(workspaceId, Long.parseLong(meetRoomId));
 		sendRoomList(workspaceId);
@@ -163,11 +164,13 @@ public class MeetRoomService {
 			meetingRoomDto.setRoomName(meetRoom.getRoomName());
 
 			// 미팅룸에 참여한 사용자 수를 조회합니다.
-			Set<String> roomMembers = redisRepository.getRoomMembers(workSpaceId, meetRoom.getRoomId());
+			Set<String> roomMembers = redisRepository.getRoomMemberIds(workSpaceId, meetRoom.getRoomId());
 			meetingRoomDto.setUserCount(roomMembers.size());
 
-			// 빈 사용자 정보 리스트를 생성합니다.
-			meetingRoomDto.setUserInfoList(Collections.emptyList());
+			// 사용자 정보 목록을 저장합니다.
+			List<UserInfoDto> userInfoList = userService.getUserInfoList(roomMembers);
+			meetingRoomDto.setUserInfoList(userInfoList);
+
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
 
@@ -196,7 +199,7 @@ public class MeetRoomService {
 	 * @param roomId 미팅룸 ID
 	 */
 	private void sendUserList(String workSpaceId, Long roomId) {
-		Set<String> userIds = redisRepository.getRoomMembers(workSpaceId, roomId);
+		Set<String> userIds = redisRepository.getRoomMemberIds(workSpaceId, roomId);
 		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		simpMessagingTemplate.convertAndSend("/topic/meetingRoom/" + roomId + "/users", userInfoList);
 	}
