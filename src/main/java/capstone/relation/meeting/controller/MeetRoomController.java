@@ -35,7 +35,6 @@ public class MeetRoomController {
 	@PostMapping("/join/{roomId}")
 	@Operation(summary = "회의방 참여", description = "회의방에 참여합니다.")
 	public JoinResponseDto joinRoom(@PathVariable Long roomId) {
-		//TODO:에러 발생 시켜보기.
 		return meetRoomService.joinRoom(roomId);
 	}
 
