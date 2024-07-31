@@ -44,7 +44,7 @@ public class WorkSpace {
 		user.setWorkSpace(this);
 		user.setInvitedWorkspaceId("");
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
