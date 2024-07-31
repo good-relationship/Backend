@@ -1,4 +1,4 @@
-package capstone.relation.websocket.signaling.controller;
+package capstone.relation.websocket.signaling;
 
 import java.util.List;
 

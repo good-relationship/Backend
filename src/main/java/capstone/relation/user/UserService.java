@@ -83,6 +83,11 @@ public class UserService {
 			.getId();
 	}
 
+	/**
+	 * 사용자 Id 목록을 받아서 사용자 정보 목록을 반환합니다.
+	 * @param userIds 사용자 Id 목록
+	 * @return 사용자 정보 목록
+	 */
 	public List<UserInfoDto> getUserInfoList(Set<String> userIds) {
 		List<UserInfoDto> userInfoList = new ArrayList<>();
 		for (String id : userIds) {

@@ -1,4 +1,4 @@
-package capstone.relation.websocket.signaling.controller;
+package capstone.relation.websocket.signaling;
 
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,7 +18,6 @@ public class SignalingController {
 
 	@MessageMapping("/ice/{roomId}")
 	public void ice(@DestinationVariable String roomId, IceDto iceDto, SimpMessageHeaderAccessor headerAccessor) {
-		System.out.println("ice");
 		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
 		signalingService.sendIce(roomId, iceDto, userId);
 	}

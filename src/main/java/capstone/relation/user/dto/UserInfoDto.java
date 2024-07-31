@@ -3,12 +3,10 @@ package capstone.relation.user.dto;
 import capstone.relation.user.domain.User;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class UserInfoDto {
 	@Schema(description = "사용자 ID", example = "1234567890")
