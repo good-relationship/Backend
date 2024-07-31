@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+oauth2:
+  jwt:
+    authorityKey: "roles"
+    bearerPrefix: "Bearer "
+    tokenSecret: "testSecretKeyShouldBeKeptSecretAndHasAtLeast32Bytes"
+    accessTokenHeader: "Authorization"
+    access-token-expire-day: 30
+    refresh-token-expire-day: 30
+  naver:
+    client-id: "test-client-id"
+    client-secret: "test-client-secret"
+    redirectUri: "http://localhost:8080/login/oauth2/code/naver"
+
+    base-url: "https://nid.naver.com"
+    token-path: "/oauth2.0/token"
+    user-info-path: "/oauth2.0/profile"
+    authorizationUri: "https://nid.naver.com/oauth2.0/authorize"
+    tokenUri: "https://nid.naver.com/oauth2.0/token"
+    userInfoUri: "https://openapi.naver.com/v1/nid/me"
+    userNameAttributeName: response
+
+  kakao:
+    name: Kakao
+    client-id: "test-client-id"
+    client-secret: "test-client-secret"
+    redirectUri: "http://localhost:8080/login/kakao/index.html"
+    authorizationUri: "https://kauth.kakao.com/oauth/authorize"
+    tokenUri: "https://kauth.kakao.com/oauth/token"
+    userInfoUri: "https://kapi.kakao.com/v2/user/me"
+    userNameAttributeName: id
+
+school:
+  info:
+    url: https://www.career.go.kr/cnet/openapi/getOpenApi
+  api:
+    key:
+      test-api-key

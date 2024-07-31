@@ -221,11 +221,11 @@ The following rules in the Naver coding convention cannot be checked by this con
                      value="[sub-flow-after-brace] ''{0}'' at column {1} should have line break before."/>
         </module>
 
-        <!-- [need-braces] -->
-        <module name="NeedBraces">
-            <message key="needBraces"
-                     value="[need-braces] ''{0}'' statement must use '''{}'''s."/>
-        </module>
+        <!--        &lt;!&ndash; [need-braces] &ndash;&gt;-->
+        <!--        <module name="NeedBraces">-->
+        <!--            <message key="needBraces"-->
+        <!--                     value="[need-braces] ''{0}'' statement must use '''{}'''s."/>-->
+        <!--        </module>-->
 
         <!-- End of Braces chapter -->
 

@@ -122,8 +122,7 @@ public class TokenProvider {
 		}
 	}
 
-	private String generateAccessToken(User user, Date accessTokenExpiredDate) {
-
+	public String generateAccessToken(User user, Date accessTokenExpiredDate) {
 		return Jwts.builder()
 			.setSubject(String.valueOf(user.getId()))
 			.claim(jwtProperties.getAuthorityKey(), user.getRole().toString())

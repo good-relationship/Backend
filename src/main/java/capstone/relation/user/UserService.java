@@ -1,6 +1,9 @@
 package capstone.relation.user;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -71,5 +74,27 @@ public class UserService {
 		User user = getUserEntity();
 		user.setWorkSpace(null);
 		userRepository.save(user);
+	}
+
+	public String getUserWorkSpaceId(Long userId) {
+		return userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"))
+			.getWorkSpace()
+			.getId();
+	}
+
+	/**
+	 * 사용자 Id 목록을 받아서 사용자 정보 목록을 반환합니다.
+	 * @param userIds 사용자 Id 목록
+	 * @return 사용자 정보 목록
+	 */
+	public List<UserInfoDto> getUserInfoList(Set<String> userIds) {
+		List<UserInfoDto> userInfoList = new ArrayList<>();
+		for (String id : userIds) {
+			UserInfoDto userInfoDto = new UserInfoDto();
+			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
+			userInfoList.add(userInfoDto);
+		}
+		return userInfoList;
 	}
 }

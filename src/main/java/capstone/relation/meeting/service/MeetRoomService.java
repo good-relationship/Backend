@@ -1,244 +1,206 @@
 package capstone.relation.meeting.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import capstone.relation.api.auth.exception.AuthException;
+import capstone.relation.common.util.SecurityUtil;
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.meeting.repository.MeetRoomRepository;
+import capstone.relation.meeting.repository.RedisRepository;
+import capstone.relation.user.UserService;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
-import capstone.relation.user.repository.UserRepository;
-import capstone.relation.websocket.SocketRegistry;
-import capstone.relation.workspace.WorkSpace;
-import capstone.relation.workspace.repository.WorkSpaceRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MeetRoomService {
-	private static final String WORK_KEY = "WORKSPACE_ROOM_PARTICIPANTS";
-	private static final String USER_KEY = "USER_ROOM_MAPPING";
-	private final UserRepository userRepository;
-	private final WorkSpaceRepository workSpaceRepository;
+	private final UserService userService;
+	private final RedisRepository redisRepository;
 	private final MeetRoomRepository meetRoomRepository;
-	private final SocketRegistry socketRegistry;
-	private final RedisTemplate<String, Object> redisTemplate;
 	private final SimpMessagingTemplate simpMessagingTemplate;
-	private HashOperations<String, String, HashMap<String, Set<String>>> workspaceRoomParticipants;
-	//workspaceId, roomId, userIds
-	private HashOperations<String, String, String> userRoomMapping;
 
-	@PostConstruct
-	protected void init() {
-		workspaceRoomParticipants = redisTemplate.opsForHash();
-		userRoomMapping = redisTemplate.opsForHash();
-	}
-
+	/**
+	 * 미팅룸을 생성하고 참여합니다.
+	 * @param createRoomDto 생성할 미팅룸 정보 DTO
+	 * @return 참여 응답 DTO
+	 */
 	@Transactional(readOnly = false)
-	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto, Long userId, String workSpaceId) {
+	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto) {
 		String roomName = createRoomDto.getRoomName();
-		if (roomName == null || roomName.isEmpty()) {
+		if (roomName == null || roomName.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
-		}
-		try {
-			JoinResponseDto joinResponseDto = createAndJoin(workSpaceId, userId.toString(), roomName);
-			sendRoomList(workSpaceId);
-			return joinResponseDto;
-		} catch (AuthException e) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-		}
+		Long userId = SecurityUtil.getCurrentUserId();
+		String workSpaceId = userService.getUserWorkSpaceId(userId);
+
+		// 미팅룸을 생성, 참여, 미팅룸 목록을 전송합니다.
+		Long roomId = createRoom(userId, roomName);
+		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workSpaceId, userId, roomId);
+		sendRoomList(workSpaceId);
+		return joinResponseDto;
 	}
 
-	public boolean isUserInRoom(String userId) {
-		return userRoomMapping.get(USER_KEY, userId) != null;
-	}
-
-	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
-		if (!isUserInRoom(userId.toString())) {
-			return new RoomInfoDto();
-		}
-		String roomId = userRoomMapping.get(USER_KEY, userId.toString());
-		System.out.println("roomId = " + roomId);
-		System.out.println("userId = " + userId);
-		Set<String> userIds = getRoomMembers(workspaceId, Long.parseLong(roomId));
-		List<UserInfoDto> userInfoList = new ArrayList<>();
-		for (String id : userIds) {
-			UserInfoDto userInfoDto = new UserInfoDto();
-			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
-			userInfoList.add(userInfoDto);
-		}
-		return new RoomInfoDto(true, Long.parseLong(roomId),
-			meetRoomRepository.findById(Long.parseLong(roomId)).get().getRoomName(), userInfoList);
-	}
-
-	private JoinResponseDto createAndJoin(String workSpaceId, String userId, String roomName) {
-		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid workspace ID"));
-		if (isUserInRoom(userId)) {
+	/**
+	 * 미팅룸을 생성합니다.
+	 * @param userId 사용자 ID
+	 * @param roomName 미팅룸 이름
+	 * @return 생성된 미팅룸 ID
+	 */
+	private Long createRoom(Long userId, String roomName) {
+		if (redisRepository.isUserInRoom(userId))
 			throw new IllegalArgumentException("User is already in the room: " + userId);
-		}
-
 		MeetRoom meetRoom = MeetRoom.builder()
 			.roomName(roomName)
 			.deleted(false)
 			.build();
 		meetRoomRepository.save(meetRoom);
-		workSpace.addMeetRoom(meetRoom);
-		Long roomId = meetRoom.getRoomId();
-		return joinWorkspaceRoom(workSpaceId, userId, roomId);
+		return meetRoom.getRoomId();
 	}
 
-	public JoinResponseDto joinRoom(Long userId, String workspaceId, Long roomId) {
+	/**
+	 * 미팅룸 정보를 조회합니다.
+	 * @param workspaceId 워크스페이스 ID
+	 * @param userId 사용자 ID
+	 * @return 미팅룸 정보 DTO
+	 */
+	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
+		if (!redisRepository.isUserInRoom(userId))
+			throw new IllegalArgumentException("User is not in any room: " + userId);
 
-		//유저가 이미 회의 방에 있는지 확인
-		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
-		if (meetRoom != null) {
+		Long roomId = Long.parseLong(redisRepository.getUserRoomId(userId));
+		Set<String> userIds = redisRepository.getRoomMemberIds(workspaceId, roomId);
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
+		return new RoomInfoDto(true, roomId, getRoomName(roomId), userInfoList);
+	}
+
+	/**
+	 * 미팅룸 이름을 조회합니다.
+	 * @param roomId 미팅룸 ID
+	 * @return 미팅룸 이름
+	 */
+	private String getRoomName(Long roomId) {
+		return meetRoomRepository.findById(roomId)
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid room ID : " + roomId))
+			.getRoomName();
+	}
+
+	/**
+	 * 미팅룸에 참여합니다. 컨트롤러 연결 메서드
+	 * @param roomId 가입하고자 하는 미팅룸 ID
+	 * @return 참여 응답 DTO
+	 */
+	public JoinResponseDto joinRoom(Long roomId) {
+		Long userId = SecurityUtil.getCurrentUserId();
+		String workspaceId = userService.getUserWorkSpaceId(userId);
+		String meetRoomId = redisRepository.getUserRoomId(userId);
+		if (meetRoomId != null)
 			throw new IllegalArgumentException("User is already in the room: " + userId);
-		}
-		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId.toString(), roomId);
+
+		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId, roomId);
 		sendRoomList(workspaceId);
 		return joinResponseDto;
 	}
 
-	private JoinResponseDto joinWorkspaceRoom(String workSpaceId, String userId, Long roomId) {
+	/**
+	 * 미팅룸에 참여합니다.
+	 * 웹소켓으로 변경된 사용자 목록을 전송합니다.
+	 * @param workSpaceId 워크스페이스 ID
+	 * @param userId 사용자 ID
+	 * @param roomId 미팅룸 ID
+	 * @return 참여 응답 DTO
+	 */
+	private JoinResponseDto joinWorkspaceRoom(String workSpaceId, Long userId, Long roomId) {
 		MeetRoom meetRoom = meetRoomRepository.findById(roomId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
-		Set<String> userIds = addUserToRoom(workSpaceId, roomId, userId);
-		List<UserInfoDto> userInfoList = new ArrayList<>();
-		for (String id : userIds) {
-			UserInfoDto userInfoDto = new UserInfoDto();
-			userRepository.findById(Long.parseLong(id)).ifPresent(userInfoDto::setByUserEntity);
-			userInfoList.add(userInfoDto);
-		}
+			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid room ID"));
+		redisRepository.addUserToRoom(workSpaceId, roomId, userId.toString());
+		Set<String> userIds = redisRepository.getRoomMemberIds(workSpaceId, roomId);
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
 		sendUserList(workSpaceId, roomId);
 		return new JoinResponseDto(roomId, meetRoom.getRoomName(), userInfoList, (long)userIds.size());
 	}
 
+	/**
+	 * 미팅룸에서 나갑니다.
+	 * 웹소켓으로 변경된 사용자 목록을 전송합니다.
+	 * @param userId 사용자 ID
+	 */
 	@Transactional(readOnly = false)
-	public void leaveRoom(Long userId, String workspaceId) {
-		String meetRoom = userRoomMapping.get(USER_KEY, userId.toString());
-		if (meetRoom == null) {
-			return;
-		}
-		removeUserFromRoom(workspaceId, Long.parseLong(meetRoom), userId.toString());
-		sendUserList(workspaceId, Long.parseLong(meetRoom));
+	public void leaveRoom(Long userId) {
+		String workspaceId = userService.getUserWorkSpaceId(userId);
+		String meetRoomId = redisRepository.getUserRoomId(userId);
+		if (meetRoomId == null)
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in any room: " + userId);
+		redisRepository.removeUserFromRoom(workspaceId, Long.parseLong(meetRoomId), userId.toString());
+		sendUserList(workspaceId, Long.parseLong(meetRoomId));
 		sendRoomList(workspaceId);
 	}
 
-	private Set<String> addUserToRoom(String workspaceId, Long roomId, String userId) {
-		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
-		if (roomParticipants == null) {
-			roomParticipants = new HashMap<>();
-		}
-		Set<String> users = roomParticipants.get(roomId.toString());
-		if (users == null) {
-			users = new HashSet<>();
-		}
-		users.add(userId);
-		roomParticipants.put(roomId.toString(), users);
-		workspaceRoomParticipants.put(WORK_KEY, workspaceId, roomParticipants);
-		userRoomMapping.put(USER_KEY, userId, roomId.toString());
-		return users;
-	}
-
-	private void removeUserFromRoom(String workspaceId, Long roomId, String userId) {
-		userRoomMapping.delete(USER_KEY, userId);
-		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId);
-		if (roomParticipants == null) {
-			return;
-		}
-		Set<String> userIds = roomParticipants.get(roomId.toString());
-		userIds.remove(userId);
-
-		if (userIds.isEmpty()) {
-			MeetRoom meetRoom = meetRoomRepository.findById(roomId).orElse(null);
-			if (meetRoom != null) {
-				meetRoom.setDeleted(true);
-				meetRoomRepository.save(meetRoom);
-			}
-			roomParticipants.remove(roomId.toString());
-		} else {
-			roomParticipants.put(roomId.toString(), userIds);
-		}
-		if (roomParticipants.isEmpty()) {
-			workspaceRoomParticipants.delete(WORK_KEY, workspaceId);
-		} else {
-			workspaceRoomParticipants.put(WORK_KEY, workspaceId, roomParticipants);
-		}
-	}
-
-	public Set<String> getRoomMembers(String workspaceId, Long roomId) {
-		HashMap<String, Set<String>> roomParticipants = workspaceRoomParticipants.get(WORK_KEY, workspaceId.toString());
-		if (roomParticipants == null) {
-			return new HashSet<>();
-		}
-		return roomParticipants.get(roomId.toString());
-	}
-
+	/**
+	 * 미팅룸 목록을 웹소켓을 통해 전송합니다.
+	 * 이벤트 : /topic/{workSpaceId}/meetingRoomList
+	 * 전송 데이터 : 워크스페이스에 있는 미팅룸 목록
+	 * @param workSpaceId 참여중인 워크스페이스 ID
+	 * @return 미팅룸 목록
+	 */
 	public MeetingRoomListDto sendRoomList(String workSpaceId) {
+		// 미팅룸 정보를 조회합니다.
 		Set<MeetRoom> meetRooms = meetRoomRepository.findAllByWorkSpaceId(workSpaceId);
 		MeetingRoomListDto meetingRoomListDto = new MeetingRoomListDto();
+		// 미팅룸 정보를 DTO로 변환합니다.
 		for (MeetRoom meetRoom : meetRooms) {
-			Long roomId = meetRoom.getRoomId();
 			MeetingRoomDto meetingRoomDto = new MeetingRoomDto();
-			meetingRoomDto.setRoomId(roomId);
+			meetingRoomDto.setRoomId(meetRoom.getRoomId());
 			meetingRoomDto.setRoomName(meetRoom.getRoomName());
-			Set<String> roomMembers = getRoomMembers(workSpaceId, roomId);
-			if (roomMembers == null) {
-				return meetingRoomListDto;
-			}
+
+			// 미팅룸에 참여한 사용자 수를 조회합니다.
+			Set<String> roomMembers = redisRepository.getRoomMemberIds(workSpaceId, meetRoom.getRoomId());
 			meetingRoomDto.setUserCount(roomMembers.size());
-			List<UserInfoDto> userInfoList = new ArrayList<>();
-			for (String userId : roomMembers) {
-				UserInfoDto userInfoDto = new UserInfoDto();
-				userRepository.findById(Long.parseLong(userId)).ifPresent(userInfoDto::setByUserEntity);
-				userInfoList.add(userInfoDto);
-			}
+
+			// 사용자 정보 목록을 저장합니다.
+			List<UserInfoDto> userInfoList = userService.getUserInfoList(roomMembers);
 			meetingRoomDto.setUserInfoList(userInfoList);
+
 			meetingRoomListDto.getMeetingRoomList().add(meetingRoomDto);
 		}
+
+		// 미팅룸 정보를 전송합니다.(웹소켓)
 		simpMessagingTemplate.convertAndSend("/topic/" + workSpaceId + "/meetingRoomList", meetingRoomListDto);
 		return meetingRoomListDto;
 	}
 
-	private void sendUserList(String workSpaceId, Long roomId) {
-		Set<String> userIds = getRoomMembers(workSpaceId, roomId);
-		List<UserInfoDto> userInfoList = new ArrayList<>();
-		for (String userId : userIds) {
-			UserInfoDto userInfoDto = new UserInfoDto();
-			userRepository.findById(Long.parseLong(userId)).ifPresent(userInfoDto::setByUserEntity);
-			userInfoList.add(userInfoDto);
-		}
-		simpMessagingTemplate.convertAndSend("/topic/meetingRoom/" + roomId + "/users", userInfoList);
+	/**
+	 * 미팅룸 목록을 웹소켓을 통해서 전송합니다.(컨트롤러 연결 메서드)
+	 * 이벤트 : /topic/meetingRoom/{roomId}/users
+	 * 전송 데이터 : 사용자 정보 리스트
+	 * @return 미팅룸 목록
+	 */
+	public MeetingRoomListDto sendRoomList() {
+		Long userId = SecurityUtil.getCurrentUserId();
+		String workSpaceId = userService.getUserWorkSpaceId(userId);
+		return sendRoomList(workSpaceId);
 	}
 
-	public void sendErrorMessage(SimpMessageHeaderAccessor headerAccessor, String message, String destination,
-		int status) {
-		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
-		String socketId = socketRegistry.getSocketId(userId.toString());
-		simpMessagingTemplate.convertAndSendToUser(socketId, destination,
-			ResponseEntity.status(status).body(message));
+	/**
+	 * 미팅룸에 참여한 사용자 목록을 웹소켓을 통해서 전송합니다.
+	 * 이벤트 : /topic/meetingRoom/{roomId}/users
+	 * 전송 데이터 : 사용자 정보 리스트
+	 * @param workSpaceId 워크스페이스 ID
+	 * @param roomId 미팅룸 ID
+	 */
+	private void sendUserList(String workSpaceId, Long roomId) {
+		Set<String> userIds = redisRepository.getRoomMemberIds(workSpaceId, roomId);
+		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);
+		simpMessagingTemplate.convertAndSend("/topic/meetingRoom/" + roomId + "/users", userInfoList);
 	}
 }

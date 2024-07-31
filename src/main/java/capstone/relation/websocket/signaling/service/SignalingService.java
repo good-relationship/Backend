@@ -13,40 +13,58 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class SignalingService {
-	private final SocketRegistry socketRegistry;
-
-	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final UserService userService;
+	private final SocketRegistry socketRegistry;
+	private final SimpMessagingTemplate simpMessagingTemplate;
 
-	public void sendOffer(String roomId, SdpMessageDto sdpMessageDto, Long myId) {
-		System.out.println("sendOffer");
+	/**
+	 * Offer 메시지를 상대방에게 전송합니다.(목적지는 메시지를 확인해서 소켓 ID를 찾아서 전송합니다.)
+	 * /user/queue/offer/{roomId} 로 전송합니다.
+	 * @param roomId 참여중인 화상회의방 ID
+	 * @param sdpMessageDto Offer 메시지 DTO
+	 * @param senderId 보내는 사람 ID (내 Id)
+	 */
+	public void sendOffer(String roomId, SdpMessageDto sdpMessageDto, Long senderId) {
 		String destId = sdpMessageDto.getUserId();
 		String socketId = socketRegistry.getSocketId(destId);
-		SdpResponseDto sdpResponseDto = new SdpResponseDto();
-		sdpResponseDto.setUserInfo(userService.getUserInfo(myId));
-		sdpResponseDto.setSessionDescription(sdpMessageDto.getSessionDescription());
-		sdpResponseDto.setType(sdpMessageDto.getType());
+
+		SdpResponseDto sdpResponseDto = SdpResponseDto.builder()
+			.userInfo(userService.getUserInfo(senderId))
+			.sessionDescription(sdpMessageDto.getSessionDescription())
+			.type(sdpMessageDto.getType())
+			.build();
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/offer/" + roomId, sdpResponseDto);
 	}
 
-	public void sendAnswer(String roomId, SdpMessageDto sdpMessageDto, Long myId) {
-		System.out.println("sendAnswer");
+	/**
+	 * Answer 메시지를 상대방에게 전송합니다.(목적지는 메시지를 확인해서 소켓 ID를 찾아서 전송합니다.)
+	 * /user/queue/answer/{roomId} 로 전송합니다.
+	 * @param roomId 참여중인 화상회의방 ID
+	 * @param sdpMessageDto Answer 메시지 DTO
+	 * @param senderId 보내는 사람 ID (내 Id)
+	 */
+	public void sendAnswer(String roomId, SdpMessageDto sdpMessageDto, Long senderId) {
 		String socketId = socketRegistry.getSocketId(sdpMessageDto.getUserId());
-		SdpResponseDto sdpResponseDto = new SdpResponseDto();
 
-		sdpResponseDto.setUserInfo(userService.getUserInfo(myId));
-		sdpResponseDto.setSessionDescription(sdpMessageDto.getSessionDescription());
-		sdpResponseDto.setType(sdpMessageDto.getType());
+		SdpResponseDto sdpResponseDto = SdpResponseDto.builder()
+			.userInfo(userService.getUserInfo(senderId))
+			.sessionDescription(sdpMessageDto.getSessionDescription())
+			.type(sdpMessageDto.getType())
+			.build();
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/answer/" + roomId, sdpResponseDto);
 	}
 
-	public void sendIce(String roomId, IceDto iceDto, Long myId) {
-		System.out.println("sendIce");
+	/**
+	 * Ice 메시지를 상대방에게 전송합니다.(목적지는 메시지를 확인해서 소켓 ID를 찾아서 전송합니다.)
+	 * @param roomId 참여중인 화상회의방 ID
+	 * @param iceDto Ice 메시지 DTO
+	 * @param senderId 보내는 사람 ID (내 Id)
+	 */
+	public void sendIce(String roomId, IceDto iceDto, Long senderId) {
 		String destId = iceDto.getUserId();
 		String socketId = socketRegistry.getSocketId(destId);
-		iceDto.setUserId(myId.toString()); // 보내는 사람 ID로 갈아 껴줌.
+		iceDto.setUserId(senderId.toString()); // 보내는 사람 ID로 갈아 껴줌.
 		iceDto.setType(iceDto.getType());
 		simpMessagingTemplate.convertAndSendToUser(socketId, "/queue/ice/" + roomId, iceDto);
 	}
-
 }

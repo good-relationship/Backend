@@ -5,10 +5,12 @@ import java.util.List;
 import capstone.relation.user.dto.UserInfoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class JoinResponseDto {
 	@Schema(description = "회의실 ID", example = "123")
 	private Long roomId;

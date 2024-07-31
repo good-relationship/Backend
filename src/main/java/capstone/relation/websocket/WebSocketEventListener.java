@@ -18,19 +18,15 @@ public class WebSocketEventListener {
 	@EventListener
 	public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-		// String sessionId = headerAccessor.getSessionId();
 		String socketId = headerAccessor.getUser().getName();
 		Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
-		String workSpaceId = (String)headerAccessor.getSessionAttributes().get("workSpaceId");
 		System.out.println("User Disconnected : " + userId);
-		System.out.println("socketId : " + socketId);
 		if (userId == null) {
 			return;
 		}
-		meetRoomService.leaveRoom(userId, workSpaceId);
+		meetRoomService.leaveRoom(userId);
 		System.out.println("register SocketId" + socketRegistry.getSocketId(userId.toString()));
-		if (socketId == socketRegistry.getSocketId(userId.toString())) {
+		if (socketId == socketRegistry.getSocketId(userId.toString()))
 			socketRegistry.unregisterSession(userId.toString());
-		}
 	}
 }
