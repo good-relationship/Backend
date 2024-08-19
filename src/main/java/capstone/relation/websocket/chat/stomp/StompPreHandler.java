@@ -39,16 +39,14 @@ public class StompPreHandler implements ChannelInterceptor {
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 		if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-			System.out.println("preSend CONNECT가 실행");
 			String token = accessor.getFirstNativeHeader("Authorization");
-			System.out.println("token: " + token);
-			if (token == null || !token.startsWith("Bearer ")) {
+			if (token == null || !token.startsWith("Bearer "))
 				throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
-			}
+
 			token = token.substring(7); // Remove "Bearer " prefix
-			if (!tokenProvider.validateToken(token)) {
+			if (!tokenProvider.validateToken(token))
 				throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
-			}
+
 			Long userId = tokenProvider.getUserId(token);
 			Long expiryTime = tokenProvider.getExpiryFromToken(token); //나중에 만료시간 설정해서 스캐줄러에 넣으려고
 			socketRegistry.registerSession(userId.toString(), accessor.getUser().getName());
@@ -62,7 +60,6 @@ public class StompPreHandler implements ChannelInterceptor {
 					throw new AuthException(AuthErrorCode.INVALID_WORKSPACE_STATE_USER);
 				}
 			});
-			System.out.println("워크 스페이스 아이디: " + accessor.getSessionAttributes().get("workSpaceId"));
 			scheduleSessionExpiry(accessor, expiryTime);
 		}
 		return message;
