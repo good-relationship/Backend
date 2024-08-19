@@ -43,6 +43,7 @@ import capstone.relation.workspace.repository.WorkSpaceRepository;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test") //테스트 프로필 활성화.
+@DisplayName("시그널링 통합 테스트")
 @ExtendWith(SpringExtension.class) //단위 테스트에 공통적으로 사용할 확장 기능을 선언
 public class SignalingIntegrationTest {
 	@LocalServerPort
