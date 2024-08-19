@@ -69,5 +69,4 @@ class ChatRepositoryTest {
 		assertThat(result).hasSize(11);
 		assertThat(result.get(0).getContent()).isEqualTo("Message 15");
 	}
-
 }

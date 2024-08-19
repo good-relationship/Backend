@@ -49,8 +49,8 @@ public class SignalingIntegrationTest {
 	@LocalServerPort
 	private int port;
 
-	private String WEBSOCKET_URI;
-	private String WEBSOCKET_TOPIC;
+	private String websocketUri;
+	private String websocketTopic;
 
 	private WebSocketStompClient stompClient;
 	private User sender;
@@ -70,8 +70,8 @@ public class SignalingIntegrationTest {
 	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.openMocks(this);
-		this.WEBSOCKET_URI = "ws://localhost:" + port + "/ws-chat";
-		this.WEBSOCKET_TOPIC = "/app";
+		this.websocketUri = "ws://localhost:" + port + "/ws-chat";
+		this.websocketTopic = "/app";
 		this.stompClient = new WebSocketStompClient(new StandardWebSocketClient());
 		this.stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 		sender = User.builder()
@@ -116,7 +116,7 @@ public class SignalingIntegrationTest {
 		stompHeaders.add("Authorization", "Bearer " + token);
 
 		//STOMP 연결
-		StompSession session = stompClient.connectAsync(WEBSOCKET_URI, headers, stompHeaders,
+		StompSession session = stompClient.connectAsync(websocketUri, headers, stompHeaders,
 			new StompSessionHandlerAdapter() {
 				@Override
 				public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
@@ -155,7 +155,7 @@ public class SignalingIntegrationTest {
 			}
 		});
 		StompHeaders stompHeaders = new StompHeaders();
-		stompHeaders.setDestination(WEBSOCKET_TOPIC + "/ice/123");
+		stompHeaders.setDestination(websocketTopic + "/ice/123");
 
 		senderSession.send(stompHeaders, iceDto);
 
@@ -195,7 +195,7 @@ public class SignalingIntegrationTest {
 		});
 
 		StompHeaders stompHeaders = new StompHeaders();
-		stompHeaders.setDestination(WEBSOCKET_TOPIC + "/offer/123");
+		stompHeaders.setDestination(websocketTopic + "/offer/123");
 
 		senderSession.send(stompHeaders, sdpMessageDto);
 
@@ -234,7 +234,7 @@ public class SignalingIntegrationTest {
 			}
 		});
 		StompHeaders stompHeaders = new StompHeaders();
-		stompHeaders.setDestination(WEBSOCKET_TOPIC + "/answer/123");
+		stompHeaders.setDestination(websocketTopic + "/answer/123");
 
 		senderSession.send(stompHeaders, sdpMessageDto);
 
