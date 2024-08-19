@@ -46,6 +46,7 @@ class MeetRoomControllerTest {
 
 	@Test
 	@DisplayName("방 생성")
+	@WithMockCustomUser
 	void testCreateRoom() throws Exception {
 		CreateRoomDto createRoomDto = new CreateRoomDto("회의방");
 		List<UserInfoDto> userInfoList = new ArrayList<>();
@@ -53,7 +54,7 @@ class MeetRoomControllerTest {
 		userInfoList.add(userInfoDto);
 		JoinResponseDto joinResponseDto = new JoinResponseDto(1L, "회의방", userInfoList, 1L);
 
-		when(meetRoomService.createAndJoinRoom(any(CreateRoomDto.class)))
+		when(meetRoomService.createAndJoinRoom(anyLong(), any(CreateRoomDto.class)))
 			.thenReturn(joinResponseDto);
 
 		mockMvc.perform(post("/meet/room/create")

@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,6 +40,7 @@ public class Chat {
 		this.timestamp = timestamp;
 	}
 
+	@Builder
 	public Chat(User user, WorkSpace workSpace, String content, LocalDateTime timestamp) {
 		this.sender = user;
 		this.workSpace = workSpace;

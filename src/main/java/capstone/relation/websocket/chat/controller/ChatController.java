@@ -31,12 +31,9 @@ public class ChatController {
 	public ResponseEntity<?> newMessage(@DestinationVariable String workSpaceId, MessagePublishDto message,
 		SimpMessageHeaderAccessor headerAccessor) throws Exception {
 		try {
-			System.out.println("workSpaceId: " + workSpaceId);
 			MessageDto messageDto = chatService.sendNewMessage(workSpaceId, message.getContent(), headerAccessor);
-			System.out.println("Send message: " + messageDto);
-			if (messageDto == null) {
+			if (messageDto == null)
 				return ResponseEntity.status(400).body("The message is empty.");
-			}
 			return ResponseEntity.ok(messageDto);
 		} catch (AuthException e) {
 			return ResponseEntity
@@ -45,7 +42,6 @@ public class ChatController {
 		} catch (WorkspaceException e) {
 			return ResponseEntity.status(404)
 				.body("The workspace does not exist or you do not have access to it.");
-
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().build();
 		}
@@ -56,15 +52,13 @@ public class ChatController {
 		SimpMessageHeaderAccessor headerAccessor) throws
 		Exception {
 		try {
-			System.out.println("historyPublishRequest: " + historyPublishDto);
+			Long userId = (Long)headerAccessor.getSessionAttributes().get("userId");
 			HistoryResponseDto historyResponseDto;
 			if (historyPublishDto == null) {
-				historyResponseDto = chatService.getRecentHistory(headerAccessor);
+				historyResponseDto = chatService.getHistory(null, userId);
 			} else {
-				historyResponseDto = chatService.getHistory(historyPublishDto.getLastMsgId(),
-					headerAccessor);
+				historyResponseDto = chatService.getHistory(historyPublishDto.getLastMsgId(), userId);
 			}
-			System.out.println("Send history: " + historyResponseDto);
 			simpMessagingTemplate.convertAndSendToUser(principal.getName(), "/queue/history",
 				ResponseEntity.ok(historyResponseDto));
 		} catch (AuthException e) {

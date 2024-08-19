@@ -29,13 +29,13 @@ public class MeetRoomController {
 			+ "방 생성자는 자동으로 방에 참여합니다.\n"
 	)
 	public JoinResponseDto createRoom(@RequestBody CreateRoomDto createRoomDto) {
-		return meetRoomService.createAndJoinRoom(createRoomDto);
+		return meetRoomService.createAndJoinRoom(SecurityUtil.getCurrentUserId(), createRoomDto);
 	}
 
 	@PostMapping("/join/{roomId}")
 	@Operation(summary = "회의방 참여", description = "회의방에 참여합니다.")
 	public JoinResponseDto joinRoom(@PathVariable Long roomId) {
-		return meetRoomService.joinRoom(roomId);
+		return meetRoomService.joinRoom(SecurityUtil.getCurrentUserId(), roomId);
 	}
 
 	@GetMapping("/list")
@@ -43,7 +43,7 @@ public class MeetRoomController {
 		+ "이것에 대한 응답은 `/topic/{workSpaceId}/meetingRoomList`로 이루어집니다.\n"
 	)
 	public MeetingRoomListDto requestRoomList() {
-		return meetRoomService.sendRoomList();
+		return meetRoomService.sendRoomList(SecurityUtil.getCurrentUserId());
 	}
 
 	@PostMapping("/leave")

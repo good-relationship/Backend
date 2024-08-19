@@ -3,9 +3,13 @@ package capstone.relation.websocket.chat.dto.response;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
+@AllArgsConstructor
 public class HistoryResponseDto {
 	@Schema(description = "메시지 목록")
 	private List<MessageDto> messages;
