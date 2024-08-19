@@ -33,83 +33,61 @@ public class ChatService {
 
 	@Transactional(readOnly = false)
 	public MessageDto sendNewMessage(String workSpaceId, String content, SimpMessageHeaderAccessor headerAccessor) {
-		if (content == null || content.isEmpty()) {
+		if (content == null || content.isEmpty())
 			return null;
-		}
+
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
-		System.out.println("userId: " + userId);
-		if (userId == null) {
+		if (userId == null)
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
-		}
-		User user = userRepository.findById(userId).orElse(null);
+		User user = userRepository.findById(userId).orElseThrow(() ->
+			new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN));
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId).orElse(null);
-		if (user == null || workSpace == null || user.getWorkSpace() != workSpace) {
+		if (user == null || workSpace == null || user.getWorkSpace() != workSpace)
 			throw new WorkspaceException(WorkspaceErrorCode.INVALID_ACCESS);
-		}
+
 		Chat chat = new Chat(user, workSpace, content, LocalDateTime.now());
 		chatRepository.save(chat);
 		return ChatMapper.INSTANCE.chatToMessageDto(chat);
 	}
 
-	public HistoryResponseDto getRecentHistory(SimpMessageHeaderAccessor headerAccessor) {
-		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
-		Long userId = (Long)sessionAttributes.get("userId");
-		User user = userRepository.findById(userId).orElse(null);
-		if (user == null) {
-			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
-		}
+	/**
+	 * 채팅방의 메시지 목록을 반환한다.(10개) 마지막 메시지 ID가 주어지면 해당 ID 이후의 메시지 목록을 반환한다.
+	 * @param lastMsgId 마지막 메시지 ID
+	 * @param userId 사용자 ID
+	 * @return 메시지 목록 응답 DTO(HistoryResponseDto)
+	 */
+	public HistoryResponseDto getHistory(Long lastMsgId, Long userId) {
+		User user = userRepository.findById(userId).orElseThrow(() ->
+			new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN));
+
 		WorkSpace workSpace = user.getWorkSpace();
-		if (workSpace == null) {
+		if (workSpace == null)
 			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+
+		List<Chat> chats = retrieveChats(workSpace, lastMsgId);
+		HistoryResponseDto historyResponseDto = HistoryResponseDto.builder()
+			.isStart(lastMsgId == null || lastMsgId == 0L)
+			.isEnd(chats.size() <= 10)
+			.build();
+		//가장 마지막 메시지를 없앤다.
+		if (chats.size() == 11)
+			chats.remove(10);
+		if (!chats.isEmpty()) {
+			if (lastMsgId != null && lastMsgId != 0L)
+				Collections.reverse(chats);
+			historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
+			historyResponseDto.setLastMsgId(chats.get(0).getId());
 		}
-		System.out.println("workSpace: " + workSpace);
-		List<Chat> chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
-		System.out.println("chats: " + chats);
-		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
-		historyResponseDto.setStart(true);
-		historyResponseDto.setEnd(chats.size() < 10);
-		if (chats.isEmpty()) {
-			return historyResponseDto;
-		}
-		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
-		historyResponseDto.setLastMsgId(chats.get(0).getId());
 		return historyResponseDto;
 	}
 
-	public HistoryResponseDto getHistory(Long lastMsgId, SimpMessageHeaderAccessor headerAccessor) {
-		System.out.println("lastMsgId: " + lastMsgId);
-		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
-		Long userId = (Long)sessionAttributes.get("userId");
-		boolean isStart = false;
-		User user = userRepository.findById(userId).orElse(null);
-		if (user == null) {
-			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
-		}
-		WorkSpace workSpace = user.getWorkSpace();
-		if (workSpace == null) {
-			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
-		}
-		List<Chat> chats;
+	private List<Chat> retrieveChats(WorkSpace workSpace, Long lastMsgId) {
 		if (lastMsgId == null || lastMsgId == 0L) {
-			chats = chatRepository.findTop10ByWorkSpaceOrderByIdDesc(workSpace);
-			isStart = true;
+			return chatRepository.findTop11ByWorkSpaceOrderByIdDesc(workSpace);
 		} else {
-			chats = chatRepository.findTop10ByWorkSpaceAndIdIsLessThanOrderByIdDesc(workSpace,
-				lastMsgId);
+			return chatRepository.findTop11ByWorkSpaceAndIdIsLessThanOrderByIdDesc(workSpace, lastMsgId);
 		}
-		System.out.println("chats: " + chats);
-		HistoryResponseDto historyResponseDto = new HistoryResponseDto();
-		historyResponseDto.setStart(isStart);
-		if (chats.isEmpty()) {
-			return historyResponseDto;
-		}
-		Collections.reverse(chats);
-		historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
-		historyResponseDto.setEnd(chats.size() < 10);
-		historyResponseDto.setLastMsgId(chats.get(0).getId());
-
-		return historyResponseDto;
 	}
 }
 
