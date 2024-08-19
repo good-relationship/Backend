@@ -26,7 +26,7 @@ public interface ChatMapper {
 	MessageDto chatToMessageDto(Chat chat);
 
 	List<MessageDto> chatToMessageDtoList(List<Chat> chats);
-	
+
 	@Named("userToSenderDto")
 	default SenderDto userToSenderDto(User user) {
 		if (user == null) {
@@ -39,3 +39,4 @@ public interface ChatMapper {
 		return dto;
 	}
 }
+
