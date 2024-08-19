@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import capstone.relation.common.util.SecurityUtil;
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
@@ -37,11 +36,10 @@ public class MeetRoomService {
 	 * @return 참여 응답 DTO
 	 */
 	@Transactional(readOnly = false)
-	public JoinResponseDto createAndJoinRoom(CreateRoomDto createRoomDto) {
+	public JoinResponseDto createAndJoinRoom(Long userId, CreateRoomDto createRoomDto) {
 		String roomName = createRoomDto.getRoomName();
 		if (roomName == null || roomName.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
-		Long userId = SecurityUtil.getCurrentUserId();
 		String workSpaceId = userService.getUserWorkSpaceId(userId);
 
 		// 미팅룸을 생성, 참여, 미팅룸 목록을 전송합니다.
@@ -100,8 +98,8 @@ public class MeetRoomService {
 	 * @param roomId 가입하고자 하는 미팅룸 ID
 	 * @return 참여 응답 DTO
 	 */
-	public JoinResponseDto joinRoom(Long roomId) {
-		Long userId = SecurityUtil.getCurrentUserId();
+	public JoinResponseDto joinRoom(Long userId, Long roomId) {
+
 		String workspaceId = userService.getUserWorkSpaceId(userId);
 		String meetRoomId = redisRepository.getUserRoomId(userId);
 		if (meetRoomId != null)
@@ -140,7 +138,7 @@ public class MeetRoomService {
 		String workspaceId = userService.getUserWorkSpaceId(userId);
 		String meetRoomId = redisRepository.getUserRoomId(userId);
 		if (meetRoomId == null)
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User is not in any room: " + userId);
+			return;
 		redisRepository.removeUserFromRoom(workspaceId, Long.parseLong(meetRoomId), userId.toString());
 		sendUserList(workspaceId, Long.parseLong(meetRoomId));
 		sendRoomList(workspaceId);
@@ -185,8 +183,8 @@ public class MeetRoomService {
 	 * 전송 데이터 : 사용자 정보 리스트
 	 * @return 미팅룸 목록
 	 */
-	public MeetingRoomListDto sendRoomList() {
-		Long userId = SecurityUtil.getCurrentUserId();
+	public MeetingRoomListDto sendRoomList(Long userId) {
+
 		String workSpaceId = userService.getUserWorkSpaceId(userId);
 		return sendRoomList(workSpaceId);
 	}

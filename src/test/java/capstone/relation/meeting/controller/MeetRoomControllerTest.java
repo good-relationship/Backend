@@ -53,7 +53,7 @@ class MeetRoomControllerTest {
 		userInfoList.add(userInfoDto);
 		JoinResponseDto joinResponseDto = new JoinResponseDto(1L, "회의방", userInfoList, 1L);
 
-		when(meetRoomService.createAndJoinRoom(any(CreateRoomDto.class)))
+		when(meetRoomService.createAndJoinRoom(1L, any(CreateRoomDto.class)))
 			.thenReturn(joinResponseDto);
 
 		mockMvc.perform(post("/meet/room/create")

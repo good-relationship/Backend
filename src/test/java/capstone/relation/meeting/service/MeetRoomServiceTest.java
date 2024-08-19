@@ -42,7 +42,7 @@ class MeetRoomServiceTest {
 
 	@Mock
 	private MeetRoomRepository mockMeetRoomRepository;
-	
+
 	@Mock
 	private RedisRepository mockRedisRepository;
 
@@ -64,7 +64,7 @@ class MeetRoomServiceTest {
 			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
 
 		// when
-		JoinResponseDto joinResponse = meetRoomService.createAndJoinRoom(createRoomDto);
+		JoinResponseDto joinResponse = meetRoomService.createAndJoinRoom(1L, createRoomDto);
 
 		// then
 		verify(mockSimpMessagingTemplate, times(1)).convertAndSend(eq("/topic/workspace-1/meetingRoomList"),
@@ -81,7 +81,7 @@ class MeetRoomServiceTest {
 		CreateRoomDto createRoomDto = new CreateRoomDto("");
 
 		// when & then
-		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(createRoomDto))
+		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(1L, createRoomDto))
 			.isInstanceOf(ResponseStatusException.class)
 			.satisfies(exception -> {
 				ResponseStatusException ex = (ResponseStatusException)exception;
@@ -102,7 +102,7 @@ class MeetRoomServiceTest {
 		given(mockRedisRepository.isUserInRoom(1L)).willReturn(true);
 
 		// when & then
-		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(createRoomDto))
+		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(1L, createRoomDto))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("User is already in the room: 1");
 	}
