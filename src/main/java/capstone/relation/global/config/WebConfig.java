@@ -1,4 +1,4 @@
-package capstone.relation.common.config;
+package capstone.relation.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

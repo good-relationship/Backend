@@ -1,4 +1,4 @@
-package capstone.relation.common.util;
+package capstone.relation.global.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

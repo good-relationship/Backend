@@ -1,4 +1,4 @@
-package capstone.relation.common.user;
+package capstone.relation.global.user;
 
 public interface UserInfo {
 	Long getUserId();

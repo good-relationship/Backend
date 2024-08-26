@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import capstone.relation.common.config.FeignConfig;
+import capstone.relation.global.config.FeignConfig;
 import capstone.relation.workspace.school.dto.SchoolInfoRequest;
 import capstone.relation.workspace.school.dto.response.SchoolInfoResponse;
 import lombok.extern.slf4j.Slf4j;

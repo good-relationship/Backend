@@ -1,4 +1,4 @@
-package capstone.relation.common.initializer;
+package capstone.relation.global.initializer;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

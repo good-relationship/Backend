@@ -1,4 +1,4 @@
-package capstone.relation.common.initializer;
+package capstone.relation.global.initializer;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Profile;

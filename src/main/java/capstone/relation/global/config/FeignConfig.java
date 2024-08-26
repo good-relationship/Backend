@@ -1,4 +1,4 @@
-package capstone.relation.common.config;
+package capstone.relation.global.config;
 
 import java.util.Map;
 import java.util.Objects;

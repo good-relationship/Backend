@@ -76,7 +76,7 @@ dependencies {
     //redis
     implementation 'io.lettuce:lettuce-core'
 
-    // apache common
+    // apache global
     implementation 'org.apache.commons:commons-lang3:3.14.0'
     implementation 'commons-validator:commons-validator:1.8.0'
 

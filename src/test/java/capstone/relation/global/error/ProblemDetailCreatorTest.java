@@ -1,4 +1,4 @@
-package capstone.relation.common.error;
+package capstone.relation.global.error;
 
 import static org.junit.jupiter.api.Assertions.*;
 
