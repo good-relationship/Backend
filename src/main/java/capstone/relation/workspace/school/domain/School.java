@@ -40,6 +40,7 @@ public class School {
 	private String estType; //사립 국립 등
 
 	@OneToMany(mappedBy = "school")
+	@Builder.Default
 	private Set<WorkSpace> workSpaces = new HashSet<>();
 
 	public void addWorkSpace(WorkSpace workSpace) {
