@@ -1,4 +1,4 @@
-package capstone.relation.global.error;
+package capstone.relation.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

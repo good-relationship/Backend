@@ -38,7 +38,7 @@ function gotLocalMediaStream(mediaStream) {
     callButton.disabled = false;  // Enable call button.
 }
 
-// Handles error by logging a message to the console.
+// Handles exception by logging a message to the console.
 function handleLocalMediaStreamError(error) {
     trace(`navigator.getUserMedia error: ${error.toString()}.`);
 }
@@ -123,7 +123,7 @@ function handleConnectionChange(event) {
         `${peerConnection.iceConnectionState}.`);
 }
 
-// Logs error when setting session description fails.
+// Logs exception when setting session description fails.
 function setSessionDescriptionError(error) {
     trace(`Failed to create session description: ${error.toString()}.`);
 }

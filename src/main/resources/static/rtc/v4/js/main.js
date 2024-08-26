@@ -99,7 +99,7 @@ navigator.mediaDevices.getUserMedia({
 })
     .then(gotStream)
     .catch(function (e) {
-        alert('getUserMedia() error: ' + e.name);
+        alert('getUserMedia() exception: ' + e.name);
     });
 
 function gotStream(stream) {
@@ -173,7 +173,7 @@ function handleIceCandidate(event) {
 }
 
 function handleCreateOfferError(event) {
-    console.log('createOffer() error: ', event);
+    console.log('createOffer() exception: ', event);
 }
 
 function doCall() {

@@ -1,4 +1,4 @@
-package capstone.relation.global.error;
+package capstone.relation.global.exception;
 
 import org.springframework.validation.FieldError;
 

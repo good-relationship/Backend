@@ -46,7 +46,7 @@ function connect() {
         })
             .then(gotStream)
             .catch(function (e) {
-                alert('getUserMedia() error: ' + e.name);
+                alert('getUserMedia() exception: ' + e.name);
             });
         stompClient.subscribe('/topic/' + WORKSPACE_ID + '/meetingRoomList', function (greeting) {
             updateRoomList(JSON.parse(greeting.body));
@@ -205,7 +205,7 @@ function handleIceRequest(message) {
 }
 
 function handleCreateOfferError(event) {
-    console.log('createOffer() error: ', event);
+    console.log('createOffer() exception: ', event);
 }
 
 function setLocalAndSendAnswer(sessionDescription, userId) {
