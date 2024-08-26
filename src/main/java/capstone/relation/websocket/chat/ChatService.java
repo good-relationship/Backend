@@ -74,8 +74,7 @@ public class ChatService {
 		if (chats.size() == 11)
 			chats.remove(10);
 		if (!chats.isEmpty()) {
-			if (lastMsgId != null && lastMsgId != 0L)
-				Collections.reverse(chats);
+			Collections.reverse(chats);
 			historyResponseDto.setMessages(ChatMapper.INSTANCE.chatToMessageDtoList(chats));
 			historyResponseDto.setLastMsgId(chats.get(0).getId());
 		}
