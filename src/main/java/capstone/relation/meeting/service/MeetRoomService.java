@@ -14,6 +14,8 @@ import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
+import capstone.relation.meeting.exception.MeetingErrorCode;
+import capstone.relation.meeting.exception.MeetingException;
 import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.meeting.repository.RedisRepository;
 import capstone.relation.user.UserService;
@@ -39,7 +41,7 @@ public class MeetRoomService {
 	public JoinResponseDto createAndJoinRoom(Long userId, CreateRoomDto createRoomDto) {
 		String roomName = createRoomDto.getRoomName();
 		if (roomName == null || roomName.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
+			throw new IllegalArgumentException("회의실 이름을 입력해주세요.");
 		String workSpaceId = userService.getUserWorkSpaceId(userId);
 
 		// 미팅룸을 생성, 참여, 미팅룸 목록을 전송합니다.
@@ -74,7 +76,7 @@ public class MeetRoomService {
 	 */
 	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
 		if (!redisRepository.isUserInRoom(userId))
-			throw new IllegalArgumentException("User is not in any room: " + userId);
+			throw new MeetingException(MeetingErrorCode.USER_NOT_MEETING_MEMBER);
 
 		Long roomId = Long.parseLong(redisRepository.getUserRoomId(userId));
 		Set<String> userIds = redisRepository.getRoomMemberIds(workspaceId, roomId);
