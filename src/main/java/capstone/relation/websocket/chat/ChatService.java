@@ -20,7 +20,6 @@ import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import capstone.relation.websocket.chat.repository.ChatRepository;
 import capstone.relation.workspace.WorkSpace;
-import capstone.relation.workspace.exception.InvalidWorkSpaceAccess;
 import capstone.relation.workspace.exception.WorkSpaceErrorCode;
 import capstone.relation.workspace.exception.WorkSpaceException;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
@@ -47,7 +46,7 @@ public class ChatService {
 			new AuthException(AuthErrorCode.INVALID_TOKEN));
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId).orElse(null);
 		if (user == null || workSpace == null || user.getWorkSpace() != workSpace)
-			throw InvalidWorkSpaceAccess.EXCEPTION;
+			throw new WorkSpaceException(WorkSpaceErrorCode.NO_WORKSPACE);
 
 		Chat chat = new Chat(user, workSpace, content, LocalDateTime.now());
 		chatRepository.save(chat);
