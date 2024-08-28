@@ -46,22 +46,17 @@ public class AuthController {
 
 	@PostMapping(value = "/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "카카오 로그인 인증", description = "초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. "
-		+ "초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
-	@ApiResponse(responseCode = "200", description = "Successful operation",
-		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
+		+ "초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful operation",
+				content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+		})
 	public ResponseEntity<TokenResponse> loginWithKakaoCode(
 		@Parameter(description = "카카오에서 받아온 AuthorizationCode", required = true, example = "네이버에서 받아온 코드")
 		@RequestParam String code,
 		@Parameter(description = "초대된 경우에만 있는 코드", required = false, example = "초대 코드")
 		@RequestParam(required = false) String inviteCode) {
-		System.out.println(code);
-		System.out.println("카카오 로그인");
-		try {
-			return ResponseEntity.ok(authService.loginWithCode(AuthProvider.KAKAO, code, inviteCode));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return ResponseEntity.badRequest().build();
-		}
+		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.KAKAO, code, inviteCode));
 	}
 
 	@PostMapping(value = "/naver", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -71,12 +66,7 @@ public class AuthController {
 		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
 	public ResponseEntity<TokenResponse> loginWithNaverCode(@RequestParam String code,
 		@RequestParam(required = false) String inviteCode) {
-		try {
-			return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return ResponseEntity.badRequest().build();
-		}
+		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
 	}
 
 	@PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
