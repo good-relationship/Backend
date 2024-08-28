@@ -14,12 +14,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.api.auth.exception.AuthErrorCode;
+import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.api.auth.jwt.refreshtoken.CollectionRefreshTokenRepository;
 import capstone.relation.api.auth.jwt.refreshtoken.RefreshToken;
 import capstone.relation.api.auth.jwt.refreshtoken.RefreshTokenRepository;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.user.domain.Role;
 import capstone.relation.user.domain.User;
+import capstone.relation.user.exception.UserErrorCode;
+import capstone.relation.user.exception.UserException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -116,9 +120,9 @@ public class TokenProvider {
 			Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(inviteToken).getBody();
 			return claims.getSubject();
 		} catch (ExpiredJwtException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "만료된 초대 코드입니다.");
+			throw new UserException(UserErrorCode.EXPIRED_INVITE_CODE);
 		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 초대 코드입니다.");
+			throw new UserException(UserErrorCode.INVALID_INVITE_CODE);
 		}
 	}
 
@@ -143,7 +147,7 @@ public class TokenProvider {
 		try {
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
 		} catch (ExpiredJwtException expiredJwtException) {
-			throw new IllegalStateException("만료된 토큰입니다.");
+			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
 		}
 	}
 }

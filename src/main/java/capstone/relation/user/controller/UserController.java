@@ -33,7 +33,6 @@ public class UserController {
 		User user = userService.getUserEntity();
 		Long userId = user.getId();
 		String workspaceId = user.getWorkSpace().getId();
-		System.out.println("룸인포!!!!!!!!");
 		return meetRoomService.getRoomInfo(workspaceId, userId);
 	}
 }

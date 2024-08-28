@@ -12,14 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 import capstone.relation.api.auth.exception.AuthErrorCode;
 import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.user.domain.User;
+import capstone.relation.user.exception.UserErrorCode;
+import capstone.relation.user.exception.UserException;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.chat.domain.Chat;
 import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import capstone.relation.websocket.chat.repository.ChatRepository;
 import capstone.relation.workspace.WorkSpace;
-import capstone.relation.workspace.exception.WorkspaceErrorCode;
-import capstone.relation.workspace.exception.WorkspaceException;
+import capstone.relation.workspace.exception.InvalidWorkSpaceAccess;
+import capstone.relation.workspace.exception.WorkSpaceErrorCode;
+import capstone.relation.workspace.exception.WorkSpaceException;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -39,12 +42,12 @@ public class ChatService {
 		Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
 		Long userId = (Long)sessionAttributes.get("userId");
 		if (userId == null)
-			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 		User user = userRepository.findById(userId).orElseThrow(() ->
-			new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN));
+			new AuthException(AuthErrorCode.INVALID_TOKEN));
 		WorkSpace workSpace = workSpaceRepository.findById(workSpaceId).orElse(null);
 		if (user == null || workSpace == null || user.getWorkSpace() != workSpace)
-			throw new WorkspaceException(WorkspaceErrorCode.INVALID_ACCESS);
+			throw InvalidWorkSpaceAccess.EXCEPTION;
 
 		Chat chat = new Chat(user, workSpace, content, LocalDateTime.now());
 		chatRepository.save(chat);
@@ -59,11 +62,11 @@ public class ChatService {
 	 */
 	public HistoryResponseDto getHistory(Long lastMsgId, Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(() ->
-			new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN));
+			new UserException(UserErrorCode.INVALID_USER));
 
 		WorkSpace workSpace = user.getWorkSpace();
 		if (workSpace == null)
-			throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+			throw new WorkSpaceException(WorkSpaceErrorCode.NO_WORKSPACE);
 
 		List<Chat> chats = retrieveChats(workSpace, lastMsgId);
 		HistoryResponseDto historyResponseDto = HistoryResponseDto.builder()

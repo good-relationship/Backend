@@ -17,7 +17,6 @@ import capstone.relation.websocket.chat.dto.publish.HistoryPublishDto;
 import capstone.relation.websocket.chat.dto.publish.MessagePublishDto;
 import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
-import capstone.relation.workspace.exception.WorkspaceException;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -39,9 +38,9 @@ public class ChatController {
 			return ResponseEntity
 				.status(401)
 				.body("Access token is already expired or invalid.");
-		} catch (WorkspaceException e) {
-			return ResponseEntity.status(404)
-				.body("The workspace does not exist or you do not have access to it.");
+			// } catch (WorkspaceException e) {
+			// 	return ResponseEntity.status(404)
+			// 		.body("The workspace does not exist or you do not have access to it.");
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().build();
 		}
