@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import capstone.relation.global.util.SecurityUtil;
+import capstone.relation.meeting.docs.CreateRoomExceptionDocs;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
@@ -28,6 +30,7 @@ public class MeetRoomController {
 		"새로운 회의방을 생성합니다. 생성된 회의방은 `/topic/{workSpaceId}/meetingRoomList`로 생성된 방에 대한 목록 발송이 이루어집니다.\n"
 			+ "방 생성자는 자동으로 방에 참여합니다.\n"
 	)
+	@ApiErrorExceptionsExample(CreateRoomExceptionDocs.class)
 	public JoinResponseDto createRoom(@RequestBody CreateRoomDto createRoomDto) {
 		return meetRoomService.createAndJoinRoom(SecurityUtil.getCurrentUserId(), createRoomDto);
 	}
