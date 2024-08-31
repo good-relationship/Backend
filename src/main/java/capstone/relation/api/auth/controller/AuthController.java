@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import capstone.relation.api.auth.AuthProvider;
+import capstone.relation.api.auth.docs.LoginAuthExceptionDocs;
 import capstone.relation.api.auth.jwt.response.RefreshTokenResponse;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.api.auth.service.AuthService;
+import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -46,11 +48,8 @@ public class AuthController {
 
 	@PostMapping(value = "/kakao", produces = MediaType.APPLICATION_JSON_VALUE)
 	@Operation(summary = "카카오 로그인 인증", description = "초대받은 경우만 있는 토큰으로 카카오를 통한 로그인 인증을 처리합니다. "
-		+ "초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "Successful operation",
-				content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-		})
+		+ "초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
+	@ApiErrorExceptionsExample(LoginAuthExceptionDocs.class)
 	public ResponseEntity<TokenResponse> loginWithKakaoCode(
 		@Parameter(description = "카카오에서 받아온 AuthorizationCode", required = true, example = "네이버에서 받아온 코드")
 		@RequestParam String code,
