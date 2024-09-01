@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import capstone.relation.api.auth.AuthProvider;
 import capstone.relation.api.auth.docs.LoginAuthExceptionDocs;
+import capstone.relation.api.auth.docs.RefreshAuthExceptionDocs;
 import capstone.relation.api.auth.jwt.response.RefreshTokenResponse;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.api.auth.service.AuthService;
@@ -63,15 +64,15 @@ public class AuthController {
 		+ "초대받은 경우만 있는 토큰으로 네이버를 통한 로그인 인증을 처리합니다. 초대 토큰이 없는 경우에는 `inviteToken` 없이 요청합니다.")
 	@ApiResponse(responseCode = "200", description = "Successful operation",
 		content = @Content(schema = @Schema(implementation = TokenResponse.class)))
+	@ApiErrorExceptionsExample(LoginAuthExceptionDocs.class)
 	public ResponseEntity<TokenResponse> loginWithNaverCode(@RequestParam String code,
 		@RequestParam(required = false) String inviteCode) {
 		return ResponseEntity.ok(authService.loginWithCode(AuthProvider.NAVER, code, inviteCode));
 	}
 
-	@PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/refresh")
 	@Operation(summary = "AccessToken 갱신", description = "Refresh Token을 통해 AccessToken을 갱신합니다.")
-	@ApiResponse(responseCode = "200", description = "Successful operation",
-		content = @Content(schema = @Schema(implementation = RefreshTokenResponse.class)))
+	@ApiErrorExceptionsExample(RefreshAuthExceptionDocs.class)
 	public ResponseEntity<RefreshTokenResponse> refresh(@RequestHeader("Refresh") String refreshToken) {
 		return ResponseEntity.ok(authService.generateAccessToken(refreshToken));
 	}
