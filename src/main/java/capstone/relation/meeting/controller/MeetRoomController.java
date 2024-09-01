@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import capstone.relation.global.util.SecurityUtil;
 import capstone.relation.meeting.docs.CreateRoomExceptionDocs;
+import capstone.relation.meeting.docs.LeaveRoomExceptionDocs;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.meeting.service.MeetRoomService;
+import capstone.relation.workspace.docs.WorkspaceGetExceptionDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class MeetRoomController {
 
 	@PostMapping("/join/{roomId}")
 	@Operation(summary = "회의방 참여", description = "회의방에 참여합니다.")
+	@ApiErrorExceptionsExample(CreateRoomExceptionDocs.class)
 	public JoinResponseDto joinRoom(@PathVariable Long roomId) {
 		return meetRoomService.joinRoom(SecurityUtil.getCurrentUserId(), roomId);
 	}
@@ -45,12 +48,14 @@ public class MeetRoomController {
 	@Operation(summary = "회의방 목록 요청", description = "현재 워크스페이스에 있는 회의방 목록을 요청합니다.\n"
 		+ "이것에 대한 응답은 `/topic/{workSpaceId}/meetingRoomList`로 이루어집니다.\n"
 	)
+	@ApiErrorExceptionsExample(WorkspaceGetExceptionDocs.class)
 	public MeetingRoomListDto requestRoomList() {
 		return meetRoomService.sendRoomList(SecurityUtil.getCurrentUserId());
 	}
 
 	@PostMapping("/leave")
 	@Operation(summary = "회의방 나가기", description = "현재 참여중인 회의방을 나갑니다.")
+	@ApiErrorExceptionsExample(LeaveRoomExceptionDocs.class)
 	public void leaveRoom() {
 		meetRoomService.leaveRoom(SecurityUtil.getCurrentUserId());
 	}
