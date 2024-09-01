@@ -10,15 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
+import capstone.relation.meeting.exception.MeetingException;
 import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.meeting.repository.RedisRepository;
 import capstone.relation.security.WithMockCustomUser;
@@ -82,12 +81,7 @@ class MeetRoomServiceTest {
 
 		// when & then
 		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(1L, createRoomDto))
-			.isInstanceOf(ResponseStatusException.class)
-			.satisfies(exception -> {
-				ResponseStatusException ex = (ResponseStatusException)exception;
-				assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-				assertThat(ex.getReason()).isEqualTo("회의실 이름을 입력해주세요.");
-			});
+			.isInstanceOf(MeetingException.class);
 	}
 
 	@DisplayName("이미 회의실에 참여한 사용자가 다시 참여하려고 할 때 예외가 발생한다.")
@@ -103,8 +97,7 @@ class MeetRoomServiceTest {
 
 		// when & then
 		assertThatThrownBy(() -> meetRoomService.createAndJoinRoom(1L, createRoomDto))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage("User is already in the room: 1");
+			.isInstanceOf(MeetingException.class);
 	}
 
 	@DisplayName("워크스페이스에 참여한 모든 유저에게 회의실 목록을 전송할 수 있다.")

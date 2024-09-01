@@ -16,14 +16,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.user.domain.User;
+import capstone.relation.user.exception.UserException;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.chat.domain.Chat;
 import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import capstone.relation.websocket.chat.repository.ChatRepository;
 import capstone.relation.workspace.WorkSpace;
+import capstone.relation.workspace.exception.WorkSpaceException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ChatService 단위 테스트")
@@ -81,20 +82,20 @@ class ChatServiceTest {
 	}
 
 	@Test
-	@DisplayName("사용자 ID가 유효하지 않으면 AuthException을 던진다.")
+	@DisplayName("사용자 ID가 유효하지 않으면 User Exception 을 던진다.")
 	void whenUserIdIsInvalid_thenThrowAuthException() {
 		// given
 		Long userId = 1L;
 		when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
 		// when & then
-		assertThrows(AuthException.class, () -> chatService.getHistory(null, userId));
+		assertThrows(UserException.class, () -> chatService.getHistory(null, userId));
 
 		verify(userRepository, times(1)).findById(userId);
 	}
 
 	@Test
-	@DisplayName("작업 공간이 없으면 AuthException을 던진다.")
+	@DisplayName("작업 공간이 없으면 WorkSpace Exception 을 던진다.")
 	void whenUserHasNoWorkSpace_thenThrowAuthException() {
 		// given
 		Long userId = 1L;
@@ -102,7 +103,7 @@ class ChatServiceTest {
 		mockUserRepository(userId);
 
 		// when & then
-		assertThrows(AuthException.class, () -> chatService.getHistory(null, userId));
+		assertThrows(WorkSpaceException.class, () -> chatService.getHistory(null, userId));
 
 		verify(userRepository, times(1)).findById(userId);
 	}
