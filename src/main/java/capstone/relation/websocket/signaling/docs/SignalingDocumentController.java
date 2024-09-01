@@ -1,4 +1,4 @@
-package capstone.relation.websocket.signaling;
+package capstone.relation.websocket.signaling.docs;
 
 import java.util.List;
 
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
 import capstone.relation.user.dto.UserInfoDto;
 import capstone.relation.websocket.signaling.dto.IceDto;
@@ -46,6 +47,7 @@ public class SignalingDocumentController {
 	@Operation(summary = "상대방에게 offer를 보냅니다.", description = "상대방에게 offer를 보냅니다. 이건 Room에 Join하면 보냅니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
+	@ApiErrorExceptionsExample(SignalingExceptionDocs.class)
 	public ResponseEntity<Void> sendOffer(@PathVariable String roomId, SdpMessageDto sdpDto) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
@@ -67,6 +69,7 @@ public class SignalingDocumentController {
 		+ "userId 는 상대방 id입니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
+	@ApiErrorExceptionsExample(SignalingExceptionDocs.class)
 	public ResponseEntity<Void> sendAnswer(@PathVariable String roomId, SdpMessageDto sdpDto) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
@@ -87,6 +90,7 @@ public class SignalingDocumentController {
 	@Operation(summary = "상대방에게 ice candidate를 보냅니다.", description = "상대방에게 ice candidate를 보냅니다."
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다."
 	)
+	@ApiErrorExceptionsExample(SignalingExceptionDocs.class)
 	public ResponseEntity<Void> sendIce(@PathVariable String roomId, IceDto iceDto) {
 		throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED, "This endpoint is not implemented.");
 	}
