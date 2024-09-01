@@ -16,6 +16,8 @@ import capstone.relation.api.auth.jwt.TokenProvider;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.websocket.SocketRegistry;
 import capstone.relation.workspace.WorkSpace;
+import capstone.relation.workspace.exception.WorkSpaceErrorCode;
+import capstone.relation.workspace.exception.WorkSpaceException;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
@@ -41,11 +43,11 @@ public class StompPreHandler implements ChannelInterceptor {
 		if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
 			String token = accessor.getFirstNativeHeader("Authorization");
 			if (token == null || !token.startsWith("Bearer "))
-				throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+				throw new AuthException(AuthErrorCode.ACCESS_TOKEN_NOT_EXIST);
 
 			token = token.substring(7); // Remove "Bearer " prefix
 			if (!tokenProvider.validateToken(token))
-				throw new AuthException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+				throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 
 			Long userId = tokenProvider.getUserId(token);
 			Long expiryTime = tokenProvider.getExpiryFromToken(token); //나중에 만료시간 설정해서 스캐줄러에 넣으려고
@@ -57,7 +59,7 @@ public class StompPreHandler implements ChannelInterceptor {
 				if (workSpace != null) {
 					accessor.getSessionAttributes().put("workSpaceId", workSpace.getId());
 				} else {
-					throw new AuthException(AuthErrorCode.INVALID_WORKSPACE_STATE_USER);
+					throw new WorkSpaceException(WorkSpaceErrorCode.NO_WORKSPACE);
 				}
 			});
 			scheduleSessionExpiry(accessor, expiryTime);

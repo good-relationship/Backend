@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 import capstone.relation.api.auth.jwt.SecurityUser;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.dto.UserInfoDto;
+import capstone.relation.user.exception.UserErrorCode;
+import capstone.relation.user.exception.UserException;
 import capstone.relation.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +44,7 @@ public class UserService {
 	public UserInfoDto getUserInfo(Long userId) {
 		Optional<User> userOptional = userRepository.findById(userId);
 		if (userOptional.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.");
+			throw new UserException(UserErrorCode.USER_NOT_FOUND);
 		}
 		UserInfoDto userInfoDto = UserMapper.INSTANCE.toUserInfoDto(userOptional.get());
 		return userInfoDto;

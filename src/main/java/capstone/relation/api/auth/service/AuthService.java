@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.AuthProvider;
 import capstone.relation.api.auth.jwt.TokenProvider;
@@ -17,6 +15,8 @@ import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.api.auth.jwt.response.WorkspaceStateType;
 import capstone.relation.api.auth.oauth.provider.OAuthUserProvider;
 import capstone.relation.user.domain.User;
+import capstone.relation.user.exception.UserErrorCode;
+import capstone.relation.user.exception.UserException;
 import capstone.relation.user.repository.UserRepository;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.service.InvitationService;
@@ -51,13 +51,13 @@ public class AuthService {
 	public TokenResponse loginWithCode(AuthProvider authProvider, String code, String inviteCode) {
 		String accessToken = getToken(authProvider, code);
 		TokenResponse response = login(authProvider, accessToken);
-		if (inviteCode == null || inviteCode.isEmpty() || inviteCode.isBlank() || inviteCode.equals("null")) {
+		if (inviteCode == null || inviteCode.isEmpty() || inviteCode.isBlank() || inviteCode.equals("null"))
 			return response;
-		}
+
 		Optional<User> userOpt = userRepository.findById(response.getMemberId());
-		if (userOpt.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found.");
-		}
+		if (userOpt.isEmpty())
+			throw new UserException(UserErrorCode.USER_NOT_FOUND);
+
 		WorkSpace workSpace = invitationService.getWorkSpace(inviteCode);
 		User user = userOpt.get();
 		if (user.getWorkSpace() != null) {

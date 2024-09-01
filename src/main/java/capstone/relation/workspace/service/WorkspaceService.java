@@ -4,9 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.jwt.response.WorkspaceStateType;
 import capstone.relation.user.UserMapper;
@@ -17,6 +15,8 @@ import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.InviteCodeResponse;
 import capstone.relation.workspace.dto.response.WorkspaceInfo;
+import capstone.relation.workspace.exception.WorkSpaceErrorCode;
+import capstone.relation.workspace.exception.WorkSpaceException;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 import capstone.relation.workspace.school.domain.School;
 import capstone.relation.workspace.school.service.SchoolService;
@@ -33,13 +33,13 @@ public class WorkspaceService {
 	public WorkspaceInfo createNewSpace(CreateSpaceRequest request) {
 		Optional<School> schoolEntity = schoolService.getSchoolEntity(request.getSchoolName());
 		if (schoolEntity.isEmpty()) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "School name is not valid.");
+			throw new WorkSpaceException(WorkSpaceErrorCode.INVALID_SCHOOL);
 		}
 		User user = userService.getUserEntity();
 		WorkSpace workSpace = user.getWorkSpace();
 
 		if (workSpace != null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has workspace.");
+			throw new WorkSpaceException(WorkSpaceErrorCode.ALREADY_WORKSPACE_MEMBER);
 		}
 		School school = schoolEntity.get();
 		workSpace = new WorkSpace();
@@ -66,9 +66,9 @@ public class WorkspaceService {
 	public InviteCodeResponse getInviteCode() {
 		User user = userService.getUserEntity();
 		WorkSpace workSpace = user.getWorkSpace();
-		if (workSpace == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have workspace.");
-		}
+		if (workSpace == null)
+			throw new WorkSpaceException(WorkSpaceErrorCode.NO_WORKSPACE);
+
 		return new InviteCodeResponse(invitationService.generateInviteCode(workSpace.getId()));
 	}
 
@@ -108,13 +108,11 @@ public class WorkspaceService {
 		WorkSpace workSpace = user.getWorkSpace();
 		if (workSpace == null) {
 			String invitedWorkspaceId = user.getInvitedWorkspaceId();
-			if (invitedWorkspaceId == null || invitedWorkspaceId.isEmpty()) {
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-					"User does not have workspace OR invited workspace.");
-			}
+			if (invitedWorkspaceId == null || invitedWorkspaceId.isEmpty())
+				throw new WorkSpaceException(WorkSpaceErrorCode.NOT_INVITED_USER);
 			workSpace = workSpaceRepository.findById(invitedWorkspaceId)
 				.orElseThrow(
-					() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User does not have invited workspace."));
+					() -> new WorkSpaceException(WorkSpaceErrorCode.NOT_INVITED_USER));
 		}
 		return workSpace.getUser().stream()
 			.map(UserMapper.INSTANCE::toUserInfoDto)

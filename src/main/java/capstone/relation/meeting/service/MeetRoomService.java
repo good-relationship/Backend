@@ -3,17 +3,17 @@ package capstone.relation.meeting.service;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.meeting.dto.request.CreateRoomDto;
 import capstone.relation.meeting.dto.response.JoinResponseDto;
 import capstone.relation.meeting.dto.response.MeetingRoomDto;
 import capstone.relation.meeting.dto.response.MeetingRoomListDto;
+import capstone.relation.meeting.exception.MeetingErrorCode;
+import capstone.relation.meeting.exception.MeetingException;
 import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.meeting.repository.RedisRepository;
 import capstone.relation.user.UserService;
@@ -39,7 +39,7 @@ public class MeetRoomService {
 	public JoinResponseDto createAndJoinRoom(Long userId, CreateRoomDto createRoomDto) {
 		String roomName = createRoomDto.getRoomName();
 		if (roomName == null || roomName.isEmpty())
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "회의실 이름을 입력해주세요.");
+			throw new MeetingException(MeetingErrorCode.MEETING_NAME_NOT_EXIST);
 		String workSpaceId = userService.getUserWorkSpaceId(userId);
 
 		// 미팅룸을 생성, 참여, 미팅룸 목록을 전송합니다.
@@ -57,7 +57,7 @@ public class MeetRoomService {
 	 */
 	private Long createRoom(Long userId, String roomName) {
 		if (redisRepository.isUserInRoom(userId))
-			throw new IllegalArgumentException("User is already in the room: " + userId);
+			throw new MeetingException(MeetingErrorCode.MEETING_ALREADY_JOINED);
 		MeetRoom meetRoom = MeetRoom.builder()
 			.roomName(roomName)
 			.deleted(false)
@@ -74,7 +74,7 @@ public class MeetRoomService {
 	 */
 	public RoomInfoDto getRoomInfo(String workspaceId, Long userId) {
 		if (!redisRepository.isUserInRoom(userId))
-			throw new IllegalArgumentException("User is not in any room: " + userId);
+			throw new MeetingException(MeetingErrorCode.USER_NOT_MEETING_MEMBER);
 
 		Long roomId = Long.parseLong(redisRepository.getUserRoomId(userId));
 		Set<String> userIds = redisRepository.getRoomMemberIds(workspaceId, roomId);
@@ -89,7 +89,7 @@ public class MeetRoomService {
 	 */
 	private String getRoomName(Long roomId) {
 		return meetRoomRepository.findById(roomId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid room ID : " + roomId))
+			.orElseThrow(() -> new MeetingException(MeetingErrorCode.INVALID_MEETING))
 			.getRoomName();
 	}
 
@@ -103,7 +103,7 @@ public class MeetRoomService {
 		String workspaceId = userService.getUserWorkSpaceId(userId);
 		String meetRoomId = redisRepository.getUserRoomId(userId);
 		if (meetRoomId != null)
-			throw new IllegalArgumentException("User is already in the room: " + userId);
+			throw new MeetingException(MeetingErrorCode.MEETING_ALREADY_JOINED);
 
 		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workspaceId, userId, roomId);
 		sendRoomList(workspaceId);
@@ -120,7 +120,7 @@ public class MeetRoomService {
 	 */
 	private JoinResponseDto joinWorkspaceRoom(String workSpaceId, Long userId, Long roomId) {
 		MeetRoom meetRoom = meetRoomRepository.findById(roomId)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid room ID"));
+			.orElseThrow(() -> new MeetingException(MeetingErrorCode.INVALID_MEETING));
 		redisRepository.addUserToRoom(workSpaceId, roomId, userId.toString());
 		Set<String> userIds = redisRepository.getRoomMemberIds(workSpaceId, roomId);
 		List<UserInfoDto> userInfoList = userService.getUserInfoList(userIds);

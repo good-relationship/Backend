@@ -22,7 +22,7 @@ import capstone.relation.websocket.chat.domain.Chat;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
 import capstone.relation.websocket.chat.repository.ChatRepository;
 import capstone.relation.workspace.WorkSpace;
-import capstone.relation.workspace.exception.WorkspaceException;
+import capstone.relation.workspace.exception.WorkSpaceException;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 
 @SpringBootTest
@@ -117,7 +117,7 @@ class ChatServiceIntegrationTest {
 		String content = "Test message";
 
 		// Then: WorkspaceException이 발생해야 한다.
-		assertThrows(WorkspaceException.class, () -> {
+		assertThrows(WorkSpaceException.class, () -> {
 			chatService.sendNewMessage(invalidWorkSpaceId, content, headerAccessor);
 		});
 	}

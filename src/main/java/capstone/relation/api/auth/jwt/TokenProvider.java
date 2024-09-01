@@ -7,19 +7,21 @@ import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
+import capstone.relation.api.auth.exception.AuthErrorCode;
+import capstone.relation.api.auth.exception.AuthException;
 import capstone.relation.api.auth.jwt.refreshtoken.CollectionRefreshTokenRepository;
 import capstone.relation.api.auth.jwt.refreshtoken.RefreshToken;
 import capstone.relation.api.auth.jwt.refreshtoken.RefreshTokenRepository;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.user.domain.Role;
 import capstone.relation.user.domain.User;
+import capstone.relation.workspace.exception.WorkSpaceErrorCode;
+import capstone.relation.workspace.exception.WorkSpaceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -83,7 +85,7 @@ public class TokenProvider {
 	public String generateAccessTokenByRefreshToken(String refreshTokenKey) {
 		long now = (new Date().getTime());
 		RefreshToken refreshToken = refreshTokenRepository.findByKey(refreshTokenKey)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "유효하지 않은 리프레시 토큰 입니다."));
+			.orElseThrow(() -> new AuthException(AuthErrorCode.INVALID_TOKEN));
 		User user = refreshToken.user();
 		Date accessTokenExpiredDate = new Date(now + jwtProperties.getAccessTokenExpireTime());
 		return generateAccessToken(user, accessTokenExpiredDate);
@@ -116,9 +118,9 @@ public class TokenProvider {
 			Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(inviteToken).getBody();
 			return claims.getSubject();
 		} catch (ExpiredJwtException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "만료된 초대 코드입니다.");
+			throw new WorkSpaceException(WorkSpaceErrorCode.EXPIRED_INVITE_CODE);
 		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "유효하지 않은 초대 코드입니다.");
+			throw new WorkSpaceException(WorkSpaceErrorCode.INVALID_INVITE_CODE);
 		}
 	}
 
@@ -143,7 +145,7 @@ public class TokenProvider {
 		try {
 			return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
 		} catch (ExpiredJwtException expiredJwtException) {
-			throw new IllegalStateException("만료된 토큰입니다.");
+			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
 		}
 	}
 }
