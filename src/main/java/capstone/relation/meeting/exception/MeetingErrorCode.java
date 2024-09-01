@@ -25,7 +25,9 @@ public enum MeetingErrorCode implements BaseErrorCode {
 	@ExplainError("회의 생성에 실패한 경우에 발생합니다.")
 	MEETING_CREATE_FAILED(500, "MEETING_500_1", "회의 생성에 실패했습니다."),
 	@ExplainError("회의 나가기에 실패한 경우에 발생합니다.")
-	MEETING_LEAVE_FAILED(500, "MEETING_500_2", "회의 나가기에 실패했습니다.");
+	MEETING_LEAVE_FAILED(500, "MEETING_500_2", "회의 나가기에 실패했습니다."),
+	@ExplainError("회의실 이름이 없는 경우 발생합니다.")
+	MEETING_NAME_NOT_EXIST(400, "MEETING_400_1", "회의실 이름이 없습니다.");
 
 	private final Integer status;
 	private final String code;

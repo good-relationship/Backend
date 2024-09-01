@@ -7,12 +7,10 @@ import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import capstone.relation.api.auth.exception.AuthErrorCode;
 import capstone.relation.api.auth.exception.AuthException;
@@ -87,7 +85,7 @@ public class TokenProvider {
 	public String generateAccessTokenByRefreshToken(String refreshTokenKey) {
 		long now = (new Date().getTime());
 		RefreshToken refreshToken = refreshTokenRepository.findByKey(refreshTokenKey)
-			.orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "유효하지 않은 리프레시 토큰 입니다."));
+			.orElseThrow(() -> new AuthException(AuthErrorCode.INVALID_TOKEN));
 		User user = refreshToken.user();
 		Date accessTokenExpiredDate = new Date(now + jwtProperties.getAccessTokenExpireTime());
 		return generateAccessToken(user, accessTokenExpiredDate);
