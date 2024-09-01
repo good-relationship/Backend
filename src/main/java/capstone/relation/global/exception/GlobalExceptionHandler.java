@@ -80,7 +80,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	 * 유효성 검사 제약 조건이 위반되었을 때 발생합니다. (예: @NotNull, @Size, @Email 어노테이션 사용 시)
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<ErrorResponse> ConstraintViolationExceptionHandler(
+	public ResponseEntity<ErrorResponse> constraintViolationExceptionHandler(
 		ConstraintViolationException ex, HttpServletRequest request) {
 		Map<String, Object> bindingErrors = new HashMap<>(); // 유효성 검사 실패 필드와 해당 오류 메시지를 저장하기 위한 맵을 생성
 		// 예외 객체에서 유효성 검사 위반 항목들을 가져옴.
@@ -117,7 +117,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(GlobalCodeException.class)
-	public ResponseEntity<ErrorResponse> JoEunCodeExceptionHandler(
+	public ResponseEntity<ErrorResponse> joEunCodeExceptionHandler(
 		GlobalCodeException e, HttpServletRequest request) {
 		BaseErrorCode code = e.getErrorCode();
 		ErrorReason errorReason = code.getErrorReason();
@@ -128,7 +128,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(GlobalDynamicException.class)
-	public ResponseEntity<ErrorResponse> JoEunDynamicExceptionHandler(
+	public ResponseEntity<ErrorResponse> joEunDynamicExceptionHandler(
 		GlobalDynamicException e, HttpServletRequest request) {
 		ErrorResponse errorResponse =
 			new ErrorResponse(

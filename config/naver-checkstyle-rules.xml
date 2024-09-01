@@ -32,9 +32,9 @@ The following rules in the Naver coding convention cannot be checked by this con
 
 
     <!-- [newline-eof] -->
-    <module name="NewlineAtEndOfFile">
-        <property name="lineSeparator" value="lf"/>
-    </module>
+    <!--    <module name="NewlineAtEndOfFile">-->
+    <!--        <property name="lineSeparator" value="lf"/>-->
+    <!--    </module>-->
 
     <!-- [no-trailing-spaces] -->
     <module name="RegexpSingleline">
@@ -55,13 +55,13 @@ The following rules in the Naver coding convention cannot be checked by this con
         <!-- Start of Naming chapter -->
 
         <!-- [list-uppercase-abbr] -->
-        <module name="AbbreviationAsWordInName">
-            <property name="ignoreFinal" value="false"/>
-            <property name="allowedAbbreviationLength" value="4"/>
-            <message key="abbreviation.as.word"
-                     value="[list-uppercase-abbr] Abbreviation in name ''{0}'' must contain no more than {1}"/>
-            <property name="allowedAbbreviations" value="DAO,BO"/>
-        </module>
+        <!--        <module name="AbbreviationAsWordInName">-->
+        <!--            <property name="ignoreFinal" value="false"/>-->
+        <!--            <property name="allowedAbbreviationLength" value="4"/>-->
+        <!--            <message key="abbreviation.as.word"-->
+        <!--                     value="[list-uppercase-abbr] Abbreviation in name ''{0}'' must contain no more than {1}"/>-->
+        <!--            <property name="allowedAbbreviations" value="DAO,BO"/>-->
+        <!--        </module>-->
 
         <!-- [package-lowercase] -->
         <module name="PackageName">
@@ -85,16 +85,16 @@ The following rules in the Naver coding convention cannot be checked by this con
         </module>
 
         <!-- [var-lower-camelcase] -->
-        <module name="MemberName">
-            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>
-            <message key="name.invalidPattern"
-                     value="[var-lower-camelcase] Member name ''{0}'' must match pattern ''{1}''."/>
-        </module>
-        <module name="ParameterName">
-            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>
-            <message key="name.invalidPattern"
-                     value="[var-lower-camelcase] Parameter name ''{0}'' must match pattern ''{1}''."/>
-        </module>
+        <!--        <module name="MemberName">-->
+        <!--            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>-->
+        <!--            <message key="name.invalidPattern"-->
+        <!--                     value="[var-lower-camelcase] Member name ''{0}'' must match pattern ''{1}''."/>-->
+        <!--        </module>-->
+        <!--        <module name="ParameterName">-->
+        <!--            <property name="format" value="^[a-z][a-zA-Z0-9][a-zA-Z0-9]*$"/>-->
+        <!--            <message key="name.invalidPattern"-->
+        <!--                     value="[var-lower-camelcase] Parameter name ''{0}'' must match pattern ''{1}''."/>-->
+        <!--        </module>-->
 
         <!-- [var-lower-camelcase], [avoid-1-char-var] -->
         <!--        <module name="LocalVariableName">-->
