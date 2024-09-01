@@ -15,16 +15,14 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum UserErrorCode implements BaseErrorCode {
 	INVALID_USER(BAD_REQUEST, "USER_400_1", "유효하지 않은 사용자입니다."),
-	INVALID_INVITE_CODE(BAD_REQUEST, "USER_400_2", "유효하지 않은 초대 코드입니다."),
-	EXPIRED_INVITE_CODE(BAD_REQUEST, "USER_400_3", "만료된 초대 코드입니다."),
 	USER_NOT_FOUND(NOT_FOUND, "USER_404_1", "사용자를 찾을 수 없습니다."),
 	USER_ALREADY_EXISTS(CONFLICT, "USER_409_1", "이미 존재하는 사용자입니다."),
 	USER_NOT_VERIFIED(UNAUTHORIZED, "USER_401_1", "사용자 인증이 되지 않았습니다."),
 	USER_NOT_AUTHORIZED(FORBIDDEN, "USER_403_1", "사용자 권한이 없습니다.");
 
-	private Integer status;
-	private String code;
-	private String reason;
+	private final Integer status;
+	private final String code;
+	private final String reason;
 
 	@Override
 	public ErrorReason getErrorReason() {

@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import capstone.relation.meeting.service.MeetRoomService;
 import capstone.relation.user.UserService;
+import capstone.relation.user.docs.UserInfoExceptionDocs;
 import capstone.relation.user.domain.User;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
@@ -23,12 +25,14 @@ public class UserController {
 
 	@GetMapping("/info")
 	@Operation(summary = "사용자 정보 조회", description = "현재 로그인한 사용자의 정보를 조회합니다.")
+	@ApiErrorExceptionsExample(UserInfoExceptionDocs.class)
 	public UserInfoDto getInfo() {
 		return userService.getUserInfo();
 	}
 
 	@GetMapping("/room/info")
 	@Operation(summary = "사용자 회의 방 정보 조회", description = "현재 로그인한 사용자의 회의 방 정보를 조회합니다.")
+	@ApiErrorExceptionsExample(UserInfoExceptionDocs.class)
 	public RoomInfoDto getRoomInfo() {
 		User user = userService.getUserEntity();
 		Long userId = user.getId();
