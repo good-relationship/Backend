@@ -1,4 +1,4 @@
-package capstone.relation.websocket.chat.controller;
+package capstone.relation.websocket.chat.docs;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import capstone.relation.websocket.chat.dto.publish.HistoryPublishDto;
 import capstone.relation.websocket.chat.dto.publish.MessagePublishDto;
 import capstone.relation.websocket.chat.dto.response.HistoryResponseDto;
 import capstone.relation.websocket.chat.dto.response.MessageDto;
+import capstone.relation.workspace.docs.WorkspaceGetExceptionDocs;
+import capstone.relation.workspace.docs.WorkspaceWithIdExceptionDocs;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +29,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/ws-chat")
 public class ChatDocumentationController {
 
+	//TODO: WebSocket API exception 문서화
 	@GetMapping("/topic/message/{workSpaceId}")
 	@Operation(summary = "새 메시지 구독", description = "워크스페이스 ID를 지정하여 새 메시지를 `/topic/message`로 발송합니다. "
 		+ "실제 메시지는 STOMP 프로토콜을 통해 이루어집니다.",
@@ -52,6 +56,7 @@ public class ChatDocumentationController {
 
 	@PostMapping("/app/message/{workSpaceId}")
 	@Operation(summary = "메시지 발송", description = "새 메시지를 `/app/message` 경로로 발송합니다.")
+	@ApiErrorExceptionsExample(WorkspaceWithIdExceptionDocs.class)
 	public ResponseEntity<Void> sendMessage(@PathVariable String workSpaceId, MessagePublishDto message) {
 		throw new UnsupportedOperationException("This endpoint is not implemented.");
 	}
@@ -64,6 +69,7 @@ public class ChatDocumentationController {
 			@ApiResponse(responseCode = "400", description = "Bad Request")
 		}
 	)
+	@ApiErrorExceptionsExample(WorkspaceGetExceptionDocs.class)
 	public ResponseEntity<Void> requestHistory(@RequestBody HistoryPublishDto historyPublishDto) {
 		throw new UnsupportedOperationException("This endpoint is not implemented.");
 	}
