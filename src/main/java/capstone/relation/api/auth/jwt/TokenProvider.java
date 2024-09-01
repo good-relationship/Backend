@@ -22,8 +22,8 @@ import capstone.relation.api.auth.jwt.refreshtoken.RefreshTokenRepository;
 import capstone.relation.api.auth.jwt.response.TokenResponse;
 import capstone.relation.user.domain.Role;
 import capstone.relation.user.domain.User;
-import capstone.relation.user.exception.UserErrorCode;
-import capstone.relation.user.exception.UserException;
+import capstone.relation.workspace.exception.WorkSpaceErrorCode;
+import capstone.relation.workspace.exception.WorkSpaceException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -120,9 +120,9 @@ public class TokenProvider {
 			Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(inviteToken).getBody();
 			return claims.getSubject();
 		} catch (ExpiredJwtException e) {
-			throw new UserException(UserErrorCode.EXPIRED_INVITE_CODE);
+			throw new WorkSpaceException(WorkSpaceErrorCode.EXPIRED_INVITE_CODE);
 		} catch (Exception e) {
-			throw new UserException(UserErrorCode.INVALID_INVITE_CODE);
+			throw new WorkSpaceException(WorkSpaceErrorCode.INVALID_INVITE_CODE);
 		}
 	}
 

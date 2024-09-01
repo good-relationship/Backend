@@ -21,8 +21,18 @@ public enum WorkSpaceErrorCode implements BaseErrorCode {
 	@ExplainError("해당 워크스페이스가 존재하지 않는 경우에 발생합니다. 초대 이후에 삭제된 경우 등")
 	INVALID_WORKSPACE(NOT_FOUND, "WORKSPACE_404_2", "해당 워크스페이스가 존재하지 않습니다."),
 	@ExplainError("해당 워크스페이스에 가입하지 않은 사용자 입니다.")
-	USER_NOT_WORKSPACE_MEMBER(403, "WORKSPACE_403_1", "해당 워크스페이스에 가입하지 않은 사용자 입니다.");
+	USER_NOT_WORKSPACE_MEMBER(403, "WORKSPACE_403_1", "해당 워크스페이스에 가입하지 않은 사용자 입니다."),
 
+	@ExplainError("이미 워크스페이스에 가입된 유저입니다.")
+	ALREADY_WORKSPACE_MEMBER(409, "WORKSPACE_409_1", "이미 워크스페이스에 가입된 유저입니다."),
+	@ExplainError("워크스페이스에 초대된 적이 없는 유저입니다.")
+	NOT_INVITED_USER(403, "WORKSPACE_403_2", "워크스페이스에 초대된 적이 없는 유저입니다."),
+	@ExplainError("유효하지 않은 초대 코드입니다.")
+	INVALID_INVITE_CODE(BAD_REQUEST, "WORKSPACE_400_1", "유효하지 않은 초대 코드입니다."),
+	@ExplainError("만료된 초대 코드입니다.")
+	EXPIRED_INVITE_CODE(BAD_REQUEST, "USER_400_2", "만료된 초대 코드입니다."),
+	@ExplainError("실제로 존재하지 않는 학교입니다.")
+	INVALID_SCHOOL(404, "SCHOOL_404_1", "실제로 존재하지 않는 학교입니다.");
 	private Integer status;
 	private String code;
 	private String reason;

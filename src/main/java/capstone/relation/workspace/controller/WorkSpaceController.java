@@ -9,8 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import capstone.relation.global.annotation.ApiErrorExceptionsExample;
 import capstone.relation.user.UserService;
 import capstone.relation.user.dto.UserInfoDto;
+import capstone.relation.workspace.docs.WorkspaceCreateExceptionDocs;
+import capstone.relation.workspace.docs.WorkspaceGetExceptionDocs;
+import capstone.relation.workspace.docs.WorkspaceInviteExceptionDocs;
+import capstone.relation.workspace.docs.WorkspaceJoinExceptionDocs;
 import capstone.relation.workspace.dto.request.CreateSpaceRequest;
 import capstone.relation.workspace.dto.response.InviteCodeResponse;
 import capstone.relation.workspace.dto.response.SchoolsResponse;
@@ -36,19 +41,15 @@ public class WorkSpaceController {
 	private final UserService userService;
 
 	@GetMapping("/member")
-	@Operation(summary = "워크스페이스 멤버 조회", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 멤버 조회 성공",
-			content = @Content(schema = @Schema(implementation = UserInfoDto.class))),
-	})
+	@Operation(summary = "워크스페이스 멤버 조회")
+	@ApiErrorExceptionsExample(WorkspaceGetExceptionDocs.class)
 	public List<UserInfoDto> getMember() {
 		return workspaceService.getMemebers();
 	}
 
 	@GetMapping("/info")
-	@Operation(summary = "워크스페이스 정보 조회", responses = {
-		@ApiResponse(responseCode = "200", description = "워크스페이스 정보 조회 성공",
-			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
-	})
+	@Operation(summary = "워크스페이스 정보 조회")
+	@ApiErrorExceptionsExample(WorkspaceGetExceptionDocs.class)
 	public WorkspaceInfo getInfo() {
 		return workspaceService.getWorkspaceInfo();
 	}
@@ -58,6 +59,7 @@ public class WorkSpaceController {
 		@ApiResponse(responseCode = "200", description = "워크스페이스 가입 성공",
 			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
 	})
+	@ApiErrorExceptionsExample(WorkspaceJoinExceptionDocs.class)
 	public WorkspaceInfo join() {
 		return workspaceService.joinSpace();
 	}
@@ -66,6 +68,7 @@ public class WorkSpaceController {
 	@Operation(summary = "워크스페이스 탈퇴", responses = {
 		@ApiResponse(responseCode = "200", description = "워크스페이스 탈퇴 성공"),
 	})
+	@ApiErrorExceptionsExample(WorkspaceGetExceptionDocs.class)
 	public void leave() {
 		userService.leaveWorkspace();
 	}
@@ -75,6 +78,7 @@ public class WorkSpaceController {
 		@ApiResponse(responseCode = "200", description = "워크스페이스 초대 알림 성공",
 			content = @Content(schema = @Schema(implementation = WorkspaceInfo.class))),
 	})
+	@ApiErrorExceptionsExample(WorkspaceInviteExceptionDocs.class)
 	public WorkspaceInfo invited(@RequestParam String inviteCode) {
 		return workspaceService.inviteSpace(inviteCode);
 	}
@@ -84,6 +88,7 @@ public class WorkSpaceController {
 		@ApiResponse(responseCode = "200", description = "워크스페이스 초대 코드 조회 성공",
 			content = @Content(schema = @Schema(implementation = InviteCodeResponse.class))),
 	})
+	@ApiErrorExceptionsExample(WorkspaceGetExceptionDocs.class)
 	public InviteCodeResponse invite() {
 		return workspaceService.getInviteCode();
 	}
@@ -104,6 +109,7 @@ public class WorkSpaceController {
 	@Operation(summary = "워크스페이스 생성", responses = {
 		@ApiResponse(responseCode = "200", description = "워크스페이스 생성 성공")
 	})
+	@ApiErrorExceptionsExample(WorkspaceCreateExceptionDocs.class)
 	public WorkspaceInfo create(@Valid @RequestBody CreateSpaceRequest createSpaceRequest) {
 		return workspaceService.createNewSpace(createSpaceRequest);
 	}
