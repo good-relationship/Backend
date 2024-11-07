@@ -100,6 +100,10 @@ dependencies {
 
     //swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+    //mongo
+//    implementation 'org.mongodb:mongodb-driver-sync:5.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 tasks.named('test') {
