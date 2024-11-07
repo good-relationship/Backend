@@ -20,10 +20,12 @@ import capstone.relation.user.UserService;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class MeetRoomService {
 	private final UserService userService;
 	private final RedisRepository redisRepository;
@@ -41,7 +43,6 @@ public class MeetRoomService {
 		if (roomName == null || roomName.isEmpty())
 			throw new MeetingException(MeetingErrorCode.MEETING_NAME_NOT_EXIST);
 		String workSpaceId = userService.getUserWorkSpaceId(userId);
-
 		// 미팅룸을 생성, 참여, 미팅룸 목록을 전송합니다.
 		Long roomId = createRoom(userId, roomName);
 		JoinResponseDto joinResponseDto = joinWorkspaceRoom(workSpaceId, userId, roomId);
