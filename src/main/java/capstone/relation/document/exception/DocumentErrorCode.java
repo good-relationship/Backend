@@ -15,7 +15,9 @@ public enum DocumentErrorCode implements BaseErrorCode {
 	@ExplainError("폴더 아이디가 잘못되었을 때 발생하는 오류입니다.")
 	FOLDER_NOT_EXIST(404, "DOC_404_1", "폴더 아이디가 잘못되었습니다."),
 	@ExplainError("파일 아이디가 잘못되었을 때 발생하는 오류입니다.")
-	FILE_NOT_EXIST(404, "DOC_404_2", "파일 아이디가 잘못되었습니다.");
+	FILE_NOT_EXIST(404, "DOC_404_2", "파일 아이디가 잘못되었습니다."),
+	@ExplainError("유저가 접근 할 수 없는 워크스페이스에 접근하려고 할 때 발생하는 오류입니다.")
+	USER_NOT_ACCESS(403, "DOC_403_1", "유저가 접근 할 수 없는 워크스페이스에 접근하려고 합니다.");
 
 	private final Integer status;
 	private final String code;
