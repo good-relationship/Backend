@@ -100,8 +100,21 @@ public class DocsService {
 	}
 
 	public FolderInfoDto getFolder(Long folderId) {
-		folderRepository.findById(folderId).orElseThrow(() -> new DocumentException(DocumentErrorCode.FOLDER_NOT_EXIST));
-		return null;
+		Folder folder = folderRepository.findById(folderId)
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FOLDER_NOT_EXIST));
+		List<FileInfo> fileInfos = folder.getFileInfos();
+		List<FileInfoDto> fileInfoDtos = new ArrayList<>();
+		for (FileInfo fileInfo : fileInfos) {
+			fileInfoDtos.add(FileInfoDto.builder()
+				.fileId(fileInfo.getId())
+				.fileName(fileInfo.getFileName())
+				.build());
+		}
+		return FolderInfoDto.builder()
+			.folderId(folder.getId())
+			.folderName(folder.getFolderName())
+			.files(fileInfoDtos)
+			.build();
 	}
 
 	public NoteInfo getFile(String id) {
