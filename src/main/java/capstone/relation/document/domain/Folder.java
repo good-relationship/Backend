@@ -7,10 +7,12 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import capstone.relation.common.entity.BaseEntity;
+import capstone.relation.workspace.WorkSpace;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 
@@ -18,7 +20,7 @@ import lombok.Getter;
 @Getter
 @SQLDelete(sql = "UPDATE shop SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
-public class Category extends BaseEntity {
+public class Folder extends BaseEntity {
 	@Id
 	private Long id;
 
@@ -28,7 +30,9 @@ public class Category extends BaseEntity {
 	private boolean deleted = Boolean.FALSE;
 
 
-	@OneToMany(mappedBy = "category")
-	private List<Document> documents = new ArrayList<>();
+	@OneToMany(mappedBy = "folder")
+	private List<FileInfo> fileInfos = new ArrayList<>();
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	private WorkSpace workSpace;
 }

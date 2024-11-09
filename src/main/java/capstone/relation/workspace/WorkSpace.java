@@ -1,8 +1,11 @@
 package capstone.relation.workspace;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import capstone.relation.document.domain.Folder;
 import capstone.relation.meeting.domain.MeetRoom;
 import capstone.relation.user.domain.User;
 import capstone.relation.workspace.school.domain.School;
@@ -35,6 +38,9 @@ public class WorkSpace {
 
 	@OneToMany(mappedBy = "workSpace", cascade = CascadeType.ALL)
 	private Set<MeetRoom> meetRooms = new HashSet<>();
+
+	@OneToMany(mappedBy = "workSpace", cascade = CascadeType.ALL)
+	private List<Folder> folders = new ArrayList<>();
 
 	@Column(nullable = false)
 	private boolean deleted;
