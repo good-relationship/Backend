@@ -29,6 +29,11 @@ public class DocsController {
 		return docsService.getAllDocs(SecurityUtil.getCurrentUserId());
 	}
 
+	@PostMapping("/folder")
+	public FolderInfoDto createFolder(@RequestBody FolderCreateDto folderCreateDto) {
+		return docsService.createFolder(folderCreateDto.getFolderName(), SecurityUtil.getCurrentUserId());
+	}
+
 	@GetMapping("/folder/{id}")
 	public FolderInfoDto getFolder(@PathVariable Long id) {
 		return docsService.getFolder(id);
@@ -39,13 +44,8 @@ public class DocsController {
 		return docsService.getFile(id);
 	}
 
-	@PostMapping("/folder")
-	public FolderInfoDto createFolder(@RequestBody FolderCreateDto folderCreateDto) {
-		return docsService.createFolder(folderCreateDto.getFolderName());
-	}
-
 	@PostMapping("/file")
 	public void createFile(@RequestBody CreateFileReqDto createFileReqDto) {
-		docsService.createFile(createFileReqDto);
+		docsService.createFile(SecurityUtil.getCurrentUserId(), createFileReqDto.getFileName(), createFileReqDto.getFolderId());
 	}
 }
