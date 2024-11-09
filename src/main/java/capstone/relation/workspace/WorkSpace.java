@@ -28,7 +28,7 @@ public class WorkSpace {
 	private String id;
 
 	@OneToMany(mappedBy = "workSpace", cascade = CascadeType.ALL)
-	private Set<User> user = new HashSet<>();
+	private Set<User> users = new HashSet<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	private School school;
@@ -46,7 +46,7 @@ public class WorkSpace {
 	private boolean deleted;
 
 	public void addUser(User user) {
-		this.user.add(user);
+		this.users.add(user);
 		user.setWorkSpace(this);
 		user.setInvitedWorkspaceId("");
 	}

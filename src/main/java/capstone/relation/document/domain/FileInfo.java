@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "document")
@@ -37,5 +38,6 @@ public class FileInfo extends BaseEntity {
 	private Folder folder;
 
 	@Column(name = "note_info_id")
+	@Setter
 	private String noteInfoId;
 }
