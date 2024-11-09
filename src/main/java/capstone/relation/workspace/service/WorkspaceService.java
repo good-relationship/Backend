@@ -114,7 +114,7 @@ public class WorkspaceService {
 				.orElseThrow(
 					() -> new WorkSpaceException(WorkSpaceErrorCode.NOT_INVITED_USER));
 		}
-		return workSpace.getUser().stream()
+		return workSpace.getUsers().stream()
 			.map(UserMapper.INSTANCE::toUserInfoDto)
 			.collect(Collectors.toList());
 	}
