@@ -1,15 +1,13 @@
 package capstone.relation.document.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class FileInfoDto {
-	private Long fileId;
-	private String fileName;
+public class FolderReqDto {
+	private String folderName;
+	private Long age;
 }
