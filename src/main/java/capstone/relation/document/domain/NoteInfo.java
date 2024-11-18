@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Document(collation = "GoodRelDocs") //실제 몽고 DB 컬렉션 명
 @Getter
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class NoteInfo {
 	@Id
 	private String id;
-	private String name;
-	private Long age;
+	@Setter
+	private String content;
 
 }

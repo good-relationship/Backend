@@ -31,6 +31,7 @@ public class FileInfo extends BaseEntity {
 	private boolean deleted = Boolean.FALSE;
 
 
+	@Setter
 	private String fileName;
 
 	@ManyToOne(fetch = FetchType.LAZY)
