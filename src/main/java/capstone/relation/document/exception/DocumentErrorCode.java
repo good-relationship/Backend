@@ -27,6 +27,7 @@ public enum DocumentErrorCode implements BaseErrorCode {
 	public ErrorReason getErrorReason() {
 		return ErrorReason.builder().reason(reason).code(code).status(status).build();
 	}
+
 	@Override
 	public String getExplainError() throws NoSuchFieldException {
 		Field field = this.getClass().getField(this.name());

@@ -26,7 +26,7 @@ public class DocsController {
 	private final DocsService docsService;
 
 	@GetMapping("/all")
-	public List<FolderInfoDto> getAllFolder(){
+	public List<FolderInfoDto> getAllFolder() {
 		return docsService.getAllDocs(SecurityUtil.getCurrentUserId());
 	}
 
@@ -42,12 +42,14 @@ public class DocsController {
 
 	@PostMapping("/file")
 	public FileContentDto createFile(@RequestBody CreateFileReqDto createFileReqDto) {
-		return docsService.createFile(SecurityUtil.getCurrentUserId(), createFileReqDto.getFileName(), createFileReqDto.getFolderId(),createFileReqDto.getContent());
+		return docsService.createFile(SecurityUtil.getCurrentUserId(),
+			createFileReqDto.getFileName(), createFileReqDto.getFolderId(), createFileReqDto.getContent());
 	}
 
 	@PutMapping("/file/{id}")
 	public FileContentDto updateFile(@PathVariable Long id, @RequestBody CreateFileReqDto createFileReqDto) {
-		return docsService.updateFile(id, createFileReqDto.getFileName(), createFileReqDto.getFolderId(), createFileReqDto.getContent());
+		return docsService.updateFile(id, createFileReqDto.getFileName(),
+			createFileReqDto.getFolderId(), createFileReqDto.getContent());
 	}
 
 	@GetMapping("/file/{id}")
