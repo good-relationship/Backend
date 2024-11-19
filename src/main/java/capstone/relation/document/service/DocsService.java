@@ -136,7 +136,14 @@ public class DocsService {
 			.build();
 	}
 
-	public FileContentDto getFile(String id) {
-		return null;
+	public FileContentDto getFile(Long id) {
+		FileInfo fileInfo = fileRepository.findById(id)
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		NoteInfo noteInfo = noteInfoRepository.findById(fileInfo.getNoteInfoId())
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		return FileContentDto.builder().fileId(fileInfo.getId())
+			.fileName(fileInfo.getFileName())
+			.content(noteInfo.getContent())
+			.build();
 	}
 }
