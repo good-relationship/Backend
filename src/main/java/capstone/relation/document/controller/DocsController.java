@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import capstone.relation.document.domain.NoteInfo;
 import capstone.relation.document.dto.CreateFileReqDto;
-import capstone.relation.document.dto.FileInfoDto;
+import capstone.relation.document.dto.FileContentDto;
 import capstone.relation.document.dto.FolderCreateDto;
 import capstone.relation.document.dto.FolderInfoDto;
 import capstone.relation.document.service.DocsService;
@@ -42,17 +41,17 @@ public class DocsController {
 	}
 
 	@PostMapping("/file")
-	public FileInfoDto createFile(@RequestBody CreateFileReqDto createFileReqDto) {
+	public FileContentDto createFile(@RequestBody CreateFileReqDto createFileReqDto) {
 		return docsService.createFile(SecurityUtil.getCurrentUserId(), createFileReqDto.getFileName(), createFileReqDto.getFolderId(),createFileReqDto.getContent());
 	}
 
 	@PutMapping("/file/{id}")
-	public FileInfoDto updateFile(@PathVariable Long id, @RequestBody CreateFileReqDto createFileReqDto) {
+	public FileContentDto updateFile(@PathVariable Long id, @RequestBody CreateFileReqDto createFileReqDto) {
 		return docsService.updateFile(id, createFileReqDto.getFileName(), createFileReqDto.getFolderId(), createFileReqDto.getContent());
 	}
 
 	@GetMapping("/file/{id}")
-	public NoteInfo getFile(@PathVariable String id) {
+	public FileContentDto getFile(@PathVariable String id) {
 		return docsService.getFile(id);
 	}
 

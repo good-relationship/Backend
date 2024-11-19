@@ -19,5 +19,4 @@ public class NoteInfo {
 	private String id;
 	@Setter
 	private String content;
-
 }

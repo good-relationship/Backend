@@ -36,6 +36,7 @@ public class FileInfo extends BaseEntity {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")
+	@Setter
 	private Folder folder;
 
 	@Column(name = "note_info_id")
