@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collation = "GoodRelDocs") //실제 몽고 DB 컬렉션 명
+@Document(collation = "{ 'locale': 'en' }") //실제 몽고 DB 컬렉션 명
 @Getter
 @Builder
 @NoArgsConstructor
