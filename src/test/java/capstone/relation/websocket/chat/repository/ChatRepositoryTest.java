@@ -11,13 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import capstone.relation.websocket.chat.domain.Chat;
 import capstone.relation.workspace.WorkSpace;
 import capstone.relation.workspace.repository.WorkSpaceRepository;
 
-@DataJpaTest
+@SpringBootTest
 @ExtendWith(SpringExtension.class)
 @DisplayName("ChatRepository JPA 테스트")
 class ChatRepositoryTest {
