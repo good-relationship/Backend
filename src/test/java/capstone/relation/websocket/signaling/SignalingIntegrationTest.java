@@ -5,7 +5,9 @@ import static capstone.relation.websocket.signaling.dto.SignalMessageType.*;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,8 +30,13 @@ import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.socket.WebSocketHttpHeaders;
+import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
+import org.springframework.web.socket.sockjs.client.RestTemplateXhrTransport;
+import org.springframework.web.socket.sockjs.client.SockJsClient;
+import org.springframework.web.socket.sockjs.client.Transport;
+import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import capstone.relation.api.auth.jwt.TokenProvider;
 import capstone.relation.user.domain.User;
@@ -72,8 +79,18 @@ public class SignalingIntegrationTest {
 		MockitoAnnotations.openMocks(this);
 		this.websocketUri = "ws://localhost:" + port + "/ws-chat";
 		this.websocketTopic = "/app";
-		this.stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+
+		// SockJS 사용을 위해 WebSocketClient 리스트를 만듭니다.
+		List<Transport> transports = new ArrayList<>();
+		transports.add(new WebSocketTransport(new StandardWebSocketClient()));
+		transports.add(new RestTemplateXhrTransport());
+
+		// SockJsClient 생성
+		WebSocketClient webSocketClient = new SockJsClient(transports);
+		this.stompClient = new WebSocketStompClient(webSocketClient);
 		this.stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+
+		//유저 생성
 		sender = User.builder()
 			.email("wnddms12345@gmail.com")
 			.profileImage("profileImage")
