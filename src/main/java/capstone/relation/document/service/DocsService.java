@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import capstone.relation.document.domain.FileInfo;
 import capstone.relation.document.domain.Folder;
 import capstone.relation.document.domain.NoteInfo;
+import capstone.relation.document.dto.FileContentDto;
 import capstone.relation.document.dto.FileInfoDto;
 import capstone.relation.document.dto.FolderInfoDto;
 import capstone.relation.document.exception.DocumentErrorCode;
@@ -77,25 +78,43 @@ public class DocsService {
 	}
 
 	@Transactional
-	public FileInfoDto createFile(Long userId, String fileName, Long folderId) {
+	public FileContentDto createFile(Long userId, String fileName, Long folderId, String content) {
 		Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new DocumentException(
 			DocumentErrorCode.FOLDER_NOT_EXIST));
 		WorkSpace workSpace = folder.getWorkSpace();
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.INVALID_USER));
-		if (workSpace.getId()!= user.getWorkSpace().getId())
+		if (!workSpace.getId().equals(user.getWorkSpace().getId()))
 			throw new DocumentException(DocumentErrorCode.USER_NOT_ACCESS);
-		FileInfo file = FileInfo.builder().build();
-		NoteInfo noteInfo = NoteInfo.builder()
-			.name(fileName)
-			.age(0L)
-			.build();
+		NoteInfo noteInfo = NoteInfo.builder().content(content).build();
 		noteInfoRepository.save(noteInfo);
-		file.setNoteInfoId(noteInfo.getId());
+		FileInfo file = FileInfo.builder()
+			.fileName(fileName)
+			.folder(folder)
+			.noteInfoId(noteInfo.getId())
+			.build();
 		fileRepository.save(file);
 		folder.getFileInfos().add(file);
-		return FileInfoDto.builder()
+		return FileContentDto.builder()
 			.fileId(file.getId())
 			.fileName(fileName)
+			.content(content)
+			.build();
+	}
+
+	@Transactional
+	public FileContentDto updateFile(Long fileId, String fileName, Long folderId, String content) {
+		FileInfo fileInfo = fileRepository.findById(fileId)
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		NoteInfo noteInfo = noteInfoRepository.findById(fileInfo.getNoteInfoId())
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		noteInfo.setContent(content);
+		noteInfoRepository.save(noteInfo);
+		fileInfo.setFileName(fileName);
+		fileRepository.save(fileInfo);
+		return FileContentDto.builder()
+			.fileId(fileInfo.getId())
+			.fileName(fileName)
+			.content(content)
 			.build();
 	}
 
@@ -117,7 +136,7 @@ public class DocsService {
 			.build();
 	}
 
-	public NoteInfo getFile(String id) {
+	public FileContentDto getFile(String id) {
 		return null;
 	}
 }
