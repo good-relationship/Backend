@@ -51,7 +51,7 @@ public class DocsController {
 	}
 
 	@GetMapping("/file/{id}")
-	public FileContentDto getFile(@PathVariable String id) {
+	public FileContentDto getFile(@PathVariable Long id) {
 		return docsService.getFile(id);
 	}
 
