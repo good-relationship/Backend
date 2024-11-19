@@ -37,9 +37,9 @@ public enum GlobalErrorCode implements BaseErrorCode {
 
 	BAD_FILE_EXTENSION(BAD_REQUEST, "FILE_400_1", "파일 확장자가 잘못 되었습니다."),
 	TOO_MANY_REQUEST(429, "GLOBAL_429_1", "과도한 요청을 보내셨습니다. 잠시 기다려 주세요.");
-	private Integer status;
-	private String code;
-	private String reason;
+	private final Integer status;
+	private final String code;
+	private final String reason;
 
 	@Override
 	public ErrorReason getErrorReason() {

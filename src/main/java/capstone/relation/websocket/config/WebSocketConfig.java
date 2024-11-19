@@ -33,7 +33,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 			.setErrorHandler(stompErrorHandler)
 			.addEndpoint("/ws-chat")
 			.setAllowedOriginPatterns("*")
-			.setHandshakeHandler(customHandshakeHandler);
+			.setHandshakeHandler(customHandshakeHandler)
+			.withSockJS();
 	}
 
 	@Override

@@ -9,6 +9,8 @@ services:
       - POSTGRES_PASSWORD=compose-postgres
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data_good_relation:/var/lib/postgresql/data
   redis:
     container_name: good-relation-spring-redis
     image: redis
@@ -16,6 +18,8 @@ services:
       - "6379:6379"
     environment:
       - REDIS_PASSWORD=compose-redis
+    volumes:
+        - redis_data_good_relation:/data
 
     # 서비스 명
   pgadmin:
@@ -54,4 +58,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 volumes:
-  spring_data_good_relation:
+    postgres_data_good_relation:
+    redis_data_good_relation:
+    spring_data_good_relation:

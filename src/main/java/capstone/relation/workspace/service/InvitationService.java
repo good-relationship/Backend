@@ -22,7 +22,7 @@ public class InvitationService {
 
 	public WorkspaceInfo inviteWorkspace(String inviteCode) {
 		WorkSpace workSpace = getWorkSpace(inviteCode);
-		if (workSpace.getUser().contains(userService.getUserEntity())) {
+		if (workSpace.getUsers().contains(userService.getUserEntity())) {
 			throw new WorkSpaceException(WorkSpaceErrorCode.ALREADY_WORKSPACE_MEMBER);
 		}
 		userService.setInvitedWorkspaceId(workSpace.getId());
