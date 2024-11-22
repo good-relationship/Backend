@@ -9,6 +9,4 @@ public class CreateFileReqDto {
 	private String fileName;
 	@Schema(description = "폴더 아이디", example = "1")
 	private Long folderId;
-	@Schema(description = "파일 내용", example = "test")
-	private String content;
 }
