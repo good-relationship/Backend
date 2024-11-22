@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -35,6 +36,7 @@ public class Folder extends BaseEntity {
 	private Long id;
 
 	@Column(name = "folder_name")
+	@Setter
 	private String folderName;
 
 	@Builder.Default

@@ -51,6 +51,28 @@ public class DocsService {
 			.folderName(folderName)
 			.build();
 	}
+	@Transactional
+	public FolderInfoDto updateFolder(Long folderId, String folderName) {
+		Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new DocumentException(
+			DocumentErrorCode.FOLDER_NOT_EXIST));
+		folder.setFolderName(folderName);
+		folderRepository.save(folder);
+		return FolderInfoDto.builder()
+			.folderId(folder.getId())
+			.folderName(folderName)
+			.build();
+	}
+
+	@Transactional
+	public void deleteFolder(Long userId, Long folderId) {
+		Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new DocumentException(
+			DocumentErrorCode.FOLDER_NOT_EXIST));
+		WorkSpace workSpace = folder.getWorkSpace();
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.INVALID_USER));
+		if (!workSpace.getId().equals(user.getWorkSpace().getId()))
+			throw new DocumentException(DocumentErrorCode.USER_NOT_ACCESS);
+		folderRepository.delete(folder);
+	}
 
 	public List<FolderInfoDto> getAllDocs(Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.INVALID_USER));
@@ -78,14 +100,14 @@ public class DocsService {
 	}
 
 	@Transactional
-	public FileContentDto createFile(Long userId, String fileName, Long folderId, String content) {
+	public FileContentDto createFile(Long userId, String fileName, Long folderId) {
 		Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new DocumentException(
 			DocumentErrorCode.FOLDER_NOT_EXIST));
 		WorkSpace workSpace = folder.getWorkSpace();
 		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.INVALID_USER));
 		if (!workSpace.getId().equals(user.getWorkSpace().getId()))
 			throw new DocumentException(DocumentErrorCode.USER_NOT_ACCESS);
-		NoteInfo noteInfo = NoteInfo.builder().content(content).build();
+		NoteInfo noteInfo = NoteInfo.builder().build();
 		noteInfoRepository.save(noteInfo);
 		FileInfo file = FileInfo.builder()
 			.fileName(fileName)
@@ -97,25 +119,36 @@ public class DocsService {
 		return FileContentDto.builder()
 			.fileId(file.getId())
 			.fileName(fileName)
-			.content(content)
 			.build();
 	}
 
 	@Transactional
-	public FileContentDto updateFile(Long fileId, String fileName, Long folderId, String content) {
+	public FileContentDto updateFile(Long userId, Long fileId, String content) {
 		FileInfo fileInfo = fileRepository.findById(fileId)
 			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
 		NoteInfo noteInfo = noteInfoRepository.findById(fileInfo.getNoteInfoId())
 			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
 		noteInfo.setContent(content);
 		noteInfoRepository.save(noteInfo);
-		fileInfo.setFileName(fileName);
+		fileInfo.setFileName(fileInfo.getFileName());
 		fileRepository.save(fileInfo);
 		return FileContentDto.builder()
 			.fileId(fileInfo.getId())
-			.fileName(fileName)
+			.fileName(fileInfo.getFileName())
 			.content(content)
 			.build();
+	}
+
+	@Transactional
+	public void deleteFile(Long userId, Long fileId) {
+		FileInfo fileInfo = fileRepository.findById(fileId)
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		Folder folder = fileInfo.getFolder();
+		WorkSpace workSpace = folder.getWorkSpace();
+		User user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.INVALID_USER));
+		if (!workSpace.getId().equals(user.getWorkSpace().getId()))
+			throw new DocumentException(DocumentErrorCode.USER_NOT_ACCESS);
+		fileRepository.delete(fileInfo);
 	}
 
 	public FolderInfoDto getFolder(Long folderId) {
