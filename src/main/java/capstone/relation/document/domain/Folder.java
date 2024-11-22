@@ -25,7 +25,7 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@SQLDelete(sql = "UPDATE shop SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE folder SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
 @Builder
 @AllArgsConstructor
