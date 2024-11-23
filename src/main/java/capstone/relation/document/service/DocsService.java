@@ -51,6 +51,7 @@ public class DocsService {
 			.folderName(folderName)
 			.build();
 	}
+
 	@Transactional
 	public FolderInfoDto updateFolder(Long folderId, String folderName) {
 		Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new DocumentException(

@@ -16,9 +16,9 @@ import capstone.relation.document.dto.CreateFileReqDto;
 import capstone.relation.document.dto.FileContentDto;
 import capstone.relation.document.dto.FolderCreateDto;
 import capstone.relation.document.dto.FolderInfoDto;
+import capstone.relation.document.dto.UpdateFileReqDto;
 import capstone.relation.document.service.DocsService;
 import capstone.relation.global.util.SecurityUtil;
-import capstone.relation.document.dto.UpdateFileReqDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
