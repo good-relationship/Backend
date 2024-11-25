@@ -68,6 +68,12 @@ public class DocsController {
 			createFileReqDto.getFileName(), createFileReqDto.getFolderId());
 	}
 
+	@PatchMapping("/file/name/{id}")
+	@Operation(summary = "파일 명 수정", description = "파일명을 수정합니다.")
+	public FileContentDto updateFileName(@PathVariable Long id, @RequestBody String fileName) {
+		return docsService.updateFileName(SecurityUtil.getCurrentUserId(), id, fileName);
+	}
+
 	@PatchMapping("/file/{id}")
 	@Operation(summary = "파일 수정", description = "파일을 수정합니다.")
 	public FileContentDto updateFile(@PathVariable Long id, @RequestBody UpdateFileReqDto updateFileReqDto) {

@@ -124,6 +124,21 @@ public class DocsService {
 	}
 
 	@Transactional
+	public FileContentDto updateFileName(Long userId, Long fileId, String fileName) {
+		FileInfo fileInfo = fileRepository.findById(fileId)
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		NoteInfo noteInfo = noteInfoRepository.findById(fileInfo.getNoteInfoId())
+			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
+		fileInfo.setFileName(fileName);
+		fileRepository.save(fileInfo);
+		return FileContentDto.builder()
+			.fileId(fileInfo.getId())
+			.fileName(fileName)
+			.content(noteInfo.getContent())
+			.build();
+	}
+
+	@Transactional
 	public FileContentDto updateFile(Long userId, Long fileId, String content) {
 		FileInfo fileInfo = fileRepository.findById(fileId)
 			.orElseThrow(() -> new DocumentException(DocumentErrorCode.FILE_NOT_EXIST));
