@@ -18,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.Getter;
 
 @Entity
@@ -40,6 +41,7 @@ public class WorkSpace {
 	private Set<MeetRoom> meetRooms = new HashSet<>();
 
 	@OneToMany(mappedBy = "workSpace", cascade = CascadeType.ALL)
+	@OrderBy("id ASC")
 	private List<Folder> folders = new ArrayList<>();
 
 	@Column(nullable = false)

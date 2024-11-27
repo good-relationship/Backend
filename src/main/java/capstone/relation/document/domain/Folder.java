@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +46,7 @@ public class Folder extends BaseEntity {
 
 	@OneToMany(mappedBy = "folder")
 	@Builder.Default
+	@OrderBy("id ASC")
 	private List<FileInfo> fileInfos = new ArrayList<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
