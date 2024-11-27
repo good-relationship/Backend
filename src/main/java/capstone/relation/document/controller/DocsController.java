@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import capstone.relation.document.dto.CreateFileReqDto;
 import capstone.relation.document.dto.FileContentDto;
+import capstone.relation.document.dto.FileNameChangeDto;
 import capstone.relation.document.dto.FolderCreateDto;
 import capstone.relation.document.dto.FolderInfoDto;
 import capstone.relation.document.dto.UpdateFileReqDto;
@@ -70,8 +71,8 @@ public class DocsController {
 
 	@PatchMapping("/file/name/{id}")
 	@Operation(summary = "파일 명 수정", description = "파일명을 수정합니다.")
-	public FileContentDto updateFileName(@PathVariable Long id, @RequestBody String fileName) {
-		return docsService.updateFileName(SecurityUtil.getCurrentUserId(), id, fileName);
+	public FileContentDto updateFileName(@PathVariable Long id, @RequestBody FileNameChangeDto fileNameChangeDto) {
+		return docsService.updateFileName(SecurityUtil.getCurrentUserId(), id, fileNameChangeDto.getFileName());
 	}
 
 	@PatchMapping("/file/{id}")
