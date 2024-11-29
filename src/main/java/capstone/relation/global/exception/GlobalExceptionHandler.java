@@ -143,7 +143,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request)
 		throws IOException {
-		ServletWebRequest servletWebRequest = (ServletWebRequest)request;
+		ServletWebRequest servletWebRequest = new ServletWebRequest(request);
 		HttpServletRequest httpServletRequest = servletWebRequest.getRequest(); // 예외가 발생한 URL과 같은 요청에 대한 세부 정보를 추출
 		String url = httpServletRequest.getRequestURL().toString();
 
