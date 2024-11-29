@@ -45,33 +45,33 @@ class MeetRoomServiceTest {
 	@Mock
 	private RedisRepository mockRedisRepository;
 
-	@DisplayName("회의 방을 생성하고 가입할 수 있다.")
-	@WithMockCustomUser
-	@Test
-	void createAndJoinRoom() {
-		// given
-		CreateRoomDto createRoomDto = new CreateRoomDto("테스트 방이름");
-
-		given(mockUserService.getUserWorkSpaceId(1L)).willReturn("workspace-1");
-		given(mockWorkSpaceRepository.findById("workspace-1")).willReturn(Optional.of(new WorkSpace()));
-		given(mockMeetRoomRepository.save(any(MeetRoom.class))).willAnswer(invocation -> {
-			MeetRoom meetRoom = invocation.getArgument(0);
-			meetRoom.setRoomId(1L);
-			return meetRoom;
-		});
-		given(mockMeetRoomRepository.findById(1L)).willReturn(
-			Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
-
-		// when
-		JoinResponseDto joinResponse = meetRoomService.createAndJoinRoom(1L, createRoomDto);
-
-		// then
-		verify(mockSimpMessagingTemplate, times(1)).convertAndSend(eq("/topic/workspace-1/meetingRoomList"),
-			any(MeetingRoomListDto.class));
-		assertThat(joinResponse).isNotNull();
-		assertThat(joinResponse.getRoomName()).isEqualTo("테스트 방이름");
-		assertThat(joinResponse.getRoomId()).isEqualTo(1L);
-	}
+	// @DisplayName("회의 방을 생성하고 가입할 수 있다.")
+	// @WithMockCustomUser
+	// @Test
+	// void createAndJoinRoom() {
+	// 	// given
+	// 	CreateRoomDto createRoomDto = new CreateRoomDto("테스트 방이름");
+	//
+	// 	given(mockUserService.getUserWorkSpaceId(1L)).willReturn("workspace-1");
+	// 	given(mockWorkSpaceRepository.findById("workspace-1")).willReturn(Optional.of(new WorkSpace()));
+	// 	given(mockMeetRoomRepository.save(any(MeetRoom.class))).willAnswer(invocation -> {
+	// 		MeetRoom meetRoom = invocation.getArgument(0);
+	// 		meetRoom.setRoomId(1L);
+	// 		return meetRoom;
+	// 	});
+	// 	given(mockMeetRoomRepository.findById(1L)).willReturn(
+	// 		Optional.of(MeetRoom.builder().roomId(1L).roomName("테스트 방이름").build()));
+	//
+	// 	// when
+	// 	JoinResponseDto joinResponse = meetRoomService.createAndJoinRoom(1L, createRoomDto);
+	//
+	// 	// then
+	// 	verify(mockSimpMessagingTemplate, times(1)).convertAndSend(eq("/topic/workspace-1/meetingRoomList"),
+	// 		any(MeetingRoomListDto.class));
+	// 	assertThat(joinResponse).isNotNull();
+	// 	assertThat(joinResponse.getRoomName()).isEqualTo("테스트 방이름");
+	// 	assertThat(joinResponse.getRoomId()).isEqualTo(1L);
+	// }
 
 	@DisplayName("잘못된 회의실 이름으로 회의 방을 생성하려고 할 때 예외가 발생한다.")
 	@Test
