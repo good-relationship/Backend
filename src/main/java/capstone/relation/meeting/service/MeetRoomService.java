@@ -17,6 +17,7 @@ import capstone.relation.meeting.exception.MeetingException;
 import capstone.relation.meeting.repository.MeetRoomRepository;
 import capstone.relation.meeting.repository.RedisRepository;
 import capstone.relation.user.UserService;
+import capstone.relation.user.domain.User;
 import capstone.relation.user.dto.RoomInfoDto;
 import capstone.relation.user.dto.UserInfoDto;
 import lombok.RequiredArgsConstructor;
@@ -59,9 +60,11 @@ public class MeetRoomService {
 	private Long createRoom(Long userId, String roomName) {
 		if (redisRepository.isUserInRoom(userId))
 			throw new MeetingException(MeetingErrorCode.MEETING_ALREADY_JOINED);
+		User user = userService.getUserEntity();
 		MeetRoom meetRoom = MeetRoom.builder()
 			.roomName(roomName)
 			.deleted(false)
+			.workSpace(user.getWorkSpace())
 			.build();
 		meetRoomRepository.save(meetRoom);
 		return meetRoom.getRoomId();
