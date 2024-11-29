@@ -73,7 +73,11 @@ public class RedisRepository {
 		if (roomParticipants == null) {
 			return new HashSet<>();
 		}
-		return roomParticipants.get(roomId.toString());
+		Set<String> membersId = roomParticipants.get(roomId.toString());
+		if (membersId == null) {
+			return new HashSet<>();
+		}
+		return membersId;
 	}
 
 	public void deleteAll() {
