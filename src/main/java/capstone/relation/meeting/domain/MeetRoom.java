@@ -40,6 +40,7 @@ public class MeetRoom {
 	public MeetRoom(Long roomId, String roomName, WorkSpace workSpace, boolean deleted) {
 		this.roomId = roomId;
 		this.roomName = roomName;
+		this.workSpace = workSpace;
 		this.deleted = deleted;
 	}
 
